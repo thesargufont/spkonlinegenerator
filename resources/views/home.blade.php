@@ -10,6 +10,15 @@
 @endsection
 
 @section('content')
+    <style>
+        body {
+        background-image: url('images/background_page(2).png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        height: 1000px;
+        }
+    </style>
     <div class="col-sm-12">
         <h5>Hallo, <b>{{Auth::user()->name}}</b>. Selamat Datang di <b> SPONGE - Surat Perintah Online Generator</b>.</h5>
     </div>

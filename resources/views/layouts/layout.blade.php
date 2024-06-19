@@ -32,8 +32,8 @@
             <!-- LOGO -->
             <div class="topbar-left">
                 <div class="text-center">
-                    <a href="{{ asset('html/index.html') }}" class="logo"><img src="{{ asset('images/sponge_logo.png') }}" height="28"></a>
-                    <a href="{{ asset('html/index.html') }}" class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}" height="36"></a>
+                    <a class="logo"><img src="{{ asset('images/sponge_logo.png') }}" height="28"></a>
+                    <a class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}" height="36"></a>
                 </div>
             </div>
             <!-- Button mobile view to collapse sidebar menu -->

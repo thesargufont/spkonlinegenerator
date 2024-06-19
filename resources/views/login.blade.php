@@ -8,11 +8,20 @@
     <link rel="shortcut icon" href="{{ asset('images/pln_logo.png') }}">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
+<style>
+    body {
+        background-image: url('images/background_page(2).png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        height: 1000px;
+    }
+</style>
 <body>
+    
     <div class="container"><br>
         <div class="col-md-4 col-md-offset-4">
-            <h2 class="text-center"><b>SPK GENERATOR</b><br>Aplikasi Surat Perintah online Generator</h3>
+            <h2 class="text-center"><b></b><br>Development Server</h3>
             <hr>
             @if(session('error'))
             <div class="alert alert-danger">
@@ -31,7 +40,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Log In</button>
                 <hr>
-                <p class="text-center">Belum punya akun? <a href="#">Register</a> sekarang!</p>
+                {{-- <p class="text-center">Belum punya akun? <a href="#">Register</a> sekarang!</p> --}}
             </form>
         </div>
     </div>
