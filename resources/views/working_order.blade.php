@@ -11,6 +11,14 @@
 
 @section('content')
 <div class="container">
+    <div class="card-header">
+        <div class="btn-group" role="group">
+            <div class="form-group">
+                <button type="button" name="save" id="saveBtn" class="btn btn-primary" onclick="doSave();"><i class="fa fa-fw fa-save"></i> {{ucwords(__('Simpan'))}}</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="row">
         <div class="col-sm-12">
             <form class="form-horizontal" role="form">
@@ -19,7 +27,7 @@
                         <h3 class="panel-title">Form Header</h3>
                     </div>
                     <div class="panel-body">
-                        
+                        <span id="form_result"></span>
                             {{-- NOMOR WORK ORDER --}}
                             <div class="form-group">
                                 <label class="col-md-2">NOMOR WORK ORDER</label>
@@ -132,6 +140,19 @@
 </div>
 
 <!-- Plugins js -->
-@endsection
+<script src="{{ asset('plugins/timepicker/bootstrap-timepicker.js') }}"></script>
+<script src="{{ asset('plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js') }}"></script>
+<script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ asset('plugins/bootstrap-maxlength/bootstrap-maxlength.min.js" type="text/javascript') }}"></script>
+<script src="{{ asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js" type="text/javascript') }}"></script>
+<script src="{{ asset('pages/form-advanced.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script>
 
-{{-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
+<script>
+    function doSave(){
+        $('#form_result').html('');
+        html = '<div class="alert alert-danger">Sorry, this page is under maintenance by developer</div>';
+        $('#form_result').html(html);
+    }
+</script>
+@endsection
