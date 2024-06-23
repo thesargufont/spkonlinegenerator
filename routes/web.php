@@ -79,7 +79,12 @@ Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'
     // LOCATION
         // DASNBOARD
         Route::get('masters/location/index', [LocationController::class, 'index'])->name('masters/location/index')->middleware('auth');
-
+        Route::post('masters/location/dashboard-data', [LocationController::class, 'data'])->name('masters/location/dashboard-data')->middleware('auth');
+        Route::get('masters/location/export-excel', [LocationController::class, 'exportExcel'])->name('masters/location/export-excel')->middleware('auth');
+        Route::get('masters/location/import-excel', [LocationController::class, 'importExcel'])->name('masters/location/import-excel')->middleware('auth');
+        Route::get('masters/location/create-new', [LocationController::class, 'createNew'])->name('masters/location/create-new')->middleware('auth');
+        // FORM INPUT
+        Route::post('masters/location/create-new/create', [LocationController::class, 'submitData'])->name('masters/location/create-new/create')->middleware('auth');
     // DEVICE
         // DASNBOARD
         Route::get('masters/device/index', [DeviceController::class, 'index'])->name('masters/device/index')->middleware('auth');
