@@ -10,7 +10,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        return view('employee_data');
+        return view('masters.employee.employee_index');
     }
 
     public function getData($request,$isExcel='')

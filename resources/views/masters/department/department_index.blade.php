@@ -15,7 +15,7 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
-                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('create-new-department')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
+                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/department/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
                 <button type="button" name="download" id="btn_download_xlsx" class="btn btn-secondary"><i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}</button>
                 <button type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button>
             </div>
@@ -137,7 +137,7 @@
                 infoEmpty:      ""
             },
             ajax: {
-                'url': '{!! route('department-data/department-datatable') !!}',
+                'url': '{!! route('masters/department/dashboard-data') !!}',
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
@@ -179,12 +179,12 @@
     $('#btn_download_xlsx').click(function() {
         $('#search-form').submit();
         $('#main-table').DataTable().ajax.reload();
-        var uri = encodeURI("{{url('department-data/export_excel')}}");
+        var uri = encodeURI("{{url('masters/department/export-excel')}}");
         window.open(uri,'_blank');
     });
 
     $('#btn_upload_xlsx').click(function() {
-    location.replace('{{ url('department-data/import-excel') }}');
+    location.replace('{{ url('masters/department/import-excel') }}');
 });
 </script>
 @endsection

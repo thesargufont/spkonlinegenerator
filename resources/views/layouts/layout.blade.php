@@ -154,7 +154,7 @@
                         <li class="has_sub">
                           <a href="javascript:void(0);" class="waves-effect"><i class="ti-write"></i><span> Forms </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                           <ul class="list-unstyled">
-                              <li><a href="{{ route('input-working-order') }}">Input Working Order</a></li>
+                              <li><a href="{{ route('form/input/working-order') }}">Input Working Order</a></li>
                               <li><a href="#">Input Progress</a></li>
                           </ul>
                       </li>
@@ -175,10 +175,10 @@
                         <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Admin Panel </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
-                                <li><a href="{{ route('employee-data') }}">Data Karyawan</a></li>
-                                <li><a href="{{ route('department-data') }}">Data Bagian</a></li>
-                                <li><a href="{{ route('location-data') }}">Data Lokasi</a></li>
-                                <li><a href="{{ route('device-data') }}">Data Peralatan</a></li>
+                                <li><a href="{{ route('masters/employee/index') }}">Data Karyawan</a></li>
+                                <li><a href="{{ route('masters/department/index') }}">Data Bagian</a></li>
+                                <li><a href="{{ route('masters/location/index') }}">Data Lokasi</a></li>
+                                <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
                             </ul>
                         </li>
                     </ul>

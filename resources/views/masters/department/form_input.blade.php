@@ -119,7 +119,7 @@
         var description = $('#description').val();
         
         $.ajax({
-            url : '{!! route('create-new-department/create') !!}',
+            url : '{!! route('masters/department/create-new/create') !!}',
             type: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{!!csrf_token()!!}'
@@ -139,7 +139,7 @@
                     $('#form_result').html(data.message);
                     $('#department_name').val('');
                     $('#description').val('');
-                    setTimeout(function(){ window.location.href = '{{url('department-data')}}'; }, 1500);
+                    setTimeout(function(){ window.location.href = '{{url('masters/department/index')}}'; }, 1500);
                 }  
             },
             error: function(data) {
@@ -161,7 +161,7 @@
     }
 
     function doBack(){
-        setTimeout(function(){ window.location.href = '{{url('department-data')}}'; }, 100);
+        setTimeout(function(){ window.location.href = '{{url('masters/department/index')}}'; }, 100);
     }
 </script>
 

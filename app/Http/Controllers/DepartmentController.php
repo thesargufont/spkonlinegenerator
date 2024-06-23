@@ -19,12 +19,12 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        return view('department.department_data');
+        return view('masters.department.department_index');
     }
 
     public function createNew()
     {
-        return view('department.create');
+        return view('masters.department.form_input');
     }
 
     public function submitData(Request $request)
@@ -180,7 +180,7 @@ class DepartmentController extends Controller
 
     public function importExcel()
     {
-        return view('department.upload');
+        return view('masters.department.upload');
     }
 
     public function uploadDepartment(Request $request)

@@ -16,13 +16,6 @@
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
                 <button type="button" name="create_new" id="create_new" class="btn btn-secondary"><i class="fa fa-plus"></i> {{ucwords(__('New'))}}</button>
-                
-                <a href="#" title="{{ucwords(__('Download As..'))}}" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-download"></i> {{ucwords(__('Download'))}}
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a href="#" class="dropdown-item" id="btn_download_xlsx" title="download as XLSX file"><i class="fa fa-fw fa-file-excel-o"></i> XLSX Report</a></li>
-                </ul>
             </div>
         </div>
     </div>
@@ -120,7 +113,7 @@
                 infoEmpty:      ""
             },
             ajax: {
-                'url': '{!! route('employee-datatable') !!}',
+                'url': '{!! route('master/employee/dashboard-data') !!}',
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'

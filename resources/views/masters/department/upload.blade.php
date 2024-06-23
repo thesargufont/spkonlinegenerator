@@ -96,7 +96,7 @@
     $('#template_department').click(function(){
         html = '';
         $('#form_result').html(html);
-        var uri = encodeURI("{{url('/department-data/download-department-template')}}");
+        var uri = encodeURI("{{url('/masters/department/download-template')}}");
         window.open(uri,'_blank');
     });
 
@@ -119,7 +119,7 @@
         
         $.ajax({
             method: 'POST', // Type of response and matches what we said in the route
-            url: '{!! route('department-data/upload-department') !!}', // This is the url we gave in the route
+            url: '{!! route('masters/department/upload') !!}', // This is the url we gave in the route
             headers: {
                 'X-CSRF-TOKEN': '{!!csrf_token()!!}'
             },
@@ -181,7 +181,7 @@
             infoEmpty:      ""
         },
         ajax: {
-            'url': '{!! route('department-data/display-upload-department') !!}',
+            'url': '{!! route('masters/department/display-upload') !!}',
             'type': 'POST',
             'headers': {
                 'X-CSRF-TOKEN': '{!! csrf_token() !!}'
@@ -206,5 +206,9 @@
             $('td:eq(0)', row).html(index);
         }
     });
+
+    function doBack(){
+        setTimeout(function(){ window.location.href = '{{url('masters/department/index')}}'; }, 100);
+    }
 </script>
 @endsection

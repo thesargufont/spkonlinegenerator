@@ -99,7 +99,7 @@ class DepartmentExport extends DefaultValueBinder implements  WithCustomValueBin
         $auth = Auth::user();
         $datetimenow = Date('d/m/Y H:i:s');
         $this->countdata = count($items);
-        return view('department.export.export',['items' => $data, 'auth' => $auth, 'date' => $datetimenow]);
+        return view('masters.department.export.export',['items' => $data, 'auth' => $auth, 'date' => $datetimenow]);
     }
 
     /**

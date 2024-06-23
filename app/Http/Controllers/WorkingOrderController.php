@@ -8,6 +8,6 @@ class WorkingOrderController extends Controller
 {
     public function index()
     {   
-        return view('working_order');
+        return view('forms.working_order.index');
     }
 }
