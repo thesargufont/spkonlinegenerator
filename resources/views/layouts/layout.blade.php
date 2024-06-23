@@ -104,6 +104,9 @@
                             <li class="hidden-xs">
                                 <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="fa fa-crosshairs"></i></a>
                             </li>
+                            <li class="hidden-xs">
+                                <a href="{{ route('actionlogout') }}" id="btn-logout" class="waves-effect waves-light"><i class="fa fa-sign-out"></i></a>
+                            </li>
                             <li class="dropdown">
                                 {{-- <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('images/users/avatar-1.jpg') }}" alt="user-img" class="img-circle"> </a> --}}
                                 <ul class="dropdown-menu">
@@ -178,9 +181,11 @@
                         <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Admin Panel </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
-                                <li><a href="{{ route('masters/employee/index') }}">Data Karyawan</a></li>
-                                <li><a href="{{ route('masters/department/index') }}">Data Bagian</a></li>
+                                <li><a href="{{ route('masters/role/index') }}">Data Pengaturan Pengguna</a></li>
+                                <li><a href="{{ route('masters/employee/index') }}">Data Pengguna</a></li>
+                                <li><a href="{{ route('masters/department/index') }}">Data Departemen</a></li>
                                 <li><a href="{{ route('masters/location/index') }}">Data Lokasi</a></li>
+                                <li><a href="{{ route('masters/job/index') }}">Data Pekerjaan</a></li>
                                 <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
                             </ul>
                         </li>

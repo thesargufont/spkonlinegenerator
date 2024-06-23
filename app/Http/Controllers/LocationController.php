@@ -8,8 +8,10 @@ use Carbon\Carbon;
 use App\Models\Location;
 use App\Models\LocationHist;
 use Illuminate\Http\Request;
+use App\Exports\LocationExport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
   
 class LocationController extends Controller
@@ -185,5 +187,11 @@ class LocationController extends Controller
                             "message"=> '<div class="alert alert-danger">Telah terjadi kesalahan sistem, data gagal diproses</div>'
                     ]);       
         }
+    }
+
+    public function exportExcel()
+    {
+        $datas = $this->getData(null, 'excel');
+        return Excel::download(new LocationExport($datas), 'LocationMaster.xlsx');
     }
 }

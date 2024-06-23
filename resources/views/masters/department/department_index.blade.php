@@ -184,8 +184,8 @@
     });
 
     $('#btn_upload_xlsx').click(function() {
-    location.replace('{{ url('masters/department/import-excel') }}');
-});
+        location.replace('{{ url('masters/department/import-excel') }}');
+    });
 </script>
 @endsection
 

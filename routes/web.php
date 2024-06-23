@@ -27,6 +27,7 @@ use App\Http\Controllers\WorkingOrderController;
 
 Route::get('/', [LoginController::class, 'login'])->name('login');
 Route::post('actionlogin', [LoginController::class, 'actionlogin'])->name('actionlogin');
+Route::post('actionlogout', [LoginController::class, 'actionlogout'])->name('actionlogout');
 
 Route::get('home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 Route::get('actionlogout', [LoginController::class, 'actionlogout'])->name('actionlogout')->middleware('auth');
@@ -88,3 +89,5 @@ Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'
     // DEVICE
         // DASNBOARD
         Route::get('masters/device/index', [DeviceController::class, 'index'])->name('masters/device/index')->middleware('auth');
+        Route::get('masters/role/index', [RoleController::class, 'index'])->name('masters/role/index')->middleware('auth');
+        Route::get('masters/job/index', [JobController::class, 'index'])->name('masters/job/index')->middleware('auth');
