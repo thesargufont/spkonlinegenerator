@@ -20,8 +20,8 @@ class AddColumnUsers extends Migration
             //$table->string('email', 100)->change();
             $table->string('gender', 10)->after('email_verified_at');
             $table->boolean('active')->after('gender');
-            $table->date('start_effective')->after('active');
-            $table->date('end_effective')->after('active')->nullable();
+            $table->dateTime('start_effective')->after('active')->nullable();
+            $table->dateTime('end_effective')->after('active')->nullable();
             $table->string('signature_path', 150)->after('end_effective')->nullable();
             $table->unsignedBigInteger('created_by')->after('remember_token');
             $table->unsignedBigInteger('updated_by')->after('created_at');
