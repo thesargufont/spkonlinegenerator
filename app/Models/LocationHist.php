@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LocationHist extends Model
 {
+
     protected $table = "location_hists";
     public $timestamps = false;
     protected $fillable = [
