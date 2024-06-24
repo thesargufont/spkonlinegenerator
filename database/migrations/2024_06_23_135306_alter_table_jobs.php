@@ -16,7 +16,9 @@ class AlterTableJobs extends Migration
         Schema::table('jobs', function (Blueprint $table) {
             $table->dropUnique('jobs_1_unique');
 
-            $table->dropColumn('job');
+            if (Schema::hasColumn('jobs', 'jobs')) {
+                $table->dropColumn('jobs');
+            }
 
             $table->unsignedBigInteger('departement_id')->nullable()->default(null)->after('id');
             $table->string('wo_category', 100)->default('')->after('departement_id');
@@ -38,9 +40,15 @@ class AlterTableJobs extends Migration
 
             $table->string('job', 50)->default('')->after('id');
 
-            $table->dropColumn('departement_id');
-            $table->dropColumn('wo_category');
-            $table->dropColumn('job_category');
+            if (Schema::hasColumn('jobs', 'departement_id')) {
+                $table->dropColumn('departement_id');
+            }
+            if (Schema::hasColumn('jobs', 'wo_category')) {
+                $table->dropColumn('wo_category');
+            }
+            if (Schema::hasColumn('jobs', 'job_category')) {
+                $table->dropColumn('job_category');
+            }
 
             $table->unique(['job','active'],'jobs_1_unique');
         });

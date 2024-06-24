@@ -14,7 +14,9 @@ class AlterTableJobHists extends Migration
     public function up()
     {
         Schema::table('job_hists', function (Blueprint $table) {
-            $table->dropColumn('job');
+            if (Schema::hasColumn('job_hists', 'jobs')) {
+                $table->dropColumn('jobs');
+            }
 
             $table->unsignedBigInteger('departement_id')->nullable()->default(null)->after('id');
             $table->string('wo_category', 100)->default('')->after('departement_id');
@@ -32,9 +34,15 @@ class AlterTableJobHists extends Migration
         Schema::table('job_hists', function (Blueprint $table) {
             $table->string('job', 50)->default('')->after('id');
 
-            $table->dropColumn('departement_id');
-            $table->dropColumn('wo_category');
-            $table->dropColumn('job_category');
+            if (Schema::hasColumn('job_hists', 'departement_id')) {
+                $table->dropColumn('departement_id');
+            }
+            if (Schema::hasColumn('job_hists', 'wo_category')) {
+                $table->dropColumn('wo_category');
+            }
+            if (Schema::hasColumn('job_hists', 'job_category')) {
+                $table->dropColumn('job_category');
+            }
         });
     }
 }
