@@ -110,6 +110,22 @@ class WorkingOrderController extends Controller
 
     public function submitData(Request $request)
     {
-        dd($request);
+        //dd($request->all());
+        foreach ($request->details as $detail) {
+            //dd($detail);
+            dd($detail['photo1']->getClientOriginalName());
+            $name = $detail['photo1']->getClientOriginalName() . '.' . $detail['photo1']->getClientOriginalExtension();
+            // if ($detail->hasFile('photo1')) {
+            //     $file = $detail->file('photo1');
+
+            //     //you also need to keep file extension as well
+            //     $name = $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+
+
+            //     //using array instead of object
+            //     // $image['filePath'] = $name;
+            //     // $file->move(public_path() . '/uploads/', $name);
+            // }
+        }
     }
 }

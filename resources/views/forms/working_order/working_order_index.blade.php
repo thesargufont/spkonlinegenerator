@@ -172,7 +172,7 @@
 
 <script>
     $(function() {
-        url = "{!! route('form-input/working-order/dashboard-data') !!}";
+        url = "{!! route('form-input.working-order.dashboard-data') !!}";
         var oTable = $('#main-table').DataTable({
             filter: false,
             processing: true,

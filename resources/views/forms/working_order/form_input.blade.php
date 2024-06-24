@@ -23,7 +23,7 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal" id="wo_form" enctype="multipart/form-data">
                 @csrf
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -118,6 +118,7 @@
         var detailIndex = 0;
 
         $('#addDetailButton').click(function() {
+            detailIndex++;
             $('#work-detail-container').append(`
         <div class="col-md-12" id="work-detail" data-index="${detailIndex}">
             <div class="col-sm-2">
@@ -191,11 +192,11 @@
                         <label>LAMPIRAN FOTO</label>
                     </div>
                     <div>
-                        <input type="file" id="myFile1" name="details[${detailIndex}][photo1]">
+                        <input type="file" name="details[${detailIndex}][photo1]">
                         <br>
-                        <input type="file" id="myFile2" name="details[${detailIndex}][photo2]">
+                        <input type="file" name="details[${detailIndex}][photo2]">
                         <br>
-                        <input type="file" id="myFile3" name="details[${detailIndex}][photo3]">
+                        <input type="file" name="details[${detailIndex}][photo3]">
                     </div>
                 </div>
             </div>
@@ -222,6 +223,7 @@
             var wo_type = $('#wo_type').val();
             var department = $('#department').val();
             var effective_date = $('#effective_date').val();
+            var work_detail = $('#work-detail').val();
 
             // Defining URLs
             var urls = {
@@ -229,23 +231,38 @@
                 index: "{{ route('form-input.working-order.index') }}" // Correct the route format to dot notation for consistency
             };
 
-            console.log('Create URL:', urls.create); // Debugging URL
-            console.log('CSRF Token:', '{{ csrf_token() }}'); // Debugging CSRF token
+            var formData = new FormData($('#wo-form')[0]);
+
+            // Append form data for each detail block
+            $('#work-detail').each(function() {
+                var detailIndex = $(this).data('index');
+                formData.append('details[' + detailIndex + '][location]', $(this).find('select[name="details[' + detailIndex + '][location]"]').val());
+                formData.append('details[' + detailIndex + '][device]', $(this).find('select[name="details[' + detailIndex + '][device]"]').val());
+                formData.append('details[' + detailIndex + '][description]', $(this).find('textarea[name="details[' + detailIndex + '][description]"]').val());
+                formData.append('details[' + detailIndex + '][disturbance_category]', $(this).find('select[name="details[' + detailIndex + '][disturbance_category]"]').val());
+
+                // Append file inputs
+                var files = $(this).find('input[type="file"]');
+                $.each(files, function(index, fileInput) {
+                    if (fileInput.files.length > 0) {
+                        formData.append('details[' + detailIndex + '][photo' + (index + 1) + ']', fileInput.files[0]);
+                    }
+                });
+            });
+
+            console.log(formData);
 
             // AJAX request
             $.ajax({
-                url: urls.create,
+                url: "{{ route('form-input.working-order.create-new') }}",
                 type: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Ensure CSRF token is properly enclosed in curly braces
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 dataType: "json",
-                data: {
-                    'wo_number': wo_number,
-                    'wo_type': wo_type,
-                    'department': department,
-                    'effective_date': effective_date,
-                },
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(data) {
                     if (data.errors) {
                         $('#form_result').html(data.message);
@@ -254,11 +271,11 @@
                         $('#form_result').html(data.message);
                         // Optionally, redirect to another page after success
                         // setTimeout(function() {
-                        //     window.location.href = urls.index;
+                        //     window.location.href = "{{ route('form-input.working-order.index') }}";
                         // }, 1500);
                     }
                 },
-                error: function(data) {
+                error: function(xhr, status, error) {
                     console.log('Error Status:', status);
                     console.log('Error:', error);
                     console.log('Response:', xhr.responseText);
