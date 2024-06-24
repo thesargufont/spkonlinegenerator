@@ -13,8 +13,20 @@ class CreateTableBasecamps extends Migration
      */
     public function up()
     {
-        Schema::table('basecamps', function (Blueprint $table) {
-            //
+        Schema::create('basecamps', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('basecamp','50');
+            $table->string('basecamp_description','100')->default('');
+            $table->boolean('active')->default(1);
+            $table->dateTime('start_effective')->nullable();  
+            $table->dateTime('end_effective')->nullable();
+            $table->unsignedBigInteger('created_by'); 
+            $table->dateTime('created_at')->nullable();  
+            $table->unsignedBigInteger('updated_by'); 
+            $table->dateTime('updated_at')->nullable();  
+
+            $table->unique(['basecamp','active'],'basecamps_1_unique');
+            $table->index(['basecamp', 'active', 'start_effective', 'end_effective'], 'basecamps_1_index');
         });
     }
 
@@ -25,8 +37,6 @@ class CreateTableBasecamps extends Migration
      */
     public function down()
     {
-        Schema::table('basecamps', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('basecamps');
     }
 }

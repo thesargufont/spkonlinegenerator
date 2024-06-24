@@ -14,7 +14,7 @@ class AlterTableLocations extends Migration
     public function up()
     {
         Schema::table('locations', function (Blueprint $table) {
-            //
+            $table->unsignedBigInteger('basecamp_id')->nullable()->default(null)->after('location_type');
         });
     }
 
@@ -26,7 +26,7 @@ class AlterTableLocations extends Migration
     public function down()
     {
         Schema::table('locations', function (Blueprint $table) {
-            //
+            $table->dropColumn('basecamp_id');
         });
     }
 }

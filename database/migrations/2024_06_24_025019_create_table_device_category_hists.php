@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableBasecampHists extends Migration
+class CreateTableDeviceCategoryHists extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateTableBasecampHists extends Migration
      */
     public function up()
     {
-        Schema::create('basecamp_hists', function (Blueprint $table) {
+        Schema::create('device_category_hists', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('basecamp_id');
-            $table->string('basecamp','50');
-            $table->string('basecamp_description','100')->default('');
+            $table->unsignedBigInteger('device_category_id');
+            $table->string('device_category','150');
+            $table->string('disturbance_category','150')->default('');
             $table->boolean('active')->default(1);
             $table->dateTime('start_effective')->nullable();  
             $table->dateTime('end_effective')->nullable();
@@ -25,7 +25,7 @@ class CreateTableBasecampHists extends Migration
             $table->unsignedBigInteger('created_by'); 
             $table->dateTime('created_at')->nullable();  
 
-            $table->index(['basecamp_id', 'basecamp'], 'basecamp_hists_1_index');
+            $table->index(['device_category_id', 'device_category', 'disturbance_category', 'active'], 'device_hists_1_index');
         });
     }
 
@@ -36,6 +36,6 @@ class CreateTableBasecampHists extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('basecamp_hists');
+        Schema::dropIfExists('device_category_hists');
     }
 }

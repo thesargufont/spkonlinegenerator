@@ -14,7 +14,7 @@ class AlterTableDepartmentHists extends Migration
     public function up()
     {
         Schema::table('department_hists', function (Blueprint $table) {
-            //
+            $table->string('department_code', 10)->default('')->after('department_id');
         });
     }
 
@@ -26,7 +26,7 @@ class AlterTableDepartmentHists extends Migration
     public function down()
     {
         Schema::table('department_hists', function (Blueprint $table) {
-            //
+            $table->dropColumn('department_code');
         });
     }
 }
