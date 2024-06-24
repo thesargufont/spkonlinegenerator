@@ -15,7 +15,7 @@
         <span id="form_result"></span>
         <div class="btn-group" role="group">
             <div class="form-group">
-                <button type="button" name="save" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
+                <button type="button" name="back" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
                 <button type="button" name="save" id="saveBtn" class="btn btn-primary"><i class="fa fa-fw fa-save"></i> {{ucwords(__('Simpan'))}}</button>
             </div>
         </div>
@@ -24,6 +24,7 @@
     <div class="row">
         <div class="col-sm-12">
             <form class="form-horizontal" role="form">
+                @csrf
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">Form Header</h3>
@@ -33,7 +34,7 @@
                         <div class="form-group">
                             <label class="col-md-2">NOMOR WORK ORDER</label>
                             <div class="col-md-6">
-                                <input id="work_order" type="text" class="form-control" readonly="readonly" value="00002/WO/TEL/05/2024">
+                                <input name="wo_number" type="text" class="form-control" readonly="readonly" value="00002/WO/TEL/05/2024">
                             </div>
                         </div>
 
@@ -41,7 +42,7 @@
                         <div class="form-group">
                             <label class="col-sm-2">TIPE WORK ORDER</label>
                             <div class="col-sm-6">
-                                <select class="form-control">
+                                <select class="form-control" name="wo_type">
                                     <option>LAPORAN GANGGUAN</option>
                                     <option>PEKERJAAN</option>
                                 </select>
@@ -52,7 +53,7 @@
                         <div class="form-group">
                             <label class="col-sm-2">DEPARTEMEN</label>
                             <div class="col-sm-6">
-                                <select class="form-control">
+                                <select class="form-control" name="department">
                                     <option>TELKOM</option>
                                     <option>SCADA</option>
                                     <option>PROSIS</option>
@@ -64,7 +65,7 @@
 
                         {{-- KATEGORI PEKERJAAN --}}
                         <div class="form-group">
-                            <label class="col-sm-2">KATEGORI PEKERJAAN</label>
+                            <label class="col-sm-2" name="wo_category">KATEGORI PEKERJAAN</label>
                             <div class="col-sm-6">
                                 <select class="form-control">
                                     <option>PERBAIKAN</option>
@@ -78,7 +79,7 @@
                         <div class="form-group">
                             <label class="col-sm-2">TANGGAL EFEKTIF</label>
                             <div class="col-sm-6 input-group">
-                                <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="datepicker">
+                                <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date">
                                 <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
                             </div><!-- input-group -->
                         </div>
@@ -114,11 +115,11 @@
 
 <script>
     $(document).ready(function() {
-        //var detailIndex = 0;
+        var detailIndex = 0;
 
         $('#addDetailButton').click(function() {
             $('#work-detail-container').append(`
-        <div class="col-md-12" id="work-detail">
+        <div class="col-md-12" id="work-detail" data-index="${detailIndex}">
             <div class="col-sm-2">
                 <button type="button" id="removeDetailButton" class="btn btn-danger btn-sm waves-effect waves-light">HAPUS</button>
             </div>
@@ -130,7 +131,7 @@
                                 <label>LOKASI</label>
                             </div>
                             <div>
-                                <select class="form-control">
+                                <select class="form-control" name="details[${detailIndex}][location]">
                                     <option>GI KUDUS 150 KV</option>
                                     <option>GI UNGARAN 150 KV</option>
                                     <option>GI SEMARANG 150 KV</option>
@@ -150,7 +151,7 @@
                                 <label>ALAT</label>
                             </div>
                             <div>
-                                <select class="form-control">
+                                <select class="form-control" name="details[${detailIndex}][device]">
                                     <option>MODEM</option>
                                     <option>ROUTER</option>
                                     <option>MUX</option>
@@ -169,7 +170,7 @@
                         <label>DESKRIPSI</label>
                     </div>
                     <div>
-                        <textarea class="form-control" rows="5"></textarea>
+                        <textarea class="form-control" rows="5" name="details[${detailIndex}][description]"></textarea>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -177,7 +178,7 @@
                         <label>KATEGORI GANGGUAN</label>
                     </div>
                     <div>
-                        <select class="form-control">
+                        <select class="form-control" name="details[${detailIndex}][disturbance_category]">
                             <option>TP OFF</option>
                             <option>TP LINK DOWN</option>
                             <option>TP ERROR</option>
@@ -190,11 +191,11 @@
                         <label>LAMPIRAN FOTO</label>
                     </div>
                     <div>
-                        <input type="file" id="myFile1" name="filename">
+                        <input type="file" id="myFile1" name="details[${detailIndex}][photo1]">
                         <br>
-                        <input type="file" id="myFile2" name="filename">
+                        <input type="file" id="myFile2" name="details[${detailIndex}][photo2]">
                         <br>
-                        <input type="file" id="myFile3" name="filename">
+                        <input type="file" id="myFile3" name="details[${detailIndex}][photo3]">
                     </div>
                 </div>
             </div>
@@ -209,15 +210,63 @@
             $(this).closest('#work-detail').remove();
         });
 
-        $('#datepicker').datepicker({
+        $('.datepicker').datepicker({
             dateFormat: 'dd-mm-yyyy'
         });
 
         $(document).on('click', '#saveBtn', function() {
-            console.log('test');
             $('#form_result').html('');
-            html = '<div class="alert alert-danger">Sorry, this feature is under maintenance by developer</div>';
-            $('#form_result').html(html);
+
+            // Collecting form values
+            var wo_number = $('#wo_number').val();
+            var wo_type = $('#wo_type').val();
+            var department = $('#department').val();
+            var effective_date = $('#effective_date').val();
+
+            // Defining URLs
+            var urls = {
+                create: "{{ route('form-input.working-order.create-new') }}", // Correctly use curly braces for Blade syntax
+                index: "{{ route('form-input.working-order.index') }}" // Correct the route format to dot notation for consistency
+            };
+
+            console.log('Create URL:', urls.create); // Debugging URL
+            console.log('CSRF Token:', '{{ csrf_token() }}'); // Debugging CSRF token
+
+            // AJAX request
+            $.ajax({
+                url: urls.create,
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Ensure CSRF token is properly enclosed in curly braces
+                },
+                dataType: "json",
+                data: {
+                    'wo_number': wo_number,
+                    'wo_type': wo_type,
+                    'department': department,
+                    'effective_date': effective_date,
+                },
+                success: function(data) {
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                    }
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        // Optionally, redirect to another page after success
+                        // setTimeout(function() {
+                        //     window.location.href = urls.index;
+                        // }, 1500);
+                    }
+                },
+                error: function(data) {
+                    console.log('Error Status:', status);
+                    console.log('Error:', error);
+                    console.log('Response:', xhr.responseText);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                }
+            });
+            return false; // Prevent default form submission
         });
     });
 </script>

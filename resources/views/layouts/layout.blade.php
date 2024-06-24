@@ -136,7 +136,7 @@
                     </div>
                     <div class="user-info">
                         <div class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Thesar Gufont</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{Auth::user()->name}}</a>
                             <ul class="dropdown-menu">
                                 <li><a href="javascript:void(0)"> Profile</a></li>
                                 <li><a href="javascript:void(0)"> Settings</a></li>
@@ -159,7 +159,7 @@
                         <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="ti-write"></i><span> Forms </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
-                                <li><a href="{{ route('form/input/working-order') }}">Pelaporan</a></li>
+                                <li><a href="{{ route('form-input.working-order.index') }}">Pelaporan</a></li>
                                 <li><a href="#">Approval</a></li>
                                 <li><a href="#">Engineer</a></li>
                             </ul>
