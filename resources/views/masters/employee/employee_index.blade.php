@@ -78,7 +78,7 @@
                                 <th>Nama</th>
                                 <th>Jenis Kelamin</th>
                                 <th>Email</th>
-                                <th>Bagian</th>
+                                <th>Departemen</th>
                                 <th>Lokasi</th>
                                 <th>Status</th>
                                 <th>No. Telp</th>
