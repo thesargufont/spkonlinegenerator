@@ -77,7 +77,7 @@
         html = '<div class="alert alert-danger">Lantai sudah pernah ada</div>';
         $('#form_result').html(html);
     }
-    
+
     function confirmTestCallback() {
         $("#back").attr("disabled", false);
         $("#saveBtn").attr("disabled", false);
@@ -85,19 +85,18 @@
         $('#submitBtn').click();
     }
 
-    $('#submitBtn').click(function(event){
+    $('#submitBtn').click(function(event) {
         console.log('masukkkkk');
         $(".form-control").removeClass('is-invalid');
         event.preventDefault();
         $("[id*=_error]").hide();
         $("[id*=_error]").html("{{ucfirst(__('please fill out this field'))}}");
         var isError = false;
-        $( '#form-add' ).find( 'select, textarea, input' ).each(function(){
-            if( ! $( this ).prop( 'required' )){
-            } else {
-                if ( ! $( this ).val() ) {
+        $('#form-add').find('select, textarea, input').each(function() {
+            if (!$(this).prop('required')) {} else {
+                if (!$(this).val()) {
                     isError = true;
-                    name = $( this ).attr( 'name' );
+                    name = $(this).attr('name');
                     $(this).addClass("is-invalid");
                     $("#" + name + "_error").show();
                     console.log($("#" + name + "_error"));
@@ -105,63 +104,64 @@
                 }
             }
         });
-        if(isError)
-        {
+        if (isError) {
             return false;
         }
         saveData();
     });
 
-    function doSave(){
+    function doSave() {
         $('#form_result').html('');
 
         var department_name = $('#department_name').val();
         var description = $('#description').val();
-        
+
         $.ajax({
-            url : '{!! route('masters/department/create-new/create') !!}',
+            url: "{!! route('masters / department / create - new / create ') !!}",
             type: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{!!csrf_token()!!}'
             },
-            dataType:"json",
+            dataType: "json",
             data: {
-                'department_name'   : department_name,
-                'description'       : description,
+                'department_name': department_name,
+                'description': description,
             },
-            success: function(data){
-                if(data.errors)
-                {
+            success: function(data) {
+                if (data.errors) {
                     $('#form_result').html(data.message);
                 }
-                if(data.success) 
-                {
+                if (data.success) {
                     $('#form_result').html(data.message);
                     $('#department_name').val('');
                     $('#description').val('');
-                    setTimeout(function(){ window.location.href = '{{url('masters/department/index')}}'; }, 1500);
-                }  
+                    setTimeout(function() {
+                        window.location.href = "{{url('masters/department/index')}}";
+                    }, 1500);
+                }
             },
             error: function(data) {
                 console.log(data);
                 html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
                 $('#form_result').html(html);
-                if(data.responseJSON.message) {
+                if (data.responseJSON.message) {
                     var target = data.responseJSON.errors;
-                    for (var k in target){
-                        if(!Array.isArray(target[k]['0']))
-                        {
+                    for (var k in target) {
+                        if (!Array.isArray(target[k]['0'])) {
                             var msg = target[k]['0'];
-                            artCreateFlashMsg(msg,"danger",true);
+                            artCreateFlashMsg(msg, "danger", true);
                         }
                     }
                 }
             }
-        });return false;
+        });
+        return false;
     }
 
-    function doBack(){
-        setTimeout(function(){ window.location.href = '{{url('masters/department/index')}}'; }, 100);
+    function doBack() {
+        setTimeout(function() {
+            window.location.href = "{{url('masters / department / index ')}}";
+        }, 100);
     }
 </script>
 
