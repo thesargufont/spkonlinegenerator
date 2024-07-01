@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SpongeDetailHist extends Model
 {
-    protected $table = "sponge_details";
+    protected $table = "sponge_detail_history";
     protected $fillable = [
         'id',
         'wo_number_id',
