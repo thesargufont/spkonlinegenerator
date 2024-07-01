@@ -33,9 +33,6 @@
                             <div class="col-md-6">
                                 <input id="department_name" type="text" class="text-uppercase form-control" name="department_name" title="NAMA BAGIAN" placeholder="NAMA BAGIAN">
                                 <input name="department_name_id" id="department_name_id" type="hidden"/>
-                                {{-- <div class="input-group-append">
-                                    <button class="btn btn-info" type="button" onclick="departmentName();"><i class="fa fa-ellipsis-h"></i></button>    
-                                </div> --}}
                             </div>
                         </div>
                         <br>
@@ -51,20 +48,6 @@
                             </div>
                         </div>
                         <br>
-
-                        {{-- TANGGAKL EFEKTIF --}}
-                        {{-- <div class="row mb-2">
-                            <label class="col-sm-2">TANGGAL EFEKTIF</label>
-                            <div class="col-sm-6">
-                                <div class="input-daterange input-group" id="date-range">
-                                    <input type="text" class="form-control" name="start" id="start_effective" title="MULAI EFEKTIF" placeholder="MULAI EFEKTIF"/>
-                                    <span class="input-group-addon bg-primary text-white b-0">to</span>
-                                    <input type="text" class="form-control" name="end" id="end_effective" title="AKHIR EFEKTIF" placeholder="AKHIR EFEKTIF"/>
-                                </div>
-                            </div>
-                        </div>
-                        <br> --}}
-
                         <br>
                         <br>
                         {{-- SEARCH --}}
@@ -88,7 +71,7 @@
                         <thead>
                             <tr>
                                 <th>Action</th>
-                                <th>Bagian</th>
+                                <th>Departemen</th>
                                 <th>Deskripsi</th>
                                 <th>Status</th>
                                 <th>Start Effective</th>
