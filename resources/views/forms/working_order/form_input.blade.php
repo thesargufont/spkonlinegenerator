@@ -34,7 +34,7 @@
                         <div class="form-group">
                             <label class="col-md-2">NOMOR WORK ORDER</label>
                             <div class="col-md-6">
-                                <input name="wo_number" type="text" class="form-control" readonly="readonly" value="00002/WO/TEL/05/2024">
+                                <input name="wo_number" type="text" class="form-control" readonly="readonly" value="{{ $wo_number }}">
                             </div>
                         </div>
 
@@ -43,8 +43,8 @@
                             <label class="col-sm-2">TIPE WORK ORDER</label>
                             <div class="col-sm-6">
                                 <select class="form-control" name="wo_type">
-                                    <option>LAPORAN GANGGUAN</option>
-                                    <option>PEKERJAAN</option>
+                                    <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
+                                    <option value="PEKERJAAN">PEKERJAAN</option>
                                 </select>
                             </div>
                         </div>
@@ -54,23 +54,23 @@
                             <label class="col-sm-2">DEPARTEMEN</label>
                             <div class="col-sm-6">
                                 <select class="form-control" name="department">
-                                    <option>TELKOM</option>
-                                    <option>SCADA</option>
-                                    <option>PROSIS</option>
-                                    <option>UPT</option>
-                                    <option>DISPATCHER</option>
+                                    <option value="1">TELKOM</option>
+                                    <option value="2">SCADA</option>
+                                    <option value="3">PROSIS</option>
+                                    <option value="4">UPT</option>
+                                    <option value="5">DISPATCHER</option>
                                 </select>
                             </div>
                         </div>
 
                         {{-- KATEGORI PEKERJAAN --}}
                         <div class="form-group">
-                            <label class="col-sm-2" name="wo_category">KATEGORI PEKERJAAN</label>
+                            <label class="col-sm-2">KATEGORI PEKERJAAN</label>
                             <div class="col-sm-6">
-                                <select class="form-control">
-                                    <option>PERBAIKAN</option>
-                                    <option>IMPROVEMMENT</option>
-                                    <option>PEMBANGUNAN</option>
+                                <select class="form-control" name="wo_category">
+                                    <option value="1">PERBAIKAN</option>
+                                    <option value="2">IMPROVEMMENT</option>
+                                    <option value="3">PEMBANGUNAN</option>
                                 </select>
                             </div>
                         </div>
@@ -120,7 +120,7 @@
         $('#addDetailButton').click(function() {
             detailIndex++;
             $('#work-detail-container').append(`
-        <div class="col-md-12" id="work-detail" data-index="${detailIndex}">
+        <div class="col-md-12 work-detail" data-index="${detailIndex}">
             <div class="col-sm-2">
                 <button type="button" id="removeDetailButton" class="btn btn-danger btn-sm waves-effect waves-light">HAPUS</button>
             </div>
@@ -208,7 +208,7 @@
         });
 
         $(document).on('click', '#removeDetailButton', function() {
-            $(this).closest('#work-detail').remove();
+            $(this).closest('.work-detail').remove();
         });
 
         $('.datepicker').datepicker({
@@ -218,13 +218,6 @@
         $(document).on('click', '#saveBtn', function() {
             $('#form_result').html('');
 
-            // Collecting form values
-            var wo_number = $('#wo_number').val();
-            var wo_type = $('#wo_type').val();
-            var department = $('#department').val();
-            var effective_date = $('#effective_date').val();
-            var work_detail = $('#work-detail').val();
-
             // Defining URLs
             var urls = {
                 create: "{{ route('form-input.working-order.create-new') }}", // Correctly use curly braces for Blade syntax
@@ -232,9 +225,14 @@
             };
 
             var formData = new FormData($('#wo-form')[0]);
+            formData.append('wo_number', $("input[name=wo_number]").val());
+            formData.append('wo_type', $("select[name=wo_type]").val());
+            formData.append('department', $("select[name=department]").val());
+            formData.append('wo_category', $("select[name=wo_category]").val());
+            formData.append('effective_date', $("input[name=effective_date]").val());
 
             // Append form data for each detail block
-            $('#work-detail').each(function() {
+            $('.work-detail').each(function() {
                 var detailIndex = $(this).data('index');
                 formData.append('details[' + detailIndex + '][location]', $(this).find('select[name="details[' + detailIndex + '][location]"]').val());
                 formData.append('details[' + detailIndex + '][device]', $(this).find('select[name="details[' + detailIndex + '][device]"]').val());
@@ -250,6 +248,7 @@
                 });
             });
 
+            console.log(detailIndex);
             console.log(formData);
 
             // AJAX request

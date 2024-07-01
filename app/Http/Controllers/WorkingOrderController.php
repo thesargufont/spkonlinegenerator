@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\User;
 use Exception;
 use Carbon\Carbon;
@@ -19,6 +20,8 @@ class WorkingOrderController extends Controller
 {
     public function index()
     {
+        $department = Department::where('active', 1)->get()->toArray();
+
         return view('forms.working_order.working_order_index');
     }
 
@@ -105,12 +108,35 @@ class WorkingOrderController extends Controller
 
     public function createNew()
     {
-        return view('forms.working_order.form_input');
+        $department_id = Auth::user()->department_id;
+        $depcode = Department::where('id', $department_id)->first()->department_code;
+
+        $now = Carbon::now();
+        $year = $now->year;
+        $month =  $now->month;
+        $number = 2;
+
+        $department_arr = Department::select('id', 'department')->where('active', 1)->get()->toArray();
+
+        $wo_number = str_pad($number, 4, '0', STR_PAD_LEFT) . '/' . $depcode . '/' . $year . '/' . $month;
+
+        return view('forms.working_order.form_input', ['wo_number' => $wo_number]);
     }
 
     public function submitData(Request $request)
     {
-        //dd($request->all());
+        $department_id = Auth::user()->department_id;
+        $depcode = Department::where('id', $department_id)->first()->department_code;
+
+        $now = Carbon::now();
+        $year = $now->year;
+        $month =  $now->month;
+        $number = 2;
+        $count = strlen(strval($number));
+
+        $wo_number = str_pad($number, 4, '0', STR_PAD_LEFT) . '/' . $depcode . '/' . $year . '/' . $month;
+
+        dd($request->all());
         foreach ($request->details as $detail) {
             //dd($detail);
             dd($detail['photo1']->getClientOriginalName());
