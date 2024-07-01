@@ -119,13 +119,13 @@
             detailIndex++;
             $('#work-detail-container').append(`
         <div class="col-md-12 work-detail" data-index="${detailIndex}">
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 <button type="button" id="removeDetailButton" class="btn btn-danger btn-sm waves-effect waves-light">HAPUS</button>
             </div>
-            <div class="col-sm-11">
-                <div class="col-md-3">
+            <div class="col-sm-10">
+                <div class="col-md-2">
                     <div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div>
                                 <label>LOKASI</label>
                             </div>
@@ -137,42 +137,20 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <div>
-                        <p>&nbsp;</p>
-                    </div>
-                    <div>
-                        <div class="col-md-12">
-                            <div>
-                                <label>KATEGORI GANGGUAN</label>
-                            </div>
-                            <div>
-                                <select class="form-control disturbance_category" name="details[${detailIndex}][disturbance_category]">
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div>
                         <div class="col-md-6">
                             <div>
                                 <label>ALAT</label>
                             </div>
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][device]">
-                                    @foreach($device as $device)
-                                        <option value="{{$device->id}}">{{$device->device_name}} | {{$device->barand}} {{$device->description}} - {{$device->serial_number}} | {{$device->eq_id}}</option>
-                                    @endforeach
+                                    <option>MODEM</option>
+                                    <option>ROUTER</option>
+                                    <option>MUX</option>
+                                    <option>RADIO VHF</option>
+                                    <option>REPEATERR</option>
+                                    <option>RECEIVER</option>
+                                    <option>TRANSMITER</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div>
-                                <label>MODEL ALAT</label>
-                            </div>
-                            <div>
-                                <input name="details[${detailIndex}][device_model]" id='device_model' type="text" class="form-control" readonly="readonly">
                             </div>
                         </div>
                     </div>
@@ -183,15 +161,19 @@
                         <label>DESKRIPSI</label>
                     </div>
                     <div>
-                        <textarea class="form-control" rows="4" name="details[${detailIndex}][description]"></textarea>
+                        <textarea class="form-control" rows="5" name="details[${detailIndex}][description]"></textarea>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div>
-                        <label>KODE ALAT</label>
+                        <label>KATEGORI GANGGUAN</label>
                     </div>
                     <div>
-                        <input name="details[${detailIndex}][device_code]" id='device_code' type="text" class="form-control" readonly="readonly">
+                        <select class="form-control" name="details[${detailIndex}][disturbance_category]">
+                            <option>TP OFF</option>
+                            <option>TP LINK DOWN</option>
+                            <option>TP ERROR</option>
+                        </select>
                     </div>
                     <div>
                         <p>&nbsp;</p>
@@ -213,7 +195,6 @@
             </div>
         </div>
         `);
-            checkwocategory();
         });
 
         $(document).on('click', '#removeDetailButton', function() {
@@ -246,9 +227,9 @@
             $('.work-detail').each(function() {
                 var detailIndex = $(this).data('index');
                 formData.append('details[' + detailIndex + '][location]', $(this).find('select[name="details[' + detailIndex + '][location]"]').val());
-                formData.append('details[' + detailIndex + '][disturbance_category]', $(this).find('select[name="details[' + detailIndex + '][disturbance_category]"]').val());
                 formData.append('details[' + detailIndex + '][device]', $(this).find('select[name="details[' + detailIndex + '][device]"]').val());
                 formData.append('details[' + detailIndex + '][description]', $(this).find('textarea[name="details[' + detailIndex + '][description]"]').val());
+                formData.append('details[' + detailIndex + '][disturbance_category]', $(this).find('select[name="details[' + detailIndex + '][disturbance_category]"]').val());
 
                 // Append file inputs
                 var files = $(this).find('input[type="file"]');
@@ -296,14 +277,6 @@
             return false; // Prevent default form submission
         });
     });
-
-    function checkwocategory() {
-        if ($('#wo_category').val() == 'PEKERJAAN') {
-            $('.disturbance_category').prop('disabled', true);
-        } else {
-            $('.disturbance_category').prop('disabled', false);
-        }
-    }
 
     function getwonumber() {
         var department_id = $("select[name=department]").val();
@@ -354,13 +327,10 @@
                         $('#job_category').append('<option value="' + value.id + '">' + value.job_category + '</option>');
                     });
                     if (data.job_categories.length == 1) {
-                        console.log(1);
                         $('#job_category').prop('disabled', true);
                     } else {
-                        console.log(2);
-                        $('#job_category').prop('disabled', false);
+                        $('#job_category').prop('enabled', true);
                     }
-                    checkwocategory();
                 } else {
                     console.log(data);
                     var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
