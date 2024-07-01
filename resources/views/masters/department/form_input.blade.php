@@ -117,7 +117,7 @@
         var description = $('#description').val();
 
         $.ajax({
-            url: "{!! route('masters / department / create - new / create ') !!}",
+            url: "{!! route('masters/department/create-new/create') !!}",
             type: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{!!csrf_token()!!}'
@@ -160,7 +160,7 @@
 
     function doBack() {
         setTimeout(function() {
-            window.location.href = "{{url('masters / department / index ')}}";
+            window.location.href = "{{url('masters/department/index')}}";
         }, 100);
     }
 </script>

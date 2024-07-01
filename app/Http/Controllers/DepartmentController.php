@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Rap2hpoutre\FastExcel\FastExcel;
+use Illuminate\Support\Facades\Schema;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Database\Schema\Blueprint;
   
 class DepartmentController extends Controller
 {
@@ -183,6 +185,20 @@ class DepartmentController extends Controller
         return view('masters.department.upload');
     }
 
+    public function makeTempTable(){
+        Schema::create('temp', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('department', 50)->nullable();
+            $table->string('description', 255)->nullable();
+            $table->string('remark', 50)->nullable();
+            $table->temporary();
+        });
+    }
+
+    public function dropTempTable(){
+        Schema::dropIfExists('temp');
+    }
+
     public function uploadDepartment(Request $request)
     {
         $countError = 0;
@@ -241,7 +257,7 @@ class DepartmentController extends Controller
                 $success   = true;
                 $message   = '<div class="alert alert-success">Validasi data berhasil, data dapat disimpan</div>';
             }
-
+            
             return response()->json(['filename'  => $filename,
                                      'success'  => $success,
                                      'message'  => $message,
@@ -255,6 +271,35 @@ class DepartmentController extends Controller
         }
     }
 
+    public function displayUpload(Request $request)
+    {
+        $this->dropTempTable();
+        $this->makeTempTable();
+        if($request->fileName != "")
+        {
+            $attachments = $request->fileName;  
+            dd((new FastExcel)->import($attachments));
+            $data = (new FastExcel)->import($attachments);
+
+            dd($data);
+        } else {
+            $tempOutput = [
+                'department'     => '',
+                'description'    => '',
+                'remark'         => ''
+            ];
+            DB::table('temp')->insert($tempOutput);
+            $tempData = DB::table('temp')->get();
+        }
+        
+        $datatables = Datatables::of($tempData)
+        ->filter(function($instance) use ($request) {
+            return true;
+        });
+        
+        return $datatables->make(TRUE);
+    }
+    
     public function downloadDepartmentTemplate()
     {
         $filename = 'Template_Master_Bidang.xlsx';

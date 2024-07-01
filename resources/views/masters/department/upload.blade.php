@@ -87,9 +87,55 @@
     });
 
     $(function() {
-        $('#main-table').hide();
+        $('#div-main-table').hide();
         $('#upload').prop('disabled',true);
         $('#saveBtn').prop('disabled',true);
+
+        var oTable = $('#main-table').DataTable(
+        {
+            filter: false,
+            processing: true,
+            serverSide: true,
+            stateSave: false,
+            scrollY: true,
+            scrollX: true,
+            language: {
+                paginate: {
+                    first: "<i class='fa fa-step-backward'></i>",
+                    last: "<i class='fa fa-step-forward'></i>",
+                    next: "<i class='fa fa-caret-right'></i>",
+                    previous: "<i class='fa fa-caret-left'></i>"
+                },
+                lengthMenu:     "<div class=\"input-group\">_MENU_ &nbsp; / page</div>",
+                info:           "_START_ to _END_ of _TOTAL_ item(s)",
+                infoEmpty:      ""
+            },
+            ajax: {
+                'url': '{!! route('masters/department/display-upload') !!}',
+                'type': 'POST',
+                'headers': {
+                    'X-CSRF-TOKEN': '{!! csrf_token() !!}'
+                },
+                'data': function (d) {
+                    d.fileName = $('#hiddenField').val();
+                },
+            }, 
+            columns: [
+                { targets: 0, data: null, orderable: false, searchable: false , className: 'text-right'},
+                {data: 'department' ,         name: 'department'      },
+                {data: 'description' ,        name: 'description'     },
+                {data: 'remark' ,             name: 'remark'          },
+            ],
+            // order: [5, 'desc'],
+            rowCallback: function( row, data, iDisplayIndex ) {
+                var api = this.api();    
+                var info = api.page.info();
+                var page = info.page;
+                var length = info.length;
+                var index = (page * length + (iDisplayIndex +1));
+                $('td:eq(0)', row).html(index);
+            }
+        });
         oTable.clear().draw();
     });
 
@@ -131,21 +177,19 @@
             processData: false,
             contentType: false,
             success: function(response){ // What to do if we succeed
-                artLoadingDialogClose();
                 $('#hiddenField').val(response.filename);
-                oTable.clear().draw();
-                console.log(response); 
+                $('#main-table').DataTable().ajax.reload();
                 if(response.success == true)
                 {
                     $('#saveUpload').prop('disabled', true);
                     $('#saveUpload').prop('disabled', true);
-                    $('#table-cart').show();
+                    $('#div-main-table').show();
                     html = response.message;
+                    console.log(html);
                     $('#form_result').html(html);
                 } else {
-
                     $('#saveUpload').prop('disabled', false);
-                    $('#table-cart').show();
+                    $('#div-main-table').show();
                     html = response.message;
                     $('#form_result').html(html);
                 }
@@ -157,54 +201,6 @@
                 artCreateFlashMsg("{{ucfirst(__('file format does not match'))}}",'error',true);
             }
         });
-    });
-
-    var oTable = $('#main-table').DataTable(
-    {
-        filter: false,
-        processing: true,
-        serverSide: true,
-        stateSave: false,
-        // deferLoading: 0, //disable auto load
-        // scrollX : 500,
-        scrollY: true,
-        scrollX: true,
-        language: {
-            paginate: {
-                first: "<i class='fa fa-step-backward'></i>",
-                last: "<i class='fa fa-step-forward'></i>",
-                next: "<i class='fa fa-caret-right'></i>",
-                previous: "<i class='fa fa-caret-left'></i>"
-            },
-            lengthMenu:     "<div class=\"input-group\">_MENU_ &nbsp; / page</div>",
-            info:           "_START_ to _END_ of _TOTAL_ item(s)",
-            infoEmpty:      ""
-        },
-        ajax: {
-            'url': '{!! route('masters/department/display-upload') !!}',
-            'type': 'POST',
-            'headers': {
-                'X-CSRF-TOKEN': '{!! csrf_token() !!}'
-            },
-            'data': function (d) {
-                d.fileName = $('#hiddenField').val();
-            },
-        }, 
-        columns: [
-            { targets: 0, data: null, orderable: false, searchable: false , className: 'text-right'},
-            {data: 'department' ,         name: 'department'      },
-            {data: 'description' ,        name: 'description'     },
-            {data: 'remark' ,             name: 'remark'          },
-        ],
-        // order: [5, 'desc'],
-        rowCallback: function( row, data, iDisplayIndex ) {
-            var api = this.api();    
-            var info = api.page.info();
-            var page = info.page;
-            var length = info.length;
-            var index = (page * length + (iDisplayIndex +1));
-            $('td:eq(0)', row).html(index);
-        }
     });
 
     function doBack(){
