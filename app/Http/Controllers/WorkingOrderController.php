@@ -47,7 +47,7 @@ class WorkingOrderController extends Controller
         $wo_status         = session('work_order' . '.wo_status') != '' ? session('work_order' . '.wo_status') : '';
         $engineer_status         = session('work_order' . '.engineer_status') != '' ? session('work_order' . '.engineer_status') : '';
 
-        $user = Auth()->id;
+        $user = Auth::user()->id;
         $spongeheader = SpongeHeader::where('user', $user);
 
         return $spongeheader;

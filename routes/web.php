@@ -55,7 +55,7 @@ Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'
 // WORKING ORDER
 Route::get('form-input/working-order/index', [WorkingOrderController::class, 'index'])->name('form-input.working-order.index')->middleware('auth');
 Route::get('form-input/working-order/create', [WorkingOrderController::class, 'createNew'])->name('form-input.working-order.create')->middleware('auth');
-Route::post('form-input/working-order/dashboard-data', [WorkingOrderController::class, 'data'])->name('form-input.working-order.dashboard-data')->middleware('auth');
+Route::post('form-input/working-order/dashboard-data', [WorkingOrderController::class, 'data'])->name('form-input/working-order/dashboard-data')->middleware('auth');
 Route::post('form-input/working-order/create-new', [WorkingOrderController::class, 'submitData'])->name('form-input.working-order.create-new')->middleware('auth');
 
 Route::get('masters/employee/create-new', [EmployeeController::class, 'createNew'])->name('masters/employee/create-new')->middleware('auth');

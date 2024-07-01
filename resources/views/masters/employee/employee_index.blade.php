@@ -81,7 +81,7 @@
                                 <th>Bagian</th>
                                 <th>Jenis Kelamin</th>
                                 <th>Email</th>
-                                <th>Tanggal Aktif</th>
+                                <th>No. Telp</th>
                             </tr>
                         </thead>
                     </table>
