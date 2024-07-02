@@ -70,33 +70,53 @@ class WorkingOrderController extends Controller
 
         $datatables = $datatables->addColumn('action', function ($item) use ($request) {
             $txt = '';
-            $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"#;\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"#;\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"#;\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
 
             return $txt;
         })
-            ->editColumn('start_effective', function ($item) {
-                return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
-            })
-            ->editColumn('end_effective', function ($item) {
-                if ($item->end_effective == null) {
+            ->editColumn('approve_at', function ($item) {
+                if ($item->approve_at) {
                     return '-';
                 } else {
-                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->approve_at)->format('d/m/Y');
+                }
+            })
+            ->editColumn('job_category', function ($item) {
+                dd($item->job_category);
+                $job_category = Job::find($item->job_category);
+                if ($job_category) {
+                    return $job_category->job_category;
+                } else {
+                    return $item->job_category;
                 }
             })
             ->editColumn('created_by', function ($item) {
                 return optional($item->createdBy)->name;
             })
+            ->editColumn('approved_by', function ($item) {
+                if ($item->approved_by) {
+                    $approval = User::find($item->approved_by);
+                    if ($approval) {
+                        return $approval->name;
+                    } else {
+                        return $item->approved_by . ' :ID';
+                    }
+                } else {
+                    return '-';
+                }
+            })
             ->editColumn('created_at', function ($item) {
                 return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
             })
-            ->editColumn('updated_by', function ($item) {
-                return optional($item->updatedBy)->name;
-            })
-            ->editColumn('updated_at', function ($item) {
-                return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
+            ->editColumn('effective_date', function ($item) {
+
+                if ($item->end_effective) {
+                    return '-';
+                } else {
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
+                }
             });
 
         return $datatables->make(TRUE);
@@ -134,7 +154,7 @@ class WorkingOrderController extends Controller
             //get number
             $cek_number = SpongeHeader::where('wo_number', 'like', '%WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('created_at', 'desc')->first();
             $number = 0;
-            if (!$cek_number) {
+            if ($cek_number) {
                 $number = intval(substr($cek_number->wo_number, 0, 5));
             }
             $number++;
@@ -154,7 +174,7 @@ class WorkingOrderController extends Controller
     public function getJobCategory(Request $request)
     {
         try {
-            $job_categories = Job::select('id', 'job_category')->where('wo_category', $request->wo_category)->get();
+            $job_categories = Job::select('id', 'job_category')->where('wo_category', $request->wo_category)->where('department_id', $request->department)->get();
 
             return response()->json(['success' => true, 'message' => '', 'job_categories' => $job_categories]);
         } catch (\Exception $e) {
@@ -206,7 +226,7 @@ class WorkingOrderController extends Controller
             ]);
         }
         //HEADER VALIDATION - VERIFY DEPARTMENT ID
-        $department_cek = Department::find($request->id);
+        $department_cek = Department::find($request->department);
         if (!$department_cek) {
             return response()->json([
                 'errors' => true,
@@ -222,6 +242,12 @@ class WorkingOrderController extends Controller
         }
 
         //DETAIL VALIDATION
+        if (!isset($request->detail)) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Detail belum diinputkan. Mohon cek kembali</div>'
+            ]);
+        }
         foreach ($request->details as $detail) {
             if ($detail['location'] == '' || $detail['location'] == null) {
                 return response()->json([

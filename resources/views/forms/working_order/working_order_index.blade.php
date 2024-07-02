@@ -150,7 +150,7 @@
                                 <th>Disetujui Oleh</th>
                                 <th>Disetujui Pada</th>
                                 <th>Pelapor</th>
-                                <th>Tanggal Efektif</th>
+                                <!-- <th>Tanggal Efektif</th> -->
                             </tr>
                         </thead>
                     </table>
@@ -206,6 +206,10 @@
                     d.wo_type = $('#location').val();
                     d.wo_type = $('#wo_status').val();
                     d.wo_type = $('#engineer_status').val();
+                },
+                'dataSrc': function(json) {
+                    console.log(json); // Log the data received from the server
+                    return json.data;
                 }
             },
             columns: [{
@@ -231,8 +235,8 @@
                     name: 'department'
                 },
                 {
-                    data: 'wo_category',
-                    name: 'wo_category'
+                    data: 'job_category',
+                    name: 'job_category'
                 },
                 {
                     data: 'status',
@@ -244,15 +248,15 @@
                 },
                 {
                     data: 'approved_at',
-                    name: 'approved_at',
+                    name: 'approved_at'
                 },
                 {
                     data: 'created_by',
-                    name: 'created_by',
+                    name: 'created_by'
                 },
                 {
                     data: 'effective_date',
-                    name: 'effective_date',
+                    name: 'effective_date'
                 },
             ],
             // order: [[ 2, "desc" ]],

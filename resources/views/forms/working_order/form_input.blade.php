@@ -338,13 +338,15 @@
 
     function getjobcategory() {
         var wo_category = $("select[name=wo_category]").val();
+        var department = $("select[name=department]").val();
 
         $.ajax({
             url: "{{ route('form-input.working-order.getjobcategory') }}",
             type: 'get',
             dataType: "json",
             data: {
-                'wo_category': wo_category
+                'wo_category': wo_category,
+                'department': department,
             },
             success: function(data) {
                 if (data.success == true) {
