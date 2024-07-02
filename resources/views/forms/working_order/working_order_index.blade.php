@@ -142,10 +142,10 @@
                         <thead>
                             <tr>
                                 <th>Action</th>
-                                <th>Nomor Work Order</th>
-                                <th>Tipe Work Order</th>
+                                <th>Nomor WO</th>
+                                <th>Kategori WO</th>
                                 <th>Nomor SPK</th>
-                                <th>Departmen</th>
+                                <th>Departemen</th>
                                 <th>Kategori Pekerjaan</th>
                                 <th>Status</th>
                                 <th>Disetujui Oleh</th>
@@ -172,7 +172,7 @@
 
 <script>
     $(function() {
-        url = "{!! route('form-input/working-order/dashboard-data') !!}";
+        url = "{!! route('form-input.working-order.dashboard-data') !!}";
         var oTable = $('#main-table').DataTable({
             filter: false,
             processing: true,
@@ -248,8 +248,8 @@
                     name: 'approved_at',
                 },
                 {
-                    data: 'user',
-                    name: 'user',
+                    data: 'created_by',
+                    name: 'created_by',
                 },
                 {
                     data: 'effective_date',
