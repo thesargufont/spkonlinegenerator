@@ -57,6 +57,9 @@ Route::get('form-input/working-order/index', [WorkingOrderController::class, 'in
 Route::get('form-input/working-order/create', [WorkingOrderController::class, 'createNew'])->name('form-input.working-order.create')->middleware('auth');
 Route::get('form-input/working-order/getwonumber', [WorkingOrderController::class, 'getWONumber'])->name('form-input.working-order.getwonumber')->middleware('auth');
 Route::get('form-input/working-order/getjobcategory', [WorkingOrderController::class, 'getJobCategory'])->name('form-input.working-order.getjobcategory')->middleware('auth');
+Route::get('form-input/working-order/getdevicemodel', [WorkingOrderController::class, 'getDeviceModel'])->name('form-input.working-order.getdevicemodel')->middleware('auth');
+Route::get('form-input/working-order/getdevicecode', [WorkingOrderController::class, 'getDeviceCode'])->name('form-input.working-order.getdevicecode')->middleware('auth');
+Route::get('form-input/working-order/getdisturbancecategory', [WorkingOrderController::class, 'getDisturbanceCategory'])->name('form-input.working-order.getdisturbancecategory')->middleware('auth');
 Route::post('form-input/working-order/dashboard-data', [WorkingOrderController::class, 'data'])->name('form-input.working-order.dashboard-data')->middleware('auth');
 Route::post('form-input/working-order/create-new', [WorkingOrderController::class, 'submitData'])->name('form-input.working-order.create-new')->middleware('auth');
 
@@ -70,18 +73,18 @@ Route::get('masters/employee/index', [EmployeeController::class, 'index'])->name
 Route::post('master/employee/dashboard-data', [EmployeeController::class, 'data'])->name('master/employee/dashboard-data');
 
 // DEPARTMENT
-    // DASHBOARD
-    Route::get('masters/department/index', [DepartmentController::class, 'index'])->name('masters/department/index')->middleware('auth');
-    Route::post('masters/department/dashboard-data', [DepartmentController::class, 'data'])->name('masters/department/dashboard-data')->middleware('auth');
-    Route::get('masters/department/export-excel', [DepartmentController::class, 'exportExcel'])->name('masters/department/export-excel')->middleware('auth');
-    Route::get('masters/department/import-excel', [DepartmentController::class, 'importExcel'])->name('masters/department/import-excel')->middleware('auth');
-    Route::get('masters/department/create-new', [DepartmentController::class, 'createNew'])->name('masters/department/create-new')->middleware('auth');
-    // FORM INPUT
-    Route::post('masters/department/create-new/create', [DepartmentController::class, 'submitData'])->name('masters/department/create-new/create')->middleware('auth');
-    // UPLOAD
-    Route::get('masters/department/download-template', [DepartmentController::class, 'downloadDepartmentTemplate'])->name('masters/department/download-template')->middleware('auth');
-    Route::post('masters/department/upload', [DepartmentController::class, 'uploadDepartment'])->name('masters/department/upload')->middleware('auth');
-    Route::post('masters/department/display-upload', [DepartmentController::class, 'displayUpload'])->name('masters/department/display-upload')->middleware('auth');
+// DASHBOARD
+Route::get('masters/department/index', [DepartmentController::class, 'index'])->name('masters/department/index')->middleware('auth');
+Route::post('masters/department/dashboard-data', [DepartmentController::class, 'data'])->name('masters/department/dashboard-data')->middleware('auth');
+Route::get('masters/department/export-excel', [DepartmentController::class, 'exportExcel'])->name('masters/department/export-excel')->middleware('auth');
+Route::get('masters/department/import-excel', [DepartmentController::class, 'importExcel'])->name('masters/department/import-excel')->middleware('auth');
+Route::get('masters/department/create-new', [DepartmentController::class, 'createNew'])->name('masters/department/create-new')->middleware('auth');
+// FORM INPUT
+Route::post('masters/department/create-new/create', [DepartmentController::class, 'submitData'])->name('masters/department/create-new/create')->middleware('auth');
+// UPLOAD
+Route::get('masters/department/download-template', [DepartmentController::class, 'downloadDepartmentTemplate'])->name('masters/department/download-template')->middleware('auth');
+Route::post('masters/department/upload', [DepartmentController::class, 'uploadDepartment'])->name('masters/department/upload')->middleware('auth');
+Route::post('masters/department/display-upload', [DepartmentController::class, 'displayUpload'])->name('masters/department/display-upload')->middleware('auth');
 
 // LOCATION
 // DASNBOARD

@@ -8,6 +8,7 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Job;
 use App\Models\Device;
+use App\Models\DeviceCategory;
 use App\Models\Location;
 use App\Models\GeneralCode;
 use App\Models\SpongeHeader;
@@ -30,31 +31,8 @@ class WorkingOrderController extends Controller
 
     public function getData($request, $isExcel = '')
     {
-
-        if ($isExcel == "") {
-            session([
-                'work_order' . '.wo_number' => $request->has('wo_number') ?  $request->input('wo_number') : '',
-                'work_order' . '.wo_type' => $request->has('wo_type') ?  $request->input('wo_type') : '',
-                'work_order' . '.wo_category' => $request->has('wo_category') ?  $request->input('wo_category') : '',
-                'work_order' . '.disturbance_category' => $request->has('disturbance_category') ?  $request->input('disturbance_category') : '',
-                'work_order' . '.department' => $request->has('department') ?  $request->input('department') : '',
-                'work_order' . '.location' => $request->has('location') ?  $request->input('location') : '',
-                'work_order' . '.wo_status' => $request->has('wo_status') ?  $request->input('wo_status') : '',
-                'work_order' . '.engineer_status' => $request->has('engineer_status') ?  $request->input('engineer_status') : '',
-            ]);
-        }
-
-        $wo_number  = session('work_order' . '.wo_number') != '' ? session('work_order' . '.wo_number') : '';
-        $wo_type         = session('work_order' . '.wo_type') != '' ? session('work_order' . '.wo_type') : '';
-        $wo_category         = session('work_order' . '.wo_category') != '' ? session('work_order' . '.wo_category') : '';
-        $disturbance_category         = session('work_order' . '.disturbance_category') != '' ? session('work_order' . '.disturbance_category') : '';
-        $department         = session('work_order' . '.department') != '' ? session('work_order' . '.department') : '';
-        $location         = session('work_order' . '.location') != '' ? session('work_order' . '.location') : '';
-        $wo_status         = session('work_order' . '.wo_status') != '' ? session('work_order' . '.wo_status') : '';
-        $engineer_status         = session('work_order' . '.engineer_status') != '' ? session('work_order' . '.engineer_status') : '';
-
         $user = Auth::user()->id;
-        $spongeheader = SpongeHeader::where('created_by', $user);
+        $spongeheader = SpongeHeader::where('created_by', $user)->where('wo_number', 'like', '%' . $request->wo_number . '%');
 
         return $spongeheader;
     }
@@ -70,55 +48,26 @@ class WorkingOrderController extends Controller
 
         $datatables = $datatables->addColumn('action', function ($item) use ($request) {
             $txt = '';
-            $txt .= "<a href=\"#\" onclick=\"#;\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"#;\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"#;\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
 
             return $txt;
         })
-            ->editColumn('approve_at', function ($item) {
-                if ($item->approve_at) {
-                    return '-';
-                } else {
-                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->approve_at)->format('d/m/Y');
-                }
-            })
             ->editColumn('job_category', function ($item) {
-                dd($item->job_category);
-                $job_category = Job::find($item->job_category);
+                $job_category = Job::where('id', $item->job_category)->first();
                 if ($job_category) {
                     return $job_category->job_category;
                 } else {
-                    return $item->job_category;
-                }
-            })
-            ->editColumn('created_by', function ($item) {
-                return optional($item->createdBy)->name;
-            })
-            ->editColumn('approved_by', function ($item) {
-                if ($item->approved_by) {
-                    $approval = User::find($item->approved_by);
-                    if ($approval) {
-                        return $approval->name;
-                    } else {
-                        return $item->approved_by . ' :ID';
-                    }
-                } else {
                     return '-';
                 }
             })
-            ->editColumn('created_at', function ($item) {
-                return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
+            ->editColumn('status', function ($item) {
+                return 'Not Approve';
             })
-            ->editColumn('effective_date', function ($item) {
-
-                if ($item->end_effective) {
-                    return '-';
-                } else {
-                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
-                }
+            ->editColumn('start_effective', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y');
             });
-
         return $datatables->make(TRUE);
     }
 
@@ -127,7 +76,7 @@ class WorkingOrderController extends Controller
         $department_arr = Department::select('id', 'department', 'department_code')->where('active', 1)->get();
         $wo_category_arr = Job::select('wo_category')->groupBy('wo_category')->get();
         $location_arr = Location::select('id', 'location', 'location_type')->where('active', 1)->where('end_effective', null)->get();
-        $device_arr = Device::select('id', 'device_name', 'brand', 'device_description', 'serial_number', 'eq_id')->where('active', 1)->where('end_effective', null)->get();
+        $device_arr = Device::select('device_name')->where('active', 1)->where('end_effective', null)->groupBy('device_name')->get();
 
         $data = [
             'department' => $department_arr,
@@ -177,6 +126,62 @@ class WorkingOrderController extends Controller
             $job_categories = Job::select('id', 'job_category')->where('wo_category', $request->wo_category)->where('department_id', $request->department)->get();
 
             return response()->json(['success' => true, 'message' => '', 'job_categories' => $job_categories]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getDeviceModel(Request $request)
+    {
+        try {
+            $devices = Device::select('id', 'brand')->where('device_name', $request->device)->where('department_id', $request->department)->where('location_id', $request->location)->get();
+
+            return response()->json(['success' => true, 'message' => '', 'devices' => $devices]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getDeviceCode(Request $request)
+    {
+        try {
+            //dd($request->device_model);
+            $devices = Device::find($request->device_model);
+
+            return response()->json(['success' => true, 'message' => '', 'devices' => $devices]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getDisturbanceCategory(Request $request)
+    {
+        try {
+            $device = Device::find($request->device);
+            if ($device) {
+                $disturbance_cek = DeviceCategory::find($device->device_category_id);
+                if ($disturbance_cek) {
+                    $disturbances = DeviceCategory::select('id', 'disturbance_category')->where('device_category', $disturbance_cek->device_category)->get();
+                } else {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Kategori gangguan tidak ditemukan. Mohon cek kembali atau hubungi admin.</div>'
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Ada kesalahan di pencarian model alat. Mohon cek kembali atau hubungi admin.</div>'
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => '', 'disturbances' => $disturbances]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
@@ -242,7 +247,7 @@ class WorkingOrderController extends Controller
         }
 
         //DETAIL VALIDATION
-        if (!isset($request->detail)) {
+        if (!isset($request->details)) {
             return response()->json([
                 'errors' => true,
                 "message" => '<div class="alert alert-danger">Detail belum diinputkan. Mohon cek kembali</div>'
@@ -256,6 +261,7 @@ class WorkingOrderController extends Controller
                 ]);
             } else {
                 $location_cek = Location::find($detail['location']);
+                //dd($location_cek);
                 if (!$location_cek) {
                     return response()->json([
                         'errors' => true,
@@ -280,7 +286,7 @@ class WorkingOrderController extends Controller
                 if (!$device_cek) {
                     return response()->json([
                         'errors' => true,
-                        "message" => '<div class="alert alert-danger">Ada lokasi yang tidak ditemukan. Mohon cek kembali</div>'
+                        "message" => '<div class="alert alert-danger">Ada device yang tidak ditemukan. Mohon cek kembali</div>'
                     ]);
                 } else {
                     if ($device_cek->active != 1) {
@@ -305,12 +311,13 @@ class WorkingOrderController extends Controller
             }
 
             if (array_key_exists('photo1', $detail)) {
-                if ($detail['photo1']->getClientOriginalExtension() != '.jpg' || $detail['photo1']->getClientOriginalExtension() != '.jpeg') {
-                    return response()->json([
-                        'errors' => true,
-                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
-                    ]);
-                }
+                // dd($detail['photo1']->getClientOriginalExtension());
+                // if ($detail['photo1']->getClientOriginalExtension() != 'jpg' || $detail['photo1']->getClientOriginalExtension() != 'jpeg') {
+                //     return response()->json([
+                //         'errors' => true,
+                //         "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                //     ]);
+                // }
             }
             if (array_key_exists('photo2', $detail)) {
                 $path2 = Storage::putFile('uploads', $detail['photo2']);

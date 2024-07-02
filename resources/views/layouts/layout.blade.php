@@ -237,6 +237,7 @@
     <script src="{{ asset('js/jquery.nicescroll.js') }}"></script>
     <script src="{{ asset('js/jquery.scrollTo.min.js') }}"></script>
 
+    <!-- <script src="{{ asset('js/app.js') }}"></script> -->
     <script src="{{ asset('plugins/jquery-sparkline/jquery.sparkline.min.js') }}"></script>
     @yield('script')
 
@@ -250,6 +251,7 @@
 
     <script src="{{ asset('pages/dashborad.js') }}"></script>
     <script src="{{ asset('js/app2.js') }}"></script>
+
 
 </body>
 

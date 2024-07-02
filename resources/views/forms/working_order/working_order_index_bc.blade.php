@@ -146,14 +146,14 @@
                             <tr>
                                 <th>Action</th>
                                 <th>Nomor WO</th>
-                                <th>Tipe WO</th>
-                                <!-- <th>Nomor SPK</th> -->
+                                <th>Kategori WO</th>
+                                <th>Nomor SPK</th>
                                 <th>Departemen</th>
                                 <th>Kategori Pekerjaan</th>
                                 <th>Status</th>
-                                <!-- <th>Disetujui Oleh</th> -->
-                                <!-- <th>Disetujui Pada</th> -->
-                                <!-- <th>Pelapor</th> -->
+                                <th>Disetujui Oleh</th>
+                                <th>Disetujui Pada</th>
+                                <th>Pelapor</th>
                                 <!-- <th>Tanggal Efektif</th> -->
                             </tr>
                         </thead>
@@ -175,6 +175,7 @@
 
 <script>
     $(function() {
+        url = "{!! route('form-input.working-order.dashboard-data') !!}";
         var oTable = $('#main-table').DataTable({
             filter: false,
             processing: true,
@@ -183,7 +184,6 @@
             stateSave: false,
             scrollY: 500,
             scrollX: true,
-            ordering: false,
             language: {
                 paginate: {
                     first: "<i class='fa fa-step-backward'></i>",
@@ -196,13 +196,24 @@
                 infoEmpty: ""
             },
             ajax: {
-                'url': "{!! route('form-input.working-order.dashboard-data') !!}",
+                'url': url,
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
                 },
                 'data': function(d) {
                     d.wo_number = $('#wo_number').val();
+                    d.wo_type = $('#wo_type').val();
+                    d.wo_category = $('#wo_category').val();
+                    d.disturbance_category = $('#disturbance_category').val();
+                    d.wo_type = $('#department').val();
+                    d.wo_type = $('#location').val();
+                    d.wo_type = $('#wo_status').val();
+                    d.wo_type = $('#engineer_status').val();
+                },
+                'dataSrc': function(json) {
+                    console.log(json); // Log the data received from the server
+                    return json.data;
                 }
             },
             columns: [{
@@ -219,10 +230,10 @@
                     data: 'wo_type',
                     name: 'wo_type'
                 },
-                // {
-                //     data: 'spk_number',
-                //     name: 'spk_number'
-                // },
+                {
+                    data: 'spk_number',
+                    name: 'spk_number'
+                },
                 {
                     data: 'department',
                     name: 'department'
@@ -233,24 +244,24 @@
                 },
                 {
                     data: 'status',
-                    name: 'status',
+                    name: 'status'
                 },
-                // {
-                //     data: 'approve_by',
-                //     name: 'approve_by',
-                // },
-                // {
-                //     data: 'approve_at',
-                //     name: 'approve_at',
-                // },
-                // {
-                //     data: 'created_by',
-                //     name: 'created_by',
-                // },
-                // {
-                //     data: 'effective_date',
-                //     name: 'effective_date',
-                // },
+                {
+                    data: 'approved_by',
+                    name: 'approved_by'
+                },
+                {
+                    data: 'approved_at',
+                    name: 'approved_at'
+                },
+                {
+                    data: 'created_by',
+                    name: 'created_by'
+                },
+                {
+                    data: 'effective_date',
+                    name: 'effective_date'
+                },
             ],
             // order: [[ 2, "desc" ]],
             rowCallback: function(row, data, iDisplayIndex) {
