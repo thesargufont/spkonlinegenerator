@@ -30,7 +30,6 @@
                             <label class="col-md-2">NOMOR WORK ORDER</label>
                             <div class="col-md-6">
                                 <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
-                                <input name="wo_number_id" id="wo_number_id" type="hidden" />
                             </div>
                         </div>
                         <br>

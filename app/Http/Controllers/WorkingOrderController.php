@@ -76,13 +76,6 @@ class WorkingOrderController extends Controller
 
             return $txt;
         })
-            ->addColumn('active', function ($item) {
-                if ($item->active == 1) {
-                    return 'AKTIF';
-                } else {
-                    return 'TIDAK AKTIF';
-                }
-            })
             ->editColumn('start_effective', function ($item) {
                 return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
             })
@@ -93,13 +86,13 @@ class WorkingOrderController extends Controller
                     return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
                 }
             })
-            ->addColumn('created_by', function ($item) {
+            ->editColumn('created_by', function ($item) {
                 return optional($item->createdBy)->name;
             })
             ->editColumn('created_at', function ($item) {
                 return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
             })
-            ->addColumn('updated_by', function ($item) {
+            ->editColumn('updated_by', function ($item) {
                 return optional($item->updatedBy)->name;
             })
             ->editColumn('updated_at', function ($item) {
@@ -114,7 +107,7 @@ class WorkingOrderController extends Controller
         $department_arr = Department::select('id', 'department', 'department_code')->where('active', 1)->get();
         $wo_category_arr = Job::select('wo_category')->groupBy('wo_category')->get();
         $location_arr = Location::select('id', 'location', 'location_type')->where('active', 1)->where('end_effective', null)->get();
-        $device_arr = Device::select('id', 'device_name', 'barand', 'device_description', 'serial_number', 'eq_id')->where('active', 1)->where('end_effective', null)->get();
+        $device_arr = Device::select('id', 'device_name', 'brand', 'device_description', 'serial_number', 'eq_id')->where('active', 1)->where('end_effective', null)->get();
 
         $data = [
             'department' => $department_arr,
@@ -139,18 +132,12 @@ class WorkingOrderController extends Controller
             $dept_code = Department::where('id', $request->department_id)->first()->department_code;
 
             //get number
-            $get_number = GeneralCode::where('section', 'WO_NUMBER_COUNTER')
-                ->where('label', $dept_code)
-                ->where('reff1', strval($month))
-                ->where('reff2', strval($year))
-                ->where('end_effective', null)
-                ->first();
+            $cek_number = SpongeHeader::where('wo_number', 'like', '%WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('created_at', 'desc')->first();
             $number = 0;
-            if (!$get_number) {
-                $number = 1;
-            } else {
-                $number = intval($get_number->reff1);
+            if (!$cek_number) {
+                $number = intval(substr($cek_number->wo_number, 0, 5));
             }
+            $number++;
 
             //generate wo number
             $wo_number = str_pad($number, 5, '0', STR_PAD_LEFT) . '/' . 'WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year;
@@ -179,6 +166,136 @@ class WorkingOrderController extends Controller
 
     public function submitData(Request $request)
     {
+        //HEADER VALIDATION
+        if ($request->wo_number == '' || $request->wo_number == null) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Nomor WO belum diisi. Mohon cek kembali.</div>'
+            ]);
+        }
+        if ($request->wo_category == '' || $request->wo_category == null) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Kategori pekerjaan belum diisi. Mohon cek kembali.</div>'
+            ]);
+        }
+        if ($request->job_category == '' || $request->job_category == null) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Tipe pekerjaan belum diisi. Mohon cek kembali.</div>'
+            ]);
+        }
+        if ($request->department == '' || $request->department == null) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Departemen belum diisi. Mohon cek kembali.</div>'
+            ]);
+        }
+        if ($request->effective_date == null) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Tanggal efektif belum diisi. Mohon cek kembali.</div>'
+            ]);
+        }
+        //HEADER VALIDATION - CHECK WO NUMBER DUPLICATION
+        $wo_number_cek = SpongeHeader::where('wo_number', $request->wo_number)->first();
+        if ($wo_number_cek) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Nomor WO sudah terpakai. Mohon muat ulang halaman.</div>'
+            ]);
+        }
+        //HEADER VALIDATION - VERIFY DEPARTMENT ID
+        $department_cek = Department::find($request->id);
+        if (!$department_cek) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Departemen tidak ditemukan. Mohon cek kembali</div>'
+            ]);
+        } else {
+            if ($department_cek->active != 1) {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Departemen yang dipilih sudah tidak aktif. Mohon cek kembali</div>'
+                ]);
+            }
+        }
+
+        //DETAIL VALIDATION
+        foreach ($request->details as $detail) {
+            if ($detail['location'] == '' || $detail['location'] == null) {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Ada tipe pekerjaan yang belum diisi. Mohon cek kembali.</div>'
+                ]);
+            } else {
+                $location_cek = Location::find($detail['location']);
+                if (!$location_cek) {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Ada lokasi yang tidak ditemukan. Mohon cek kembali</div>'
+                    ]);
+                } else {
+                    if ($location_cek->active != 1) {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Lokasi ' . $location_cek->location . ' sudah tidak aktif. Mohon cek kembali</div>'
+                        ]);
+                    }
+                }
+            }
+            if ($detail['device'] == '' || $detail['device'] == null) {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Ada alat yang belum diisi. Mohon cek kembali.</div>'
+                ]);
+            } else {
+                $device_cek = Device::find($detail['device']);
+                if (!$device_cek) {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Ada lokasi yang tidak ditemukan. Mohon cek kembali</div>'
+                    ]);
+                } else {
+                    if ($device_cek->active != 1) {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Alat ' . $device_cek->eq_id . ' sudah tidak aktif. Mohon cek kembali</div>'
+                        ]);
+                    }
+                }
+            }
+            if ($request->wo_category == 'PEKERJAAN' && ($detail['disturbance_category'] == '' || $detail['disturbance_category'] == null)) {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Ada kategori gangguan yang belum diisi. Mohon cek kembali.</div>'
+                ]);
+            }
+            if ($detail['description'] == '' || $detail['description'] == null) {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Ada deskripsi yang belum diisi. Mohon cek kembali.</div>'
+                ]);
+            }
+
+            if (array_key_exists('photo1', $detail)) {
+                if ($detail['photo1']->getClientOriginalExtension() != '.jpg' || $detail['photo1']->getClientOriginalExtension() != '.jpeg') {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                    ]);
+                }
+            }
+            if (array_key_exists('photo2', $detail)) {
+                $path2 = Storage::putFile('uploads', $detail['photo2']);
+            }
+            if (array_key_exists('photo3', $detail)) {
+                $path3 = Storage::putFile('uploads', $detail['photo3']);
+            }
+        }
+
+
+        //TRANSACTION
         try {
             DB::beginTransaction();
             $spongeHeader = new SpongeHeader([
@@ -259,13 +376,13 @@ class WorkingOrderController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                "message" => '<div class="alert alert-success">Data berhasil disimpan</div>'
+                "message" => '<div class="alert alert-success">' . $spongeHeader->wo_number . ' berhasil disimpan</div>'
             ]);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
                 'errors' => true,
-                "message" => '<div class="alert alert-danger">' . $e . '</div>'
+                "message" => '<div class="alert alert-danger"> Server Error : ' . $e->getMessage() . '. Silahkan kontak developer atau admin.</div>'
             ]);
         }
     }

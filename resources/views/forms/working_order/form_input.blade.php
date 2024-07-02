@@ -162,7 +162,7 @@
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][device]">
                                     @foreach($device as $device)
-                                        <option value="{{$device->id}}">{{$device->device_name}} | {{$device->barand}} {{$device->description}} - {{$device->serial_number}} | {{$device->eq_id}}</option>
+                                        <option value="{{$device->id}}">{{$device->device_name}} | {{$device->brand}} {{$device->description}} - {{$device->serial_number}} | {{$device->eq_id}}</option>
                                     @endforeach
                                 </select>
                             </div>
