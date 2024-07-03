@@ -34,10 +34,8 @@
             <!-- LOGO -->
             <div class="topbar-left">
                 <div class="text-center">
-                    <a href="{{ asset('home') }}" class="logo"><img src="{{ asset('images/sponge_logo.png') }}"
-                            height="28"></a>
-                    <a href="{{ asset('home') }}" class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}"
-                            height="36"></a>
+                    <a href="{{ asset('home') }}" class="logo"><img src="{{ asset('images/sponge_logo.png') }}" height="28"></a>
+                    <a href="{{ asset('home') }}" class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}" height="36"></a>
                 </div>
             </div>
             <!-- Button mobile view to collapse sidebar menu -->
@@ -59,13 +57,11 @@
 
                         <ul class="nav navbar-nav navbar-right pull-right">
                             <li class="dropdown hidden-xs">
-                                <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light"
-                                    data-toggle="dropdown" aria-expanded="true">
+                                <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
                                     <i class="fa fa-bell"></i> <span class="badge badge-xs badge-danger">3</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-lg">
-                                    <li class="text-center notifi-title">Notification <span
-                                            class="badge badge-xs badge-success">3</span></li>
+                                    <li class="text-center notifi-title">Notification <span class="badge badge-xs badge-success">3</span></li>
                                     <li class="list-group">
                                         <!-- list item-->
                                         <a href="javascript:void(0);" class="list-group-item">
@@ -106,18 +102,15 @@
                                 </ul>
                             </li>
                             <li class="hidden-xs">
-                                <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i
-                                        class="fa fa-crosshairs"></i></a>
+                                <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="fa fa-crosshairs"></i></a>
                             </li>
 
                             <li class="hidden-xs">
-                                <a href="{{ route('profile-user') }}" id="btn-profile"
-                                    class="waves-effect waves-light"><i class="fa fa-user"></i></a>
+                                <a href="{{ route('profile-user') }}" id="btn-profile" class="waves-effect waves-light"><i class="fa fa-user"></i></a>
                             </li>
 
                             <li class="hidden-xs">
-                                <a href="{{ route('actionlogout') }}" id="btn-logout"
-                                    class="waves-effect waves-light"><i class="fa fa-sign-out"></i></a>
+                                <a href="{{ route('actionlogout') }}" id="btn-logout" class="waves-effect waves-light"><i class="fa fa-sign-out"></i></a>
                             </li>
 
                             <li class="dropdown">
@@ -125,8 +118,7 @@
                                 alt="user-img" class="img-circle"> </a> --}}
                                 <ul class="dropdown-menu">
                                     <li><a href="javascript:void(0)"> Profile</a></li>
-                                    <li><a href="javascript:void(0)"><span
-                                                class="badge badge-success pull-right">5</span> Settings </a></li>
+                                    <li><a href="javascript:void(0)"><span class="badge badge-success pull-right">5</span> Settings </a></li>
                                     <li><a href="javascript:void(0)"> Lock screen</a></li>
                                     <li class="divider"></li>
                                     <li><a href="javascript:void(0)"> Logout</a></li>
@@ -151,8 +143,7 @@
                     </div>
                     <div class="user-info">
                         <div class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                                aria-expanded="false">{{Auth::user()->name}}</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{Auth::user()->name}}</a>
                             <ul class="dropdown-menu">
                                 <li><a href="javascript:void(0)"> Profile</a></li>
                                 <li><a href="javascript:void(0)"> Settings</a></li>
@@ -178,7 +169,7 @@
                                 </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
                                 <li><a href="{{ route('form-input.working-order.index') }}">Pelaporan</a></li>
-                                <li><a href="#">Approval</a></li>
+                                <li><a href="{{ route('form-input.approval.index') }}">Approval</a></li>
                                 <li><a href="#">Engineer</a></li>
                             </ul>
                         </li>
@@ -194,8 +185,7 @@
                         </li>
 
                         <li>
-                            <a href="calendar.html" class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span
-                                        class="badge badge-primary pull-right">NEW</span></span></a>
+                            <a href="calendar.html" class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span class="badge badge-primary pull-right">NEW</span></span></a>
                         </li>
 
                         <li class="has_sub">
@@ -277,20 +267,17 @@
 <body class="hold-transition sidebar-collapse">
     <div class="wrapper">
         <!-- modal for loading dialog -->
-        <div class="modal fade" id="divArtLoadingDialog" tabindex="-1" role="dialog"
-            aria-labelledby="divArtLoadingDialogTitle" aria-hidden="true">
+        <div class="modal fade" id="divArtLoadingDialog" tabindex="-1" role="dialog" aria-labelledby="divArtLoadingDialogTitle" aria-hidden="true">
             <br>
             <br>
             <br>
             <br>
             <br>
-            <div id="divArtLoadingDialogModal" class="modal-dialog modal-dialog-centered modal-dialog-lg"
-                role="document">
+            <div id="divArtLoadingDialogModal" class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
                 <div class="breadcrumb modal-content">
                     <div id="artLoadingDialogBody" class="modal-body">
                         <div class="text-center">
-                            <div class="loading-spinner text-primary" style="width: 5rem; height: 5rem;" role="status"
-                                title="spinner for unmeasurable processes">
+                            <div class="loading-spinner text-primary" style="width: 5rem; height: 5rem;" role="status" title="spinner for unmeasurable processes">
                                 <span class="sr-only">loading...</span>
                             </div>
                             <div id="artLoadingDialogText">please wait while we process your request..</div>
@@ -321,7 +308,6 @@
             transform: rotate(360deg)
         }
     }
-
 </style>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script>
@@ -350,7 +336,7 @@
 
     function artAddModalStack(event) {
         // keep track of the number of open modals
-        if (typeof ($('body').data('fv_open_modals')) == 'undefined') {
+        if (typeof($('body').data('fv_open_modals')) == 'undefined') {
             $('body').data('fv_open_modals', 0);
         }
         // if the z-index of this modal has been set, ignore.
@@ -365,7 +351,6 @@
     };
 
     $('.modal').on('shown.bs.modal', artAddModalStack);
-
 </script>
 
 </html>
