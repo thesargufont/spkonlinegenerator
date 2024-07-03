@@ -28,6 +28,7 @@ use App\Http\Controllers\WorkingOrderController;
 Route::get('/', [LoginController::class, 'login'])->name('login');
 Route::post('actionlogin', [LoginController::class, 'actionlogin'])->name('actionlogin');
 Route::post('actionlogout', [LoginController::class, 'actionlogout'])->name('actionlogout');
+Route::post('profile-user', [ProfileController::class, 'index'])->name('profile-user');
 
 Route::get('home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 Route::get('actionlogout', [LoginController::class, 'actionlogout'])->name('actionlogout')->middleware('auth');
@@ -63,8 +64,6 @@ Route::get('form-input/working-order/getdisturbancecategory', [WorkingOrderContr
 Route::post('form-input/working-order/dashboard-data', [WorkingOrderController::class, 'data'])->name('form-input.working-order.dashboard-data')->middleware('auth');
 Route::post('form-input/working-order/create-new', [WorkingOrderController::class, 'submitData'])->name('form-input.working-order.create-new')->middleware('auth');
 
-Route::get('masters/employee/create-new', [EmployeeController::class, 'createNew'])->name('masters/employee/create-new')->middleware('auth');
-Route::post('masters/employee/create-new/create', [EmployeeController::class, 'submitData'])->name('masters/employee/create-new/create')->middleware('auth');
 Route::get('form-input/working-order/detail/{id}', [WorkingOrderController::class, 'detail'])->name('form-input.working-order.detail')->middleware('auth');
 
 // THESAR
@@ -72,6 +71,10 @@ Route::get('form-input/working-order/detail/{id}', [WorkingOrderController::clas
 // DASHBOARD
 Route::get('masters/employee/index', [EmployeeController::class, 'index'])->name('masters/employee/index')->middleware('auth');
 Route::post('master/employee/dashboard-data', [EmployeeController::class, 'data'])->name('master/employee/dashboard-data');
+Route::post('master/employee/delete-data', [EmployeeController::class, 'deleteData'])->name('master/employee/delete-data');
+// FORM INPUT
+Route::get('masters/employee/create-new', [EmployeeController::class, 'createNew'])->name('masters/employee/create-new')->middleware('auth');
+Route::post('masters/employee/create-new/create', [EmployeeController::class, 'submitData'])->name('masters/employee/create-new/create')->middleware('auth');
 
 // DEPARTMENT
 // DASHBOARD

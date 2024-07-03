@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Exception;
+use Carbon\Carbon;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Exception;
+use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\Facades\DataTables;
 
 class EmployeeController extends Controller
 {
@@ -21,11 +22,16 @@ class EmployeeController extends Controller
     public function getData($request, $isExcel = '')
     {
         $employee_name = strtoupper($request->employee_name);
-        $employee_nik = strtoupper($request->nik);
+        $employee_nik = strtoupper($request->employee_nik);
+        $status = strtoupper($request->status);
 
-        $employeeDatas = User::where('remember_token', null);
+        $employeeDatas = User::where('active', $status);
         if ($employee_name != '') {
-            $employeeDatas = $employeeDatas->where('name', $employee_name);
+            $employeeDatas = $employeeDatas->where('name', 'LIKE',  "%{$employee_name}%");
+        }
+
+        if ($employee_nik != '') {
+            $employeeDatas = $employeeDatas->where('nik', 'LIKE',  "%{$employee_nik}%");
         }
 
         return $employeeDatas;
@@ -43,8 +49,10 @@ class EmployeeController extends Controller
         $datatables = $datatables->addColumn('action', function ($item) use ($request) {
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
+            // $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            if($item->active == 1){
+                $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
+            }
 
             return $txt;
         })
@@ -60,18 +68,21 @@ class EmployeeController extends Controller
 
     public function createNew()
     {
-        return view('masters.employee.form_input');
+        $departments = Department::where('active', 1)->get();
+
+        return view('masters.employee.form_input', [
+            'departments' => $departments,
+        ]);
     }
 
     public function submitData(Request $request)
     {
-        $name  = strtoupper($request->name);
-        $nik    = $request->nik;
-        $email    = $request->email;
-        $password    = $request->password;
-        $confirm_password    = $request->confirm_password;
+        $name          = strtoupper($request->name);
+        $nik           = $request->nik;
         $department    = intval($request->department);
-        $gender    = strtoupper($request->gender);
+        $gender        = strtoupper($request->gender);
+        $email         = $request->email;
+        $phone_number  = strtoupper($request->phone_number);
 
         if ($name == '') {
             return response()->json([
@@ -94,23 +105,9 @@ class EmployeeController extends Controller
             ]);
         }
 
-        if ($password == '') {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Password wajib terisi, harap periksa kembali formulir pengisian data</div>'
-            ]);
-        }
-
-        if ($password != $confirm_password) {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Konfirmasi password tidak sesuai, silahkan dipastikan kembali password sudah sesuai.</div>'
-            ]);
-        }
-
         $checkDuplicateData = User::where('email', $email)
-            ->where('active', 1)
-            ->first();
+                                  ->where('active', 1)
+                                  ->first();
 
         if ($checkDuplicateData) {
             return response()->json([
@@ -123,19 +120,20 @@ class EmployeeController extends Controller
             // CREATE DATA 
             DB::beginTransaction();
             $insertUser = new User([
-                'name' => $name,
-                'department_id' => $department,
-                'email' => $email,
-                'password' => bcrypt($password),
-                'nik' => $nik,
-                'gender' => $gender,
-                'active' => 1,
-                'start_effective'         => Carbon::now(),
-                'end_effective'           => null,
-                'created_by'              => Auth::user()->id,
-                'created_at'              => Carbon::now(),
-                'updated_by'              => Auth::user()->id,
-                'updated_at'              => Carbon::now(),
+                'name'            => $name,
+                'department_id'   => $department,
+                'email'           => $email,
+                'password'        => Hash::make($nik),
+                'nik'             => $nik,
+                'gender'          => $gender,
+                '$phone_number'   => $phone_number,
+                'active'          => 1,
+                'start_effective' => Carbon::now(),
+                'end_effective'   => null,
+                'created_by'      => Auth::user()->id,
+                'created_at'      => Carbon::now(),
+                'updated_by'      => Auth::user()->id,
+                'updated_at'      => Carbon::now(),
             ]);
 
 
@@ -144,13 +142,45 @@ class EmployeeController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                "message" => '<div class="alert alert-success">User berhasil disimpan</div>'
+                "message" => '<div class="alert alert-success">Data User berhasil disimpan</div>'
             ]);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
                 'errors' => true,
-                "message" => '<div class="alert alert-danger">' . $e . '</div>'
+                "message" => '<div class="alert alert-danger">Data gagal di proses, terjadi kesalah system</div>'
+            ]);
+        }
+    }
+
+    public function deleteData(Request $request)
+    {
+        $user = User::where('id', $request->id)->first();
+
+        try {
+            DB::beginTransaction();
+            if($user){
+                $user->active      = 0;
+                $user->updated_by  = Auth::user()->id;
+                $user->updated_at  = Carbon::now();
+                $user->save();
+
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    "message" => '<div class="alert alert-success">Data User berhasil dihapus, status : TIDAK AKTIF</div>'
+                ]);
+            } else {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Data gagal di proses, data karyawan tidak ditemukan</div>'
+                ]);
+            }
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Data gagal di proses, terjadi kesalah system</div>'
             ]);
         }
     }

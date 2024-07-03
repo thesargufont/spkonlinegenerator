@@ -33,7 +33,7 @@
                         <div class="row mb-2">
                             <label class="col-md-2">NAMA *</label>
                             <div class="col-md-6">
-                                <input required id="name" type="text" class="text-uppercase form-control" title="NAMA" placeholder="NAMA">
+                                <input required maxlength="255" id="name" type="text" class="text-uppercase form-control" title="NAMA" placeholder="NAMA">
                             </div>
                         </div>
                         <br>
@@ -42,7 +42,7 @@
                         <div class="row mb-2">
                             <label class="col-md-2">NIK *</label>
                             <div class="col-md-6">
-                                <input required id="nik" type="text" class="text-uppercase form-control" title="NIK" placeholder="NIK">
+                                <input required max="10" id="nik" type="text" class="text-uppercase form-control" title="NIK" placeholder="NIK">
                             </div>
                         </div>
                         <br>
@@ -52,11 +52,10 @@
                             <label class="col-md-2">DEPARTMENT *</label>
                             <div class="col-md-6">
                                 <select title="DEPARTMENT" id="department" class="form-control">
-                                    <option value="1">TELKOM</option>
-                                    <option value="2">SCADA</option>
-                                    <option value="3">PROSIS</option>
-                                    <option value="4">UPT</option>
-                                    <option value="5">DISPATCHER</option>
+                                    <option value="" selected disabled>PILIH SATU</option>
+                                    @foreach ($departments as $item)
+                                        <option value={{ $item->id }}>{{ $item->department }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -67,6 +66,7 @@
                             <label class="col-md-2">JENIS KELAMIN *</label>
                             <div class="col-md-6">
                                 <select title="JENIS KELAMIN" id="gender" class="form-control">
+                                    <option value="" selected disabled>PILIH SATU</option>
                                     <option value="PRIA">PRIA</option>
                                     <option value="WANITA">WANITA</option>
                                 </select>
@@ -83,32 +83,42 @@
                         </div>
                         <br>
 
-                        {{-- PASSWORD --}}
+                        {{-- PHONE NUMBER --}}
                         <div class="row mb-2">
+                            <label class="col-md-2">NOMOR TELEPHONE </label>
+                            <div class="col-md-6">
+                                <input max="15" id="phone_number" type="tel" class="text-uppercase form-control" title="NOMOR TELEPHONE" placeholder="NOMOR TELEPHONE" onkeypress="return onlyNumberKey(event)">
+                            </div>
+                        </div>
+                        <br>
+
+                        {{-- PASSWORD --}}
+                        {{-- <div class="row mb-2">
                             <label class="col-md-2">PASSWORD *</label>
                             <div class="col-md-6">
                                 <input maxlength="50" required id="password" type="password" class="form-control" title="PASSWORD" placeholder="PASSWORD">
                             </div>
                         </div>
-                        <br>
+                        <br> --}}
 
                         {{-- CONFIRM PASSWORD --}}
-                        <div class="row mb-2">
+                        {{-- <div class="row mb-2">
                             <label class="col-md-2">CONFIRM PASSWORD *</label>
                             <div class="col-md-6">
                                 <input maxlength="50" required id="confirm_password" type="password" class="form-control" title="CONFIRM PASSWORD" placeholder="CONFIRM PASSWORD">
                             </div>
                         </div>
-                        <br>
+                        <br> --}}
 
                         {{-- SIGNATURE PATH --}}
-                        <div class="row mb-2">
+                        {{-- <div class="row mb-2">
                             <label class="col-md-2">TANDA TANGAN</label>
                             <div class="col-md-6">
-                                <input id="signature_path" type="text" class="text-uppercase form-control" title="TANDA TANGAN" placeholder="under development" disabled>
+                                <canvas id="signatureCanvas" class="signature-canvas"></canvas>
                             </div>
                         </div>
-                        <br>
+                        <button type="button" name="save" id="saveSignature" class="btn btn-primary" onclick="doSaveSignature();"><i class="fa fa-fw fa-save"></i> {{ucwords(__('Simpan Tanda Tangan'))}}</button>
+                        <br> --}}
 
                     </div> <!-- panel-body -->
                 </div> <!-- panel -->
@@ -126,16 +136,23 @@
 <script src="{{ asset('js/app.js') }}"></script> --}}
 
 <script>
+    function onlyNumberKey(evt) {
+        // Only ASCII character in that range allowed
+        let ASCIICode = (evt.which) ? evt.which : evt.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
+
     function doSave() {
         $('#form_result').html('');
 
-        var name = $('#name').val();
-        var nik = $('#nik').val();
-        var email = $('#email').val();
-        var password = $('#password').val();
-        var confirm_password = $('#confirm_password').val();
-        var gender = $('#gender').val();
-        var department = $('#department').val();
+        var name         = $('#name').val();
+        var nik          = $('#nik').val();
+        var department   = $('#department').val();
+        var gender       = $('#gender').val();
+        var email        = $('#email').val();
+        var phone_number = $('#phone_number').val();
 
         $.ajax({
             url: "{!! route('masters/employee/create-new/create') !!}",
@@ -147,11 +164,10 @@
             data: {
                 'name': name,
                 'nik': nik,
-                'email': email,
                 'department': department,
-                'password': password,
-                'confirm_password': confirm_password,
                 'gender': gender,
+                'email': email,
+                'phone_number': phone_number,
             },
             success: function(data) {
                 if (data.errors) {
