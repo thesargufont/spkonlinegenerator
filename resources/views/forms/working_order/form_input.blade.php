@@ -97,6 +97,7 @@
                         </form>
                     </div> <!-- panel-body -->
                 </div> <!-- panel -->
+
             </form>
         </div> <!-- col -->
     </div>
@@ -118,7 +119,7 @@
         $('#addDetailButton').click(function() {
             detailIndex++;
             $('#work-detail-container').append(`
-        <div class="col-md-12 work-detail" data-index="${detailIndex}">
+            <div class="col-md-12 work-detail" data-index="${detailIndex}">
             <div class="col-sm-1">
                 <button type="button" id="removeDetailButton" class="btn btn-danger btn-sm waves-effect waves-light">HAPUS</button>
             </div>
@@ -130,7 +131,7 @@
                                 <label>LOKASI</label>
                             </div>
                             <div>
-                                <select class="form-control" name="details[${detailIndex}][location]">
+                                <select class="form-control" name="details[${detailIndex}][location]" id="details${detailIndex}location" onchange="getdevicemodel(${detailIndex})">
                                     @foreach($location as $location)
                                         <option value="{{$location->id}}">{{$location->location}} - {{$location->location_type}}</option>
                                     @endforeach
@@ -147,7 +148,7 @@
                                 <label>KATEGORI GANGGUAN</label>
                             </div>
                             <div>
-                                <select class="form-control disturbance_category" name="details[${detailIndex}][disturbance_category]">
+                                <select class="form-control disturbance_category" name="details[${detailIndex}][disturbance_category]" id="details${detailIndex}disturbance_category">
                                 </select>
                             </div>
                         </div>
@@ -155,24 +156,25 @@
                 </div>
                 <div class="col-md-6">
                     <div>
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <div>
                                 <label>ALAT</label>
                             </div>
                             <div>
-                                <select class="form-control" name="details[${detailIndex}][device]">
+                                <select class="form-control" name="details[${detailIndex}][device]" id="details${detailIndex}device" onchange="getdevicemodel(${detailIndex})">
                                     @foreach($device as $device)
-                                        <option value="{{$device->id}}">{{$device->device_name}} | {{$device->barand}} {{$device->description}} - {{$device->serial_number}} | {{$device->eq_id}}</option>
+                                        <option value="{{$device->device_name}}">{{$device->device_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             <div>
                                 <label>MODEL ALAT</label>
                             </div>
                             <div>
-                                <input name="details[${detailIndex}][device_model]" id='device_model' type="text" class="form-control" readonly="readonly">
+                                <select class="form-control" name="details[${detailIndex}][device_model]" id="details${detailIndex}device_model" onchange="getdevicecode(${detailIndex})">
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -191,7 +193,7 @@
                         <label>KODE ALAT</label>
                     </div>
                     <div>
-                        <input name="details[${detailIndex}][device_code]" id='device_code' type="text" class="form-control" readonly="readonly">
+                        <input name="details[${detailIndex}][device_code]" id='details${detailIndex}device_code' type="text" class="form-control" readonly="readonly">
                     </div>
                     <div>
                         <p>&nbsp;</p>
@@ -211,9 +213,11 @@
             <div>
                 <p>&nbsp;</p>
             </div>
-        </div>
+            </div>
         `);
             checkwocategory();
+            getdevicemodel(detailIndex);
+            getdevicecode(detailIndex);
         });
 
         $(document).on('click', '#removeDetailButton', function() {
@@ -247,7 +251,7 @@
                 var detailIndex = $(this).data('index');
                 formData.append('details[' + detailIndex + '][location]', $(this).find('select[name="details[' + detailIndex + '][location]"]').val());
                 formData.append('details[' + detailIndex + '][disturbance_category]', $(this).find('select[name="details[' + detailIndex + '][disturbance_category]"]').val());
-                formData.append('details[' + detailIndex + '][device]', $(this).find('select[name="details[' + detailIndex + '][device]"]').val());
+                formData.append('details[' + detailIndex + '][device]', $(this).find('select[name="details[' + detailIndex + '][device_model]"]').val());
                 formData.append('details[' + detailIndex + '][description]', $(this).find('textarea[name="details[' + detailIndex + '][description]"]').val());
 
                 // Append file inputs
@@ -279,10 +283,10 @@
                     }
                     if (data.success) {
                         $('#form_result').html(data.message);
-                        // Optionally, redirect to another page after success
-                        // setTimeout(function() {
-                        //     window.location.href = "{{ route('form-input.working-order.index') }}";
-                        // }, 1500);
+                        //Optionally, redirect to another page after success
+                        setTimeout(function() {
+                            window.location.href = "{{ route('form-input.working-order.index') }}";
+                        }, 1500);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -338,13 +342,15 @@
 
     function getjobcategory() {
         var wo_category = $("select[name=wo_category]").val();
+        var department = $("select[name=department]").val();
 
         $.ajax({
             url: "{{ route('form-input.working-order.getjobcategory') }}",
             type: 'get',
             dataType: "json",
             data: {
-                'wo_category': wo_category
+                'wo_category': wo_category,
+                'department': department,
             },
             success: function(data) {
                 if (data.success == true) {
@@ -361,6 +367,118 @@
                         $('#job_category').prop('disabled', false);
                     }
                     checkwocategory();
+                } else {
+                    console.log(data);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('Error Status:', status);
+                console.log('Error:', error);
+                console.log('Response:', xhr.responseText);
+                var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                $('#form_result').html(html);
+            }
+        });
+    }
+
+    function getdevicemodel(d) {
+        var device_id = '#details' + d + 'device';
+        var device_model_id = '#details' + d + 'device_model';
+        var device_code_id = 'details' + d + 'device_code';
+        var location_id = '#details' + d + 'location';
+        var device = $(device_id).val();
+        var department = $("select[name=department]").val();
+        var location = $(location_id).val();
+
+        $.ajax({
+            url: "{{ route('form-input.working-order.getdevicemodel') }}",
+            type: 'get',
+            dataType: "json",
+            data: {
+                'device': device,
+                'department': department,
+                'location': location,
+            },
+            success: function(data) {
+                if (data.success == true) {
+                    console.log(data);
+                    $(device_model_id).empty();
+                    $.each(data.devices, function(key, value) {
+                        $(device_model_id).append('<option value="' + value.id + '">' + value.brand + '</option>');
+                    });
+                    document.getElementById(device_code_id).value = '';
+                } else {
+                    console.log(data);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('Error Status:', status);
+                console.log('Error:', error);
+                console.log('Response:', xhr.responseText);
+                var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                $('#form_result').html(html);
+            }
+        });
+    }
+
+    function getdevicecode(d) {
+        var device_model_id = '#details' + d + 'device_model';
+        var device_code_id = 'details' + d + 'device_code';
+        var device_model = $(device_model_id).val();
+
+        $.ajax({
+            url: "{{ route('form-input.working-order.getdevicecode') }}",
+            type: 'get',
+            dataType: "json",
+            data: {
+                'device_model': device_model,
+            },
+            success: function(data) {
+                if (data.success == true) {
+                    console.log(data);
+                    document.getElementById(device_code_id).value = data.devices.eq_id;
+                    if ($('#wo_category').val() == 'LAPORAN GANGGUAN') {
+                        getDisturbanceCategory(d);
+                    }
+                } else {
+                    console.log(data);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('Error Status:', status);
+                console.log('Error:', error);
+                console.log('Response:', xhr.responseText);
+                var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                $('#form_result').html(html);
+            }
+        });
+    }
+
+    function getDisturbanceCategory(d) {
+        var device_model_id = '#details' + d + 'device_model';
+        var disturbance_category_id = '#details' + d + 'disturbance_category';
+        var device = $(device_model_id).val();
+        var department = $("select[name=department]").val();
+        console.log(disturbance_category_id);
+
+        $.ajax({
+            url: "{{ route('form-input.working-order.getdisturbancecategory') }}",
+            type: 'get',
+            dataType: "json",
+            data: {
+                'device': device,
+            },
+            success: function(data) {
+                if (data.success == true) {
+                    console.log(data);
+                    $(disturbance_category_id).empty();
+                    $.each(data.disturbances, function(key, value) {
+                        console.log(value);
+                        $(disturbance_category_id).append('<option value="' + value.id + '">' + value.disturbance_category + '</option>');
+                    });
                 } else {
                     console.log(data);
                     var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
