@@ -34,8 +34,10 @@
             <!-- LOGO -->
             <div class="topbar-left">
                 <div class="text-center">
-                    <a href="{{ asset('home') }}" class="logo"><img src="{{ asset('images/sponge_logo.png') }}" height="28"></a>
-                    <a href="{{ asset('home') }}" class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}" height="36"></a>
+                    <a href="{{ asset('home') }}" class="logo"><img src="{{ asset('images/sponge_logo.png') }}"
+                            height="28"></a>
+                    <a href="{{ asset('home') }}" class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}"
+                            height="36"></a>
                 </div>
             </div>
             <!-- Button mobile view to collapse sidebar menu -->
@@ -57,11 +59,13 @@
 
                         <ul class="nav navbar-nav navbar-right pull-right">
                             <li class="dropdown hidden-xs">
-                                <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
+                                <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light"
+                                    data-toggle="dropdown" aria-expanded="true">
                                     <i class="fa fa-bell"></i> <span class="badge badge-xs badge-danger">3</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-lg">
-                                    <li class="text-center notifi-title">Notification <span class="badge badge-xs badge-success">3</span></li>
+                                    <li class="text-center notifi-title">Notification <span
+                                            class="badge badge-xs badge-success">3</span></li>
                                     <li class="list-group">
                                         <!-- list item-->
                                         <a href="javascript:void(0);" class="list-group-item">
@@ -102,16 +106,27 @@
                                 </ul>
                             </li>
                             <li class="hidden-xs">
-                                <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="fa fa-crosshairs"></i></a>
+                                <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i
+                                        class="fa fa-crosshairs"></i></a>
                             </li>
+
                             <li class="hidden-xs">
-                                <a href="{{ route('actionlogout') }}" id="btn-logout" class="waves-effect waves-light"><i class="fa fa-sign-out"></i></a>
+                                <a href="{{ route('profile-user') }}" id="btn-profile"
+                                    class="waves-effect waves-light"><i class="fa fa-user"></i></a>
                             </li>
+
+                            <li class="hidden-xs">
+                                <a href="{{ route('actionlogout') }}" id="btn-logout"
+                                    class="waves-effect waves-light"><i class="fa fa-sign-out"></i></a>
+                            </li>
+
                             <li class="dropdown">
-                                {{-- <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('images/users/avatar-1.jpg') }}" alt="user-img" class="img-circle"> </a> --}}
+                                {{-- <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('images/users/avatar-1.jpg') }}"
+                                alt="user-img" class="img-circle"> </a> --}}
                                 <ul class="dropdown-menu">
                                     <li><a href="javascript:void(0)"> Profile</a></li>
-                                    <li><a href="javascript:void(0)"><span class="badge badge-success pull-right">5</span> Settings </a></li>
+                                    <li><a href="javascript:void(0)"><span
+                                                class="badge badge-success pull-right">5</span> Settings </a></li>
                                     <li><a href="javascript:void(0)"> Lock screen</a></li>
                                     <li class="divider"></li>
                                     <li><a href="javascript:void(0)"> Logout</a></li>
@@ -136,7 +151,8 @@
                     </div>
                     <div class="user-info">
                         <div class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{Auth::user()->name}}</a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                                aria-expanded="false">{{Auth::user()->name}}</a>
                             <ul class="dropdown-menu">
                                 <li><a href="javascript:void(0)"> Profile</a></li>
                                 <li><a href="javascript:void(0)"> Settings</a></li>
@@ -153,11 +169,13 @@
                 <div id="sidebar-menu">
                     <ul>
                         <li>
-                            <a href="{{ route('home') }}" class="waves-effect"><i class="ti-home"></i><span> Dashboard </span></a>
+                            <a href="{{ route('home') }}" class="waves-effect"><i class="ti-home"></i><span> Dashboard
+                                </span></a>
                         </li>
 
                         <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-write"></i><span> Forms </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-write"></i><span> Forms
+                                </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
                                 <li><a href="{{ route('form-input.working-order.index') }}">Pelaporan</a></li>
                                 <li><a href="#">Approval</a></li>
@@ -166,7 +184,8 @@
                         </li>
 
                         <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-agenda"></i> <span> Laporan </span> <span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-agenda"></i> <span> Laporan
+                                </span> <span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
                                 <li><a href="#">Working Order</a></li>
                                 <li><a href="#">Surat Perintah Kerja</a></li>
@@ -175,11 +194,13 @@
                         </li>
 
                         <li>
-                            <a href="calendar.html" class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span class="badge badge-primary pull-right">NEW</span></span></a>
+                            <a href="calendar.html" class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span
+                                        class="badge badge-primary pull-right">NEW</span></span></a>
                         </li>
 
                         <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Admin Panel </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Admin
+                                    Panel </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
                                 <li><a href="{{ route('masters/role/index') }}">Data Pengaturan Pengguna</a></li>
                                 <li><a href="{{ route('masters/employee/index') }}">Data Pengguna</a></li>
@@ -251,10 +272,100 @@
 
     <script src="{{ asset('pages/dashborad.js') }}"></script>
     <script src="{{ asset('js/app2.js') }}"></script>
-
-
 </body>
 
+<body class="hold-transition sidebar-collapse">
+    <div class="wrapper">
+        <!-- modal for loading dialog -->
+        <div class="modal fade" id="divArtLoadingDialog" tabindex="-1" role="dialog"
+            aria-labelledby="divArtLoadingDialogTitle" aria-hidden="true">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div id="divArtLoadingDialogModal" class="modal-dialog modal-dialog-centered modal-dialog-lg"
+                role="document">
+                <div class="breadcrumb modal-content">
+                    <div id="artLoadingDialogBody" class="modal-body">
+                        <div class="text-center">
+                            <div class="loading-spinner text-primary" style="width: 5rem; height: 5rem;" role="status"
+                                title="spinner for unmeasurable processes">
+                                <span class="sr-only">loading...</span>
+                            </div>
+                            <div id="artLoadingDialogText">please wait while we process your request..</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<style>
+    .loading-spinner {
+        width: 30px;
+        height: 30px;
+        border: 2px solid indigo;
+        border-radius: 50%;
+        border-top-color: #0001;
+        display: inline-block;
+        animation: loadingspinner .7s linear infinite;
+    }
+
+    @keyframes loadingspinner {
+        0% {
+            transform: rotate(0deg)
+        }
+
+        100% {
+            transform: rotate(360deg)
+        }
+    }
+
+</style>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+    function artLoadingDialogDo(text, onShownCallback = null, onHiddenCallback = null, modalWidth = 500) {
+        $('#artLoadingDialogText').html(text);
+        if (onShownCallback != null) {
+            $('#divArtLoadingDialog').off('shown.bs.modal');
+            $('#divArtLoadingDialog').on('shown.bs.modal', artAddModalStack);
+            $('#divArtLoadingDialog').on('shown.bs.modal', onShownCallback);
+        }
+        if (onHiddenCallback != null) {
+            $('#divArtLoadingDialog').off('hidden.bs.modal');
+            $('#divArtLoadingDialog').on('hidden.bs.modal', artSubModalStack);
+            $('#divArtLoadingDialog').on('hidden.bs.modal', onHiddenCallback);
+        }
+        $('#divArtLoadingDialogModal').attr('style', 'width: ' + modalWidth + 'px !important');
+        $('#divArtLoadingDialog').modal({
+            backdrop: 'static',
+            keyboard: false
+        }).show();
+    }
+
+    function artLoadingDialogClose() {
+        $('#divArtLoadingDialog').modal('hide');
+    }
+
+    function artAddModalStack(event) {
+        // keep track of the number of open modals
+        if (typeof ($('body').data('fv_open_modals')) == 'undefined') {
+            $('body').data('fv_open_modals', 0);
+        }
+        // if the z-index of this modal has been set, ignore.
+        if ($(this).hasClass('fv-modal-stack')) {
+            return;
+        }
+        $(this).addClass('fv-modal-stack');
+        $('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+        $(this).css('z-index', 4040 + (10 * $('body').data('fv_open_modals')));
+        $('.modal-backdrop').not('.fv-modal-stack').css('z-index', 4039 + (10 * $('body').data('fv_open_modals')));
+        $('.modal-backdrop').not('fv-modal-stack').addClass('fv-modal-stack');
+    };
+
+    $('.modal').on('shown.bs.modal', artAddModalStack);
+
+</script>
 
 </html>

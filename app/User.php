@@ -22,6 +22,7 @@ class User extends Authenticatable
         'department_id',
         'nik',
         'gender',
+        'phone_number',
         'active',
         'start_effective',
         'end_effective',

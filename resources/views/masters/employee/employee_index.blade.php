@@ -29,6 +29,7 @@
                     </div> --}}
 
                     <div class="panel-body">
+                        {{-- EMPLOYEE NAME --}}
                         <div class="row mb-2">
                             <label class="col-md-2">NAMA KARYAWAN</label>
                             <div class="col-md-6">
@@ -52,6 +53,18 @@
                                 </div> -->
                             </div>
                         </div>
+                        <br>
+                        
+                        {{-- GENDER --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">STATUS *</label>
+                            <div class="col-md-6">
+                                <select title="STATUS" id="status" class="form-control">
+                                    <option value="1" selected>AKTIF</option>
+                                    <option value="0">TIDAK AKTIF</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <br>
                         <br>
@@ -72,6 +85,7 @@
                     <h3 class="panel-title">Data Karyawan</h3>
                 </div>
                 <div class="panel-body">
+                    <span id="form_result"></span>
                     <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                         <thead>
                             <tr>
@@ -82,6 +96,7 @@
                                 <th>Jenis Kelamin</th>
                                 <th>Email</th>
                                 <th>No. Telp</th>
+                                <th>Mulai Efektif</th>
                             </tr>
                         </thead>
                     </table>
@@ -121,6 +136,7 @@
                 'data': function(d) {
                     d.employee_name = $('#employee_name').val();
                     d.employee_nik = $('#employee_nik').val();
+                    d.status = $('#status').val();
                 }
             },
             columns: [{
@@ -150,6 +166,10 @@
                     name: 'email'
                 },
                 {
+                    data: 'phone_number',
+                    name: 'phone_number',
+                },
+                {
                     data: 'start_effective',
                     name: 'start_effective',
                 },
@@ -166,9 +186,52 @@
         });
 
         $('#search-form').on('submit', function(e) {
+            $('#form_result').html('');
             oTable.draw();
             e.preventDefault();
         });
     });
+
+    function deleteItem(id) {
+        $('#form_result').html('');
+
+        artLoadingDialogDo("Please wait, we process your request..",function(){
+            $.ajax({
+                url : '{!! route('master/employee/delete-data') !!}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{!!csrf_token()!!}'
+                },
+                dataType:"json",
+                data: {
+                    'id': id,
+                },
+                success: function(data){
+                    artLoadingDialogClose();
+                    if(data.success) {
+                        $('#form_result').html(data.message);
+                        $('#main-table').DataTable().ajax.reload();
+
+                    } else {
+                        $('#form_result').html(data.message);
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                    if (data.responseJSON.message) {
+                        var target = data.responseJSON.errors;
+                        for (var k in target) {
+                            if (!Array.isArray(target[k]['0'])) {
+                                var msg = target[k]['0'];
+                                artCreateFlashMsg(msg, "danger", true);
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
 </script>
 @endsection
