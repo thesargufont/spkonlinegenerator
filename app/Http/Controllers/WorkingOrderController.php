@@ -50,7 +50,7 @@ class WorkingOrderController extends Controller
             $show_url = route('form-input.working-order.detail', ['id' => $item->id]);
 
             $txt = '';
-            $txt .= "<a href=\"." . $show_url . ".\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
             $txt .= "<a href=\"#\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
             $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
 
@@ -498,8 +498,16 @@ class WorkingOrderController extends Controller
     public function detail($id)
     {
         $spongeheader = SpongeHeader::find($id);
-        dd($spongeheader);
+        $job_category = Job::find($spongeheader->job_category);
+        $data = [
+            'spk_number' => $spongeheader->spk_number,
+            'wo_number' => $spongeheader->wo_number,
+            'wo_category' => $spongeheader->wo_type,
+            'department' => $spongeheader->department,
+            'job_category' => $job_category->job_category,
+            'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
+        ];
 
-        return view('forms.working_order.detail', $spongeheader);
+        return view('forms.working_order.detail', $data);
     }
 }
