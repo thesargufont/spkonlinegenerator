@@ -498,7 +498,29 @@ class WorkingOrderController extends Controller
     public function detail($id)
     {
         $spongeheader = SpongeHeader::find($id);
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
         $job_category = Job::find($spongeheader->job_category);
+
+        $details = [];
+        $index = 1;
+        foreach ($spongedetails as $detail) {
+            $device = Device::find($detail->device_id);
+            $details[$index] = [
+                'location' => $detail->reporter_location,
+                'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
+                'description' => $detail->wo_description,
+                'image_path1' => $detail->wo_attachment1,
+                'image_path2' => $detail->wo_attachment2,
+                'image_path3' => $detail->wo_attachment3,
+                'device' => $device->device_name,
+                'device_model' => $device->brand,
+                'device_code' => $device->eq_id,
+            ];
+            $index++;
+        }
+
+        // dd($details);
+
         $data = [
             'spk_number' => $spongeheader->spk_number,
             'wo_number' => $spongeheader->wo_number,
@@ -506,6 +528,7 @@ class WorkingOrderController extends Controller
             'department' => $spongeheader->department,
             'job_category' => $job_category->job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
+            'details' => $details,
         ];
 
         return view('forms.working_order.detail', $data);

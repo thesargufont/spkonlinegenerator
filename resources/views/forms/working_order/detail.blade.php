@@ -79,21 +79,93 @@
                     </div> <!-- panel-body -->
                 </div> <!-- panel -->
 
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Form Detail</h3>
-                    </div>
-                    <div class="panel-body">
-                        <form class="form-horizontal" role="form">
-                            <div class="form-group" id="work-detail-container">
+                <!-- <div class="col-lg-6"> -->
+                <div class="panel-group" id="accordion-test-2">
+                    @foreach($details as $index => $detail)
+                    <div class="panel panel-info panel-color">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseOne-{{ $index }}" aria-expanded="false" class="collapsed">
+                                    Detail Work Order #{{$index}}
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne-{{ $index }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                {{-- LOKASI --}}
+                                <div class="form-group">
+                                    <label class="col-md-2">LOKASI</label>
+                                    <div class="col-md-6">
+                                        <input name="detail_location_{{ $index }}" id="detail_location_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['location'] }}">
+                                    </div>
+                                </div>
 
+                                {{-- ALAT --}}
+                                <div class="form-group">
+                                    <label class="col-md-2">ALAT</label>
+                                    <div class="col-md-6">
+                                        <input name="detail_device_{{ $index }}" id="detail_device_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device'] }}">
+                                    </div>
+                                </div>
+
+                                {{-- MODEL ALAT --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">MODEL ALAT</label>
+                                    <div class="col-sm-6">
+                                        <input name="detail_device_model_{{ $index }}" id="detail_device_model_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_model'] }}">
+                                    </div>
+                                </div>
+
+                                {{-- KODE ALAT --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">KODE ALAT</label>
+                                    <div class="col-sm-6">
+                                        <input name="detail_device_code_{{ $index }}" id="detail_device_code_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_code'] }}">
+                                    </div>
+                                </div>
+
+                                {{-- KATEGORI GANGGUAN --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">KATEGORI GANGGUAN</label>
+                                    <div class="col-sm-6">
+                                        <input name="detail_disturbance_category_{{ $index }}" id="detail_disturbance_category_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['disturbance_category'] }}">
+                                    </div>
+                                </div>
+
+                                {{-- DESKRIPSI PELAPORAN --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">DESKRIPSI PELAPORAN</label>
+                                    <div class="col-sm-6">
+                                        <input name="detail_description_{{ $index }}" id="detail_description_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['description'] }}">
+                                    </div>
+                                </div>
+                                {{-- UPLOAD #1 --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">UPLOAD #1</label>
+                                    <div class="col-sm-6">
+                                        <img src="{{ Storage::url($detail['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;">
+                                    </div>
+                                </div>
+                                {{-- UPLOAD #2 --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">UPLOAD #2</label>
+                                    <div class="col-sm-6">
+                                        <img src="{{ Storage::url($detail['image_path2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;">
+                                    </div>
+                                </div>
+                                {{-- UPLOAD #3 --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">UPLOAD #3</label>
+                                    <div class="col-sm-6">
+                                        <img src="{{ Storage::url($detail['image_path3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;">
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <button type="button" id="addDetailButton" class="btn btn-primary btn-sm waves-effect waves-light">+ Tambah Detail</button>
-                            </div>
-                        </form>
-                    </div> <!-- panel-body -->
-                </div> <!-- panel -->
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <!-- </div> -->
 
             </form>
 
@@ -114,11 +186,5 @@
             window.location.href = "{{ route('form-input.working-order.index') }}";
         });
     });
-
-    function showItem(id) {
-        {
-            window.location.href = "{{ route('form-input.working-order.detail', ['id' => $workingOrder - > id]) }}";
-        }
-    }
 </script>
 @endsection

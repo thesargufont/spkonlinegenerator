@@ -181,7 +181,7 @@
             serverSide: true,
             // deferLoading: 0, //disable auto load
             stateSave: false,
-            scrollY: 500,
+            // scrollY: 500,
             // scrollX: true,
             ordering: false,
             language: {
@@ -268,5 +268,12 @@
             e.preventDefault();
         });
     });
+
+    function showItem(id) {
+        {
+            var url = "{{route('form-input.working-order.detail', '')}}" + "/" + id;
+            window.location.href = url;
+        }
+    }
 </script>
 @endsection
