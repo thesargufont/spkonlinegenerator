@@ -15,7 +15,6 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
-                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('form-input/working-order/create')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
             </div>
         </div>
     </div>
@@ -196,7 +195,7 @@
                 infoEmpty: ""
             },
             ajax: {
-                'url': "{!! route('form-input.working-order.dashboard-data') !!}",
+                'url': "{!! route('form-input.approval.dashboard-data') !!}",
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
@@ -271,7 +270,7 @@
 
     function showItem(id) {
         {
-            var url = "{{route('form-input.working-order.detail', '')}}" + "/" + id;
+            var url = "{{route('form-input.approval.detail', '')}}" + "/" + id;
             window.location.href = url;
         }
     }

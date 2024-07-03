@@ -260,10 +260,10 @@
                     }
                     if (data.success) {
                         $('#form_result').html(data.message);
-                        // Optionally, redirect to another page after success
-                        // setTimeout(function() {
-                        //     window.location.href = "{{ route('form-input.working-order.index') }}";
-                        // }, 1500);
+                        //Optionally, redirect to another page after success
+                        setTimeout(function() {
+                            window.location.href = "{{ route('form-input.working-order.index') }}";
+                        }, 1500);
                     }
                 },
                 error: function(xhr, status, error) {

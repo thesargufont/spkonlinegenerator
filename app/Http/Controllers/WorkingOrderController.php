@@ -52,7 +52,6 @@ class WorkingOrderController extends Controller
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
             $txt .= "<a href=\"#\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
 
             return $txt;
         })
@@ -85,7 +84,7 @@ class WorkingOrderController extends Controller
                         return 'User ID : ' . $item->created_by;
                     }
                 } else {
-                    return '-';
+                    return 'WAITING APPROVAL';
                 }
             })
             ->editColumn('spk_number', function ($item) {
@@ -99,7 +98,7 @@ class WorkingOrderController extends Controller
                 if ($item->status != '' || $item->status != null) {
                     return $item->status;
                 } else {
-                    return 'Not Approve';
+                    return 'WAITING';
                 }
             })
             ->editColumn('approve_at', function ($item) {
@@ -444,32 +443,33 @@ class WorkingOrderController extends Controller
                     'updated_at'              => Carbon::now(),
                 ]);
                 $spongeDetails[] = $spongeDetail;
-                $spongeDetailHist = new SpongeDetailHist([
-                    'wo_number_id' => $spongeHeader->id,
-                    'reporter_location' => Location::find($detail['location'])->location,
-                    'device_id' => $detail['device'],
-                    'disturbance_category' => $detail['disturbance_category'],
-                    'wo_decription' => $detail['description'],
-                    'wo_attachment1' => 'public/' . $newFilename1,
-                    'wo_attachment2' => 'public/' . $newFilename2,
-                    'wo_attachment3' => 'public/' . $newFilename3,
-                    'start_at' => $spongeHeader->effective_date,
-                    'estimated_end' => $spongeHeader->effective_date,
-                    'action' => 'CREATE',
-                    'created_by'              => Auth::user()->id,
-                    'created_at'              => Carbon::now(),
-                    'updated_by'              => Auth::user()->id,
-                    'updated_at'              => Carbon::now(),
-                ]);
-                $spongeDetailHists[] = $spongeDetailHist;
+                // $spongeDetailHist = new SpongeDetailHist([
+                //     'sponge_detail_id' => $spongeDetail->id,
+                //     'wo_number_id' => $spongeHeader->id,
+                //     'reporter_location' => Location::find($detail['location'])->location,
+                //     'device_id' => $detail['device'],
+                //     'disturbance_category' => $detail['disturbance_category'],
+                //     'wo_decription' => $detail['description'],
+                //     'wo_attachment1' => 'public/' . $newFilename1,
+                //     'wo_attachment2' => 'public/' . $newFilename2,
+                //     'wo_attachment3' => 'public/' . $newFilename3,
+                //     'start_at' => $spongeHeader->effective_date,
+                //     'estimated_end' => $spongeHeader->effective_date,
+                //     'action' => 'CREATE',
+                //     'created_by'              => Auth::user()->id,
+                //     'created_at'              => Carbon::now(),
+                //     'updated_by'              => Auth::user()->id,
+                //     'updated_at'              => Carbon::now(),
+                // ]);
+                // $spongeDetailHists[] = $spongeDetailHist;
             }
 
             foreach ($spongeDetails as $insert) {
                 $insert->save();
             }
-            foreach ($spongeDetailHists as $insert) {
-                $insert->save();
-            }
+            // foreach ($spongeDetailHists as $insert) {
+            //     $insert->save();
+            // }
 
             DB::commit();
 

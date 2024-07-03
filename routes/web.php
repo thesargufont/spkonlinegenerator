@@ -9,6 +9,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\WorkingOrderController;
+use App\Http\Controllers\ApprovalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,8 +64,16 @@ Route::get('form-input/working-order/getdevicecode', [WorkingOrderController::cl
 Route::get('form-input/working-order/getdisturbancecategory', [WorkingOrderController::class, 'getDisturbanceCategory'])->name('form-input.working-order.getdisturbancecategory')->middleware('auth');
 Route::post('form-input/working-order/dashboard-data', [WorkingOrderController::class, 'data'])->name('form-input.working-order.dashboard-data')->middleware('auth');
 Route::post('form-input/working-order/create-new', [WorkingOrderController::class, 'submitData'])->name('form-input.working-order.create-new')->middleware('auth');
-
 Route::get('form-input/working-order/detail/{id}', [WorkingOrderController::class, 'detail'])->name('form-input.working-order.detail')->middleware('auth');
+
+//APPROVAL
+Route::get('form-input/approval/index', [ApprovalController::class, 'index'])->name('form-input.approval.index')->middleware('auth');
+Route::post('form-input/approval/dashboard-data', [ApprovalController::class, 'data'])->name('form-input.approval.dashboard-data')->middleware('auth');
+Route::get('form-input/approval/detail/{id}', [ApprovalController::class, 'detail'])->name('form-input.approval.detail')->middleware('auth');
+Route::post('form-input/approval/approve', [ApprovalController::class, 'approve'])->name('form-input.approval.approve')->middleware('auth');
+Route::post('form-input/approval/notapprove', [ApprovalController::class, 'notApprove'])->name('form-input.approval.notapprove')->middleware('auth');
+Route::post('form-input/approval/cancel', [ApprovalController::class, 'cancel'])->name('form-input.approval.cancel')->middleware('auth');
+
 
 // THESAR
 // ERMOPLOYEE
