@@ -65,6 +65,7 @@ Route::post('form-input/working-order/create-new', [WorkingOrderController::clas
 
 Route::get('masters/employee/create-new', [EmployeeController::class, 'createNew'])->name('masters/employee/create-new')->middleware('auth');
 Route::post('masters/employee/create-new/create', [EmployeeController::class, 'submitData'])->name('masters/employee/create-new/create')->middleware('auth');
+Route::get('form-input/working-order/detail/{id}', [WorkingOrderController::class, 'detail'])->name('form-input.working-order.detail')->middleware('auth');
 
 // THESAR
 // ERMOPLOYEE

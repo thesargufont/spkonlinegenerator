@@ -74,7 +74,7 @@
                         {{-- TANGGAL EFEKTIF --}}
                         <div class="form-group">
                             <label class="col-sm-2">TANGGAL EFEKTIF</label>
-                            <div class="col-sm-6 input-group">
+                            <div class="col-sm-2 input-group">
                                 <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date">
                                 <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
                             </div><!-- input-group -->
@@ -299,13 +299,21 @@
             });
             return false; // Prevent default form submission
         });
+
+        $(document).on('click', '#backBtn', function() {
+            window.location.href = "{{ route('form-input.working-order.index') }}";
+        });
     });
 
     function checkwocategory() {
         if ($('#wo_category').val() == 'PEKERJAAN') {
             $('.disturbance_category').prop('disabled', true);
+            $('.disturbance_category').empty();
         } else {
             $('.disturbance_category').prop('disabled', false);
+            $('.disturbance_category').each(function() {
+                getDisturbanceCategory(this.id.substring(7, 8));
+            });
         }
     }
 
@@ -390,6 +398,7 @@
         var device = $(device_id).val();
         var department = $("select[name=department]").val();
         var location = $(location_id).val();
+        var disturbance_category_id = '#details' + d + 'disturbance_category';
 
         $.ajax({
             url: "{{ route('form-input.working-order.getdevicemodel') }}",
@@ -402,12 +411,13 @@
             },
             success: function(data) {
                 if (data.success == true) {
-                    console.log(data);
+                    console.log('getdevicemodel', data.devices);
                     $(device_model_id).empty();
                     $.each(data.devices, function(key, value) {
                         $(device_model_id).append('<option value="' + value.id + '">' + value.brand + '</option>');
                     });
                     document.getElementById(device_code_id).value = '';
+                    $(disturbance_category_id).empty();
                 } else {
                     console.log(data);
                     var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';

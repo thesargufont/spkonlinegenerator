@@ -138,7 +138,7 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Data Bagian</h3>
+                    <h3 class="panel-title">Data Work Order</h3>
                 </div>
                 <div class="panel-body">
                     <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
@@ -147,14 +147,14 @@
                                 <th>Action</th>
                                 <th>Nomor WO</th>
                                 <th>Tipe WO</th>
-                                <!-- <th>Nomor SPK</th> -->
+                                <th>Nomor SPK</th>
                                 <th>Departemen</th>
                                 <th>Kategori Pekerjaan</th>
                                 <th>Status</th>
-                                <!-- <th>Disetujui Oleh</th> -->
-                                <!-- <th>Disetujui Pada</th> -->
-                                <!-- <th>Pelapor</th> -->
-                                <!-- <th>Tanggal Efektif</th> -->
+                                <th>Disetujui Oleh</th>
+                                <th>Disetujui Pada</th>
+                                <th>Pelapor</th>
+                                <th>Tanggal Efektif</th>
                             </tr>
                         </thead>
                     </table>
@@ -182,7 +182,7 @@
             // deferLoading: 0, //disable auto load
             stateSave: false,
             scrollY: 500,
-            scrollX: true,
+            // scrollX: true,
             ordering: false,
             language: {
                 paginate: {
@@ -219,10 +219,10 @@
                     data: 'wo_type',
                     name: 'wo_type'
                 },
-                // {
-                //     data: 'spk_number',
-                //     name: 'spk_number'
-                // },
+                {
+                    data: 'spk_number',
+                    name: 'spk_number'
+                },
                 {
                     data: 'department',
                     name: 'department'
@@ -235,22 +235,22 @@
                     data: 'status',
                     name: 'status',
                 },
-                // {
-                //     data: 'approve_by',
-                //     name: 'approve_by',
-                // },
-                // {
-                //     data: 'approve_at',
-                //     name: 'approve_at',
-                // },
-                // {
-                //     data: 'created_by',
-                //     name: 'created_by',
-                // },
-                // {
-                //     data: 'effective_date',
-                //     name: 'effective_date',
-                // },
+                {
+                    data: 'approve_by',
+                    name: 'approve_by',
+                },
+                {
+                    data: 'approve_at',
+                    name: 'approve_at',
+                },
+                {
+                    data: 'created_by',
+                    name: 'created_by',
+                },
+                {
+                    data: 'effective_date',
+                    name: 'effective_date',
+                },
             ],
             // order: [[ 2, "desc" ]],
             rowCallback: function(row, data, iDisplayIndex) {
