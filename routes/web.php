@@ -64,6 +64,7 @@ Route::get('form-input/working-order/getdisturbancecategory', [WorkingOrderContr
 Route::post('form-input/working-order/dashboard-data', [WorkingOrderController::class, 'data'])->name('form-input.working-order.dashboard-data')->middleware('auth');
 Route::post('form-input/working-order/create-new', [WorkingOrderController::class, 'submitData'])->name('form-input.working-order.create-new')->middleware('auth');
 
+Route::get('form-input/working-order/detail/{id}', [WorkingOrderController::class, 'detail'])->name('form-input.working-order.detail')->middleware('auth');
 
 // THESAR
 // ERMOPLOYEE
