@@ -84,7 +84,7 @@ class WorkingOrderController extends Controller
                         return 'User ID : ' . $item->created_by;
                     }
                 } else {
-                    return 'WAITING APPROVAL';
+                    return '-';
                 }
             })
             ->editColumn('spk_number', function ($item) {
@@ -98,7 +98,7 @@ class WorkingOrderController extends Controller
                 if ($item->status != '' || $item->status != null) {
                     return $item->status;
                 } else {
-                    return 'WAITING';
+                    return 'NOT APPROVE';
                 }
             })
             ->editColumn('approve_at', function ($item) {
