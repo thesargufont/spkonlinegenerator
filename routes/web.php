@@ -71,6 +71,7 @@ Route::post('form-input/working-order/create-new', [WorkingOrderController::clas
 Route::get('masters/employee/index', [EmployeeController::class, 'index'])->name('masters/employee/index')->middleware('auth');
 Route::post('master/employee/dashboard-data', [EmployeeController::class, 'data'])->name('master/employee/dashboard-data');
 Route::post('master/employee/delete-data', [EmployeeController::class, 'deleteData'])->name('master/employee/delete-data');
+Route::get('masters/employee/detail-data/{id}', [EmployeeController::class, 'detailData'])->name('masters/employee/detail-data')->middleware('auth');
 // FORM INPUT
 Route::get('masters/employee/create-new', [EmployeeController::class, 'createNew'])->name('masters/employee/create-new')->middleware('auth');
 Route::post('masters/employee/create-new/create', [EmployeeController::class, 'submitData'])->name('masters/employee/create-new/create')->middleware('auth');

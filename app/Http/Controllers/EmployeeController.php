@@ -184,4 +184,9 @@ class EmployeeController extends Controller
             ]);
         }
     }
+    
+    public function detailData($id)
+    {
+        dd($id);
+    }
 }

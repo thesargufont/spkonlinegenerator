@@ -233,5 +233,10 @@
             });
         });
     }
+
+    function showItem(id) {
+        // location.replace('{{ url('master/employee/') }}/' + id);
+        location.replace('{{ url('masters/employee/detail-data') }}/' + id);
+    }
 </script>
 @endsection
