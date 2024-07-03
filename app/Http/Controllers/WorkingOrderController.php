@@ -47,25 +47,68 @@ class WorkingOrderController extends Controller
             });
 
         $datatables = $datatables->addColumn('action', function ($item) use ($request) {
+            $show_url = route('form-input.working-order.detail', ['id' => $item->id]);
+
             $txt = '';
-            $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
 
             return $txt;
         })
             ->editColumn('job_category', function ($item) {
                 $job_category = Job::where('id', $item->job_category)->first();
                 if ($job_category) {
-                    return $job_category->job_category;
+                    if ($job_category->$job_category != '' || $job_category->$job_category != null) {
+                        return $job_category->job_category;
+                    } else {
+                        return '-';
+                    }
+                } else {
+                    return '-';
+                }
+            })
+            ->editColumn('created_by', function ($item) {
+                $cek = User::find($item->created_by);
+                if ($cek) {
+                    return $cek->name;
+                } else {
+                    return 'User ID : ' . $item->created_by;
+                }
+            })
+            ->editColumn('approve_by', function ($item) {
+                if ($item->approve_by != '' || $item->approve_by != null) {
+                    $cek = User::find($item->created_by);
+                    if ($cek) {
+                        return $cek->name;
+                    } else {
+                        return 'User ID : ' . $item->created_by;
+                    }
+                } else {
+                    return 'WAITING APPROVAL';
+                }
+            })
+            ->editColumn('spk_number', function ($item) {
+                if ($item->spk_number != '' || $item->spk_number != null) {
+                    return $item->spk_number;
                 } else {
                     return '-';
                 }
             })
             ->editColumn('status', function ($item) {
-                return 'Not Approve';
+                if ($item->status != '' || $item->status != null) {
+                    return $item->status;
+                } else {
+                    return 'WAITING';
+                }
             })
-            ->editColumn('start_effective', function ($item) {
+            ->editColumn('approve_at', function ($item) {
+                if ($item->approve_at != '' || $item->approve_at != null) {
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y');
+                } else {
+                    return '-';
+                }
+            })
+            ->editColumn('effective_date', function ($item) {
                 return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y');
             });
         return $datatables->make(TRUE);
@@ -204,12 +247,12 @@ class WorkingOrderController extends Controller
                 "message" => '<div class="alert alert-danger">Kategori pekerjaan belum diisi. Mohon cek kembali.</div>'
             ]);
         }
-        if ($request->job_category == '' || $request->job_category == null) {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Tipe pekerjaan belum diisi. Mohon cek kembali.</div>'
-            ]);
-        }
+        // if ($request->job_category == '' || $request->job_category == null) {
+        //     return response()->json([
+        //         'errors' => true,
+        //         "message" => '<div class="alert alert-danger">Tipe pekerjaan belum diisi. Mohon cek kembali.</div>'
+        //     ]);
+        // }
         if ($request->department == '' || $request->department == null) {
             return response()->json([
                 'errors' => true,
@@ -310,20 +353,56 @@ class WorkingOrderController extends Controller
                 ]);
             }
 
+            $newFilename1 = '';
+            $newFilename2 = '';
+            $newFilename3 = '';
+
             if (array_key_exists('photo1', $detail)) {
-                // dd($detail['photo1']->getClientOriginalExtension());
-                // if ($detail['photo1']->getClientOriginalExtension() != 'jpg' || $detail['photo1']->getClientOriginalExtension() != 'jpeg') {
-                //     return response()->json([
-                //         'errors' => true,
-                //         "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
-                //     ]);
-                // }
+                // dd(strval($detail['photo1']->getClientOriginalExtension()));
+                if (strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpeg') {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                    ]);
+                }
+                if (filesize($detail['photo1']) > 512000) {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                    ]);
+                }
+                $newFilename1 = str_replace('/', '-', $request->wo_number) . '-photo1' . '.' . $detail['photo1']->getClientOriginalExtension();
+                Storage::putFileAs('local', $detail['photo1'], $newFilename1);
             }
             if (array_key_exists('photo2', $detail)) {
-                $path2 = Storage::putFile('uploads', $detail['photo2']);
+                if (strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpeg') {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                    ]);
+                }
+                if (filesize($detail['photo2']) > 512000) {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                    ]);
+                }
+                $newFilename2 = str_replace('/', '-', $request->wo_number) . '-photo2' . '.' . $detail['photo2']->getClientOriginalExtension();
             }
             if (array_key_exists('photo3', $detail)) {
-                $path3 = Storage::putFile('uploads', $detail['photo3']);
+                if (strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpeg') {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                    ]);
+                }
+                if (filesize($detail['photo3']) > 512000) {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                    ]);
+                }
+                $newFilename3 = str_replace('/', '-', $request->wo_number) . '-photo3' . '.' . $detail['photo3']->getClientOriginalExtension();
             }
         }
 
@@ -347,30 +426,15 @@ class WorkingOrderController extends Controller
             $spongeDetails = [];
             $spongeDetailHists = [];
             foreach ($request->details as $detail) {
-                if (array_key_exists('photo1', $detail)) {
-                    $path1 = Storage::putFile('uploads', $detail['photo1']);
-                } else {
-                    $path1 = '';
-                }
-                if (array_key_exists('photo2', $detail)) {
-                    $path2 = Storage::putFile('uploads', $detail['photo2']);
-                } else {
-                    $path2 = '';
-                }
-                if (array_key_exists('photo3', $detail)) {
-                    $path3 = Storage::putFile('uploads', $detail['photo3']);
-                } else {
-                    $path3 = '';
-                }
                 $spongeDetail = new SpongeDetail([
                     'wo_number_id' => $spongeHeader->id,
                     'reporter_location' => Location::find($detail['location'])->location,
                     'device_id' => $detail['device'],
                     'disturbance_category' => $detail['disturbance_category'],
                     'wo_decription' => $detail['description'],
-                    'wo_attachment1' => $path1,
-                    'wo_attachment2' => $path2,
-                    'wo_attachment3' => $path3,
+                    'wo_attachment1' => 'public/' . $newFilename1,
+                    'wo_attachment2' => 'public/' . $newFilename2,
+                    'wo_attachment3' => 'public/' . $newFilename3,
                     'start_at' => $spongeHeader->effective_date,
                     'estimated_end' => $spongeHeader->effective_date,
                     'created_by'              => Auth::user()->id,
@@ -379,34 +443,45 @@ class WorkingOrderController extends Controller
                     'updated_at'              => Carbon::now(),
                 ]);
                 $spongeDetails[] = $spongeDetail;
-                $spongeDetailHist = new SpongeDetailHist([
-                    'wo_number_id' => $spongeHeader->id,
-                    'reporter_location' => Location::find($detail['location'])->location,
-                    'device_id' => $detail['device'],
-                    'disturbance_category' => $detail['disturbance_category'],
-                    'wo_decription' => $detail['description'],
-                    'wo_attachment1' => $path1,
-                    'wo_attachment2' => $path2,
-                    'wo_attachment3' => $path3,
-                    'start_at' => $spongeHeader->effective_date,
-                    'estimated_end' => $spongeHeader->effective_date,
-                    'action' => 'CREATE',
-                    'created_by'              => Auth::user()->id,
-                    'created_at'              => Carbon::now(),
-                    'updated_by'              => Auth::user()->id,
-                    'updated_at'              => Carbon::now(),
-                ]);
-                $spongeDetailHists[] = $spongeDetailHist;
+                // $spongeDetailHist = new SpongeDetailHist([
+                //     'sponge_detail_id' => $spongeDetail->id,
+                //     'wo_number_id' => $spongeHeader->id,
+                //     'reporter_location' => Location::find($detail['location'])->location,
+                //     'device_id' => $detail['device'],
+                //     'disturbance_category' => $detail['disturbance_category'],
+                //     'wo_decription' => $detail['description'],
+                //     'wo_attachment1' => 'public/' . $newFilename1,
+                //     'wo_attachment2' => 'public/' . $newFilename2,
+                //     'wo_attachment3' => 'public/' . $newFilename3,
+                //     'start_at' => $spongeHeader->effective_date,
+                //     'estimated_end' => $spongeHeader->effective_date,
+                //     'action' => 'CREATE',
+                //     'created_by'              => Auth::user()->id,
+                //     'created_at'              => Carbon::now(),
+                //     'updated_by'              => Auth::user()->id,
+                //     'updated_at'              => Carbon::now(),
+                // ]);
+                // $spongeDetailHists[] = $spongeDetailHist;
             }
 
             foreach ($spongeDetails as $insert) {
                 $insert->save();
             }
-            foreach ($spongeDetailHists as $insert) {
-                $insert->save();
-            }
+            // foreach ($spongeDetailHists as $insert) {
+            //     $insert->save();
+            // }
 
             DB::commit();
+
+            if (array_key_exists('photo1', $detail)) {
+                Storage::putFileAs('public', $detail['photo1'], $newFilename1);
+            }
+            if (array_key_exists('photo2', $detail)) {
+                Storage::putFileAs('public', $detail['photo2'], $newFilename2);
+            }
+            if (array_key_exists('photo3', $detail)) {
+                Storage::putFileAs('public', $detail['photo3'], $newFilename3);
+            }
             return response()->json([
                 'success' => true,
                 "message" => '<div class="alert alert-success">' . $spongeHeader->wo_number . ' berhasil disimpan</div>'
@@ -418,5 +493,44 @@ class WorkingOrderController extends Controller
                 "message" => '<div class="alert alert-danger"> Server Error : ' . $e->getMessage() . '. Silahkan kontak developer atau admin.</div>'
             ]);
         }
+    }
+
+    public function detail($id)
+    {
+        $spongeheader = SpongeHeader::find($id);
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        $job_category = Job::find($spongeheader->job_category);
+
+        $details = [];
+        $index = 1;
+        foreach ($spongedetails as $detail) {
+            $device = Device::find($detail->device_id);
+            $details[$index] = [
+                'location' => $detail->reporter_location,
+                'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
+                'description' => $detail->wo_description,
+                'image_path1' => $detail->wo_attachment1,
+                'image_path2' => $detail->wo_attachment2,
+                'image_path3' => $detail->wo_attachment3,
+                'device' => $device->device_name,
+                'device_model' => $device->brand,
+                'device_code' => $device->eq_id,
+            ];
+            $index++;
+        }
+
+        // dd($details);
+
+        $data = [
+            'spk_number' => $spongeheader->spk_number,
+            'wo_number' => $spongeheader->wo_number,
+            'wo_category' => $spongeheader->wo_type,
+            'department' => $spongeheader->department,
+            'job_category' => $job_category->job_category,
+            'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
+            'details' => $details,
+        ];
+
+        return view('forms.working_order.detail', $data);
     }
 }
