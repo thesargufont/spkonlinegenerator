@@ -96,7 +96,7 @@ class ApprovalController extends Controller
                 if ($item->status != '' || $item->status != null) {
                     return $item->status;
                 } else {
-                    return 'WAITING APPROVAL';
+                    return 'NOT APPROVE';
                 }
             })
             ->editColumn('approve_at', function ($item) {
