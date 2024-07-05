@@ -43,6 +43,7 @@
                             <label class="col-sm-2">KATEGORI WORK ORDER</label>
                             <div class="col-sm-6">
                                 <select class="form-control" name="wo_category" id="wo_category" onchange="getjobcategory()">
+                                    <option value="">PILIH SATU</option>
                                     @foreach($wo_category as $wo_category)
                                     <option value="{{$wo_category->wo_category}}">{{$wo_category->wo_category}}</option>
                                     @endforeach
@@ -75,7 +76,7 @@
                         <div class="form-group">
                             <label class="col-sm-2">TANGGAL EFEKTIF</label>
                             <div class="col-sm-2 input-group">
-                                <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date">
+                                <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date" value="{{$effective_date}}">
                                 <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
                             </div><!-- input-group -->
                         </div>
@@ -282,7 +283,9 @@
                         $('#form_result').html(data.message);
                     }
                     if (data.success) {
-                        $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html(data.message);
+                        }, 2500);
                         //Optionally, redirect to another page after success
                         setTimeout(function() {
                             window.location.href = "{{ route('form-input.working-order.index') }}";
@@ -364,6 +367,7 @@
                 if (data.success == true) {
                     $('#job_category').empty();
                     console.log(data.job_categories.length);
+                    $('#job_category').append('<option value="">PILIH SATU</option>');
                     $.each(data.job_categories, function(key, value) {
                         $('#job_category').append('<option value="' + value.id + '">' + value.job_category + '</option>');
                     });
@@ -413,6 +417,7 @@
                 if (data.success == true) {
                     console.log('getdevicemodel', data.devices);
                     $(device_model_id).empty();
+                    $(device_model_id).append('<option value="">PILIH SATU</option>');
                     $.each(data.devices, function(key, value) {
                         $(device_model_id).append('<option value="' + value.id + '">' + value.brand + '</option>');
                     });
@@ -485,6 +490,7 @@
                 if (data.success == true) {
                     console.log(data);
                     $(disturbance_category_id).empty();
+                    $(disturbance_category_id).append('<option value="">PILIH SATU</option>');
                     $.each(data.disturbances, function(key, value) {
                         console.log(value);
                         $(disturbance_category_id).append('<option value="' + value.id + '">' + value.disturbance_category + '</option>');

@@ -117,15 +117,17 @@ class WorkingOrderController extends Controller
     public function createNew()
     {
         $department_arr = Department::select('id', 'department', 'department_code')->where('active', 1)->get();
-        $wo_category_arr = Job::select('wo_category')->groupBy('wo_category')->get();
+        $wo_category_arr = Job::select('wo_category')->groupBy('wo_category')->orderBy('id')->get();
         $location_arr = Location::select('id', 'location', 'location_type')->where('active', 1)->where('end_effective', null)->get();
         $device_arr = Device::select('device_name')->where('active', 1)->where('end_effective', null)->groupBy('device_name')->get();
+        $effective_date = Carbon::now()->format('d/m/Y');
 
         $data = [
             'department' => $department_arr,
             'wo_category' => $wo_category_arr,
             'location' => $location_arr,
             'device' => $device_arr,
+            'effective_date' => $effective_date,
         ];
 
         return view('forms.working_order.form_input', $data);
@@ -423,8 +425,8 @@ class WorkingOrderController extends Controller
             ]);
             $spongeHeader->save();
 
-            $spongeDetails = [];
-            $spongeDetailHists = [];
+            // $spongeDetails = [];
+            // $spongeDetailHists = [];
             foreach ($request->details as $detail) {
                 $spongeDetail = new SpongeDetail([
                     'wo_number_id' => $spongeHeader->id,
@@ -435,41 +437,35 @@ class WorkingOrderController extends Controller
                     'wo_attachment1' => 'public/' . $newFilename1,
                     'wo_attachment2' => 'public/' . $newFilename2,
                     'wo_attachment3' => 'public/' . $newFilename3,
-                    'start_at' => $spongeHeader->effective_date,
-                    'estimated_end' => $spongeHeader->effective_date,
+                    'start_at' => NULL,
+                    'estimated_end' => NULL,
                     'created_by'              => Auth::user()->id,
                     'created_at'              => Carbon::now(),
                     'updated_by'              => Auth::user()->id,
                     'updated_at'              => Carbon::now(),
                 ]);
-                $spongeDetails[] = $spongeDetail;
-                // $spongeDetailHist = new SpongeDetailHist([
-                //     'sponge_detail_id' => $spongeDetail->id,
-                //     'wo_number_id' => $spongeHeader->id,
-                //     'reporter_location' => Location::find($detail['location'])->location,
-                //     'device_id' => $detail['device'],
-                //     'disturbance_category' => $detail['disturbance_category'],
-                //     'wo_decription' => $detail['description'],
-                //     'wo_attachment1' => 'public/' . $newFilename1,
-                //     'wo_attachment2' => 'public/' . $newFilename2,
-                //     'wo_attachment3' => 'public/' . $newFilename3,
-                //     'start_at' => $spongeHeader->effective_date,
-                //     'estimated_end' => $spongeHeader->effective_date,
-                //     'action' => 'CREATE',
-                //     'created_by'              => Auth::user()->id,
-                //     'created_at'              => Carbon::now(),
-                //     'updated_by'              => Auth::user()->id,
-                //     'updated_at'              => Carbon::now(),
-                // ]);
-                // $spongeDetailHists[] = $spongeDetailHist;
-            }
+                $spongeDetail->save();
 
-            foreach ($spongeDetails as $insert) {
-                $insert->save();
+                $spongeDetailHist = new SpongeDetailHist([
+                    'sponge_detail_id' => $spongeDetail->id,
+                    'wo_number_id' => $spongeHeader->id,
+                    'reporter_location' => Location::find($detail['location'])->location,
+                    'device_id' => $detail['device'],
+                    'disturbance_category' => $detail['disturbance_category'],
+                    'wo_decription' => $detail['description'],
+                    'wo_attachment1' => 'public/' . $newFilename1,
+                    'wo_attachment2' => 'public/' . $newFilename2,
+                    'wo_attachment3' => 'public/' . $newFilename3,
+                    'start_at' => $spongeHeader->effective_date,
+                    'estimated_end' => $spongeHeader->effective_date,
+                    'action' => 'CREATE',
+                    'created_by'              => Auth::user()->id,
+                    'created_at'              => Carbon::now(),
+                    'updated_by'              => Auth::user()->id,
+                    'updated_at'              => Carbon::now(),
+                ]);
+                $spongeDetailHist->save();
             }
-            // foreach ($spongeDetailHists as $insert) {
-            //     $insert->save();
-            // }
 
             DB::commit();
 
