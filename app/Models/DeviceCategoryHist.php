@@ -4,21 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DeviceHist extends Model
+class DeviceCategoryHist extends Model
 {
-    protected $table = "device_hists";
+    protected $table = "device_category_hists";
     public $timestamps = false;
     protected $fillable = [
         'id',
-        'device_id',
-        'device_name',
-        'device_description',
-        'brand',
-        'location_id',
-        'department_id',
         'device_category_id',
-        'serial_number',
-        'eq_id',
+        'device_category',
+        'disturbance_category',
         'active',
         'start_effective',
         'end_effective',

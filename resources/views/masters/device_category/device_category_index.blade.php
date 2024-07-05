@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Data Lokasi</h4>
+<h4 class="pull-left page-title">Data Kategori Peralatan</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Data Lokasi</li>
+    <li class="active">Data Kategori Peralatan</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -15,7 +15,7 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
-                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/location/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
+                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/device-category/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
                 {{-- <button type="button" name="download" id="btn_download_xlsx" class="btn btn-secondary"><i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}</button>
                 <button disabled type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button> --}}
             </div>
@@ -27,41 +27,40 @@
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
                     <div class="panel-body">
-                        {{-- NAMA LOKASI --}}
+                        {{-- KATEGORI ALAT --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NAMA LOKASI</label>
+                            <label class="col-md-2">KATEGORI ALAT</label>
                             <div class="col-md-6">
-                                <input maxlength="50" id="location_name" type="text" class="text-uppercase form-control" name="location_name" title="NAMA LOKASI" placeholder="NAMA LOKASI">
-                                <input name="location_name_id" id="location_name_id" type="hidden"/>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- BASECAMP --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">BASECAMP</label>
-                            <div class="col-md-6">
-                                <select title="BASECAMP" id="basecamp" class="form-control">
-                                    <option value="" selected>SEMUA BASECAMP</option>
-                                    @foreach ($basecamps as $item)
-                                        <option value={{ $item->id }}>{{ $item->basecamp }}</option>
+                                <select title="KATEGORI ALAT" id="device_category" class="form-control">
+                                    <option value="" selected>SEMUA KATEGORI ALAT</option>
+                                    @foreach ($deviceCategories as $item)
+                                        <option value={{ $item->device_category }}>{{ $item->device_category }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                         <br>
 
-                        {{-- STATUS --}}
+                        {{-- KATEGORI GANGGUAN --}}
                         <div class="row mb-2">
-                            <label class="col-sm-2">STATUS</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="status" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
+                            <label class="col-md-2">KATEGORI GANGGUAN</label>
+                            <div class="col-md-6">
+                                <input maxlength="50" id="disturbance_category" type="text" class="text-uppercase form-control" name="disturbance_category" title="KATEGORI GANGGUAN" placeholder="KATEGORI GANGGUAN">
+                                <input name="disturbance_category_id" id="disturbance_category_id" type="hidden"/>
                             </div>
                         </div>
                         <br>
+
+                        {{-- STATUS --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">STATUS</label>
+                            <div class="col-md-6">
+                                <select title="STATUS" id="status" class="form-control">
+                                    <option value="1" selected>AKTIF</option>
+                                    <option value="0">TIDAK AKTIF</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <br>
                         <br>
@@ -79,20 +78,16 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Data Bagian</h3>
+                    <h3 class="panel-title">Data Kategori Peralatan</h3>
                 </div>
                 <div class="panel-body">
                     <span id="form_result"></span>
                     <table  id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                         <thead>
                             <tr>
-                                <th>Action</th>
-                                <th>Lokasi</th>
-                                <th>Deskripsi</th>
-                                <th>Tipe Lokasi</th>
-                                <th>Basecamp</th>
+                                <th>Kategori Alat</th>
+                                <th>Kategori Gangguan</th>
                                 <th>Status</th>
-                                <th>Alamat</th>
                                 <th>Start Effective</th>
                                 <th>End Effective</th>
                                 <th>Dibuat Oleh</th>
@@ -139,31 +134,28 @@
                 infoEmpty:      ""
             },
             ajax: {
-                'url': '{!! route('masters/location/dashboard-data') !!}',
+                'url': '{!! route('masters/device-category/dashboard-data') !!}',
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
                 },
                 'data': function (d) {
-                    d.location_name = $('#location_name').val();
-                    d.basecamp      = $('#basecamp').val();
-                    d.status        = $('#status').val();
+                    d.device_category      = $('#device_category').val();
+                    d.disturbance_category = $('#disturbance_category').val();
+                    d.status               = $('#status').val();
                 }
             },
             columns: [
                 { data: 'action', name: 'action', orderable: false, searchable: false}, 
-                { data : 'location' ,                name :  'location'              },
-                { data : 'location_description' ,    name :  'location_description'  },
-                { data : 'location_type' ,           name :  'location_type'         },
-                { data : 'basecamp' ,                name :  'basecamp'              },
-                { data : 'active' ,                  name :  'active'                },
-                { data : 'address' ,                 name :  'address'               },
-                { data : 'start_effective' ,         name :  'start_effective'       },
-                { data : 'end_effective' ,           name :  'end_effective'         },
-                { data : 'created_by' ,              name :  'created_by',           },
-                { data : 'created_at' ,              name :  'created_at',           },
-                { data : 'updated_by' ,              name :  'updated_by',           },
-                { data : 'updated_at' ,              name :  'updated_at',           },
+                { data : 'device_category' ,       name :  'device_category'         },
+                { data : 'disturbance_category' ,  name :  'disturbance_category'    },
+                { data : 'active' ,                 name :  'active'                 },
+                { data : 'start_effective' ,        name :  'start_effective'        },
+                { data : 'end_effective' ,          name :  'end_effective'          },
+                { data : 'created_by' ,             name :  'created_by',            },
+                { data : 'created_at' ,             name :  'created_at',            },
+                { data : 'updated_by' ,             name :  'updated_by',            },
+                { data : 'updated_at' ,             name :  'updated_at',            },
             ],
             // order: [[ 2, "desc" ]],
             rowCallback: function( row, data, iDisplayIndex ) {
@@ -198,7 +190,7 @@
 
         artLoadingDialogDo("Please wait, we process your request..",function(){
             $.ajax({
-                url : '{!! route('masters/location/delete-data') !!}',
+                url : '{!! route('masters/device-category/delete-data') !!}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{!!csrf_token()!!}'
@@ -236,7 +228,7 @@
     }
 
     function showItem(id) {
-        location.replace('{{ url('masters/location/detail-data') }}/' + id);
+        location.replace('{{ url('masters/device-category/detail-data') }}/' + id);
     }
 </script>
 @endsection

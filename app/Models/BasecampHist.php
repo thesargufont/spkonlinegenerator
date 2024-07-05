@@ -4,18 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class JobHist extends Model
+class BasecampHist extends Model
 {
-
-    protected $table = "job_hists";
+    protected $table = "basecamp_hists";
     public $timestamps = false;
     protected $fillable = [
         'id',
-        'job_category_id',
-        'department_id',
-        'wo_category',
-        'job_category',
-        'job_description',
+        'basecamp_id',
+        'basecamp',
+        'basecamp_description',
         'active',
         'start_effective',
         'end_effective',

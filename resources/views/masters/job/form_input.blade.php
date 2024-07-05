@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Tambah Data Lokasi</h4>
+<h4 class="pull-left page-title">Tambah Data Pekerjaan</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Tambah Data Lokasi</li>
+    <li class="active">Tambah Data Pekerjaan</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -25,60 +25,55 @@
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Form Data Bagian</h3>
+                        <h3 class="panel-title">Form Data Pekerjaan</h3>
                     </div>
                     <div class="panel-body">
                         <span id="form_result"></span>
-                        {{-- NAMA LOKASI --}}
+                        {{-- WO KATEGORI --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NAMA LOKASI *</label>
+                            <label class="col-md-2">KATEGORI WO *</label>
                             <div class="col-md-6">
-                                <input maxlength="50" required id="location_name" type="text" class="text-uppercase form-control" name="location_name" title="NAMA LOKASI" placeholder="NAMA LOKASI">
+                                <select title="KATEGORI WO" id="wo_category" class="form-control">
+                                    <option value="" selected>PILIH SATU</option>
+                                    <option value="PEKERJAAN" selected>PEKERJAAN</option>
+                                    <option value="LAPORAN GANGGUAN" selected>LAPORAN GANGGUAN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+
+                        {{-- JOB KATEGORY --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">KATEGORI PEKERJAAN *</label>
+                            <div class="col-md-6">
+                                <input maxlength="50" required id="job_category" type="text" class="text-uppercase form-control" name="job_category" title="KATEGORI PEKERJAAN" placeholder="KATEGORI PEKERJAAN">
                             </div>
                         </div>
                         <br>
 
                         {{-- DESKRIPSI --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">DESKRIPSI *</label>
+                            <label class="col-md-2">DESKRIPSI</label>
                             <div class="col-md-6">
                                 <textarea maxlength="100" required class="form-control" rows="5" id="description" type="text" class="text-uppercase form-control" name="description" title="DESKRIPSI" placeholder="DESKRIPSI"></textarea>
                             </div>
                         </div>
                         <br>
 
-                        {{-- TIPE LOKASI --}}
+                        {{-- DEPARTEMEN --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">TIPE LOKASI</label>
+                            <label class="col-md-2">DEPARTEMEN *</label>
                             <div class="col-md-6">
-                                <input maxlength="50" required id="location_type" type="text" class="text-uppercase form-control" name="location_type" title="TIPE LOKASI" placeholder="TIPE LOKASI">
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- BASECAMP --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">BASECAMP *</label>
-                            <div class="col-md-6">
-                                <select title="BASECAMP" id="basecamp" class="form-control">
+                                <select title="DEPARTEMEN" id="department" class="form-control">
                                     <option value="" selected>PILIH SATU</option>
-                                    @foreach ($basecamps as $item)
-                                        <option value={{ $item->id }}>{{ $item->basecamp }}</option>
+                                    @foreach ($departments as $item)
+                                        <option value={{ $item->id }}>{{ $item->department_code }} - {{ $item->department }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                         <br>
-
-                        {{-- ADDRESS --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">ALAMAT</label>
-                            <div class="col-md-6">
-                                <textarea maxlength="255" required class="form-control" rows="5" id="addresss" type="text" class="text-uppercase form-control" name="addresss" title="ALAMAT" placeholder="ALAMAT"></textarea>
-                            </div>
-                        </div>
                         <br>
-
                     </div> <!-- panel-body -->
                 </div> <!-- panel -->
             </form>
@@ -86,38 +81,28 @@
     </div>
 </div>
 
-<!-- Plugins js -->
-{{-- <script src="{{ asset('plugins/timepicker/bootstrap-timepicker.js') }}"></script>
-<script src="{{ asset('plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js') }}"></script>
-<script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
-<script src="{{ asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js" type="text/javascript') }}"></script>
-<script src="{{ asset('pages/form-advanced.js') }}"></script>
-<script src="{{ asset('js/app.js') }}"></script> --}}
-
 <script>
     function doSave(){
         $('#form_result').html('');
 
-        var location_name = $('#location_name').val();
-        var description   = $('#description').val();
-        var location_type = $('#location_type').val();
-        var basecamp      = $('#basecamp').val();
-        var addresss      = $('#addresss').val();
+        var wo_category  = $('#wo_category').val();
+        var job_category = $('#job_category').val();
+        var description  = $('#description').val();
+        var department   = $('#department').val();
         
         artLoadingDialogDo("Please wait, we process your request..",function(){
             $.ajax({
-                url : '{!! route('masters/location/create-new/create') !!}',
+                url : '{!! route('masters/job/create-new/create') !!}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{!!csrf_token()!!}'
                 },
                 dataType:"json",
                 data: {
-                    'location_name'   : location_name,
-                    'description'     : description,
-                    'location_type'   : location_type,
-                    'basecamp'        : basecamp,
-                    'addresss'        : addresss,
+                    'wo_category'  : wo_category,
+                    'job_category' : job_category,
+                    'description'  : description,
+                    'department'   : department,
                 },
                 success: function(data){
                     artLoadingDialogClose();
@@ -128,13 +113,11 @@
                     if(data.success) 
                     {
                         $('#form_result').html(data.message);
-                        $('#location_name').val('');
+                        $('#wo_category').val('');
+                        $('#job_category').val('');
                         $('#description').val('');
-                        $('#location_type').val('');
-                        $('#location_type').val('');
-                        $('#basecamp').val('');
-                        $('#addresss').val('');
-                        setTimeout(function(){ window.location.href = '{{url('masters/location/index')}}'; }, 1500);
+                        $('#department').val('');
+                        setTimeout(function(){ window.location.href = '{{url('masters/job/index')}}'; }, 1500);
                     }  
                 },
                 error: function(data) {
@@ -158,7 +141,7 @@
     }
 
     function doBack(){
-        setTimeout(function(){ window.location.href = '{{url('masters/location/index')}}'; }, 100);
+        setTimeout(function(){ window.location.href = '{{url('masters/job/index')}}'; }, 100);
     }
 </script>
 

@@ -16,8 +16,8 @@
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
                 <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/department/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
-                <button type="button" name="download" id="btn_download_xlsx" class="btn btn-secondary"><i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}</button>
-                <button type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button>
+                {{-- <button type="button" name="download" id="btn_download_xlsx" class="btn btn-secondary"><i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}</button>
+                <button type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button> --}}
             </div>
         </div>
     </div>
@@ -67,12 +67,14 @@
                     <h3 class="panel-title">Data Bagian</h3>
                 </div>
                 <div class="panel-body">
+                    <span id="form_result"></span>
                     <table  id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Action</th>
                                 <th>Departemen</th>
                                 <th>Deskripsi</th>
+                                <th>Kode</th>
                                 <th>Status</th>
                                 <th>Start Effective</th>
                                 <th>End Effective</th>
@@ -134,6 +136,7 @@
                 { data: 'action', name: 'action', orderable: false, searchable: false}, 
                 { data : 'department' ,               name :  'department'               },
                 { data : 'department_description' ,   name :  'department_description'   },
+                { data : 'department_code' ,          name :  'department_code'          },
                 { data : 'active' ,                   name :  'active'                   },
                 { data : 'start_effective' ,          name :  'start_effective'          },
                 { data : 'end_effective' ,            name :  'end_effective'            },
@@ -169,6 +172,52 @@
     $('#btn_upload_xlsx').click(function() {
         location.replace('{{ url('masters/department/import-excel') }}');
     });
+
+    function deleteItem(id) {
+        $('#form_result').html('');
+
+        artLoadingDialogDo("Please wait, we process your request..",function(){
+            $.ajax({
+                url : '{!! route('masters/department/delete-data') !!}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{!!csrf_token()!!}'
+                },
+                dataType:"json",
+                data: {
+                    'id': id,
+                },
+                success: function(data){
+                    artLoadingDialogClose();
+                    if(data.success) {
+                        $('#form_result').html(data.message);
+                        $('#main-table').DataTable().ajax.reload();
+
+                    } else {
+                        $('#form_result').html(data.message);
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                    if (data.responseJSON.message) {
+                        var target = data.responseJSON.errors;
+                        for (var k in target) {
+                            if (!Array.isArray(target[k]['0'])) {
+                                var msg = target[k]['0'];
+                                artCreateFlashMsg(msg, "danger", true);
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function showItem(id) {
+        location.replace('{{ url('masters/department/detail-data') }}/' + id);
+    }
 </script>
 @endsection
 

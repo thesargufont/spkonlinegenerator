@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Basecamp;
 
 class Location extends Model
 {
@@ -12,6 +13,7 @@ class Location extends Model
         'location',
         'location_description',
         'location_type',
+        'basecamp_id',
         'address',
         'code',
         'sub_district',
@@ -41,6 +43,11 @@ class Location extends Model
     public function updatedBy()
     {
         return $this->belongsTo('App\User', 'updated_by');
+    }
+
+    public function basecamp()
+    {
+        return $this->belongsTo('App\Models\Basecamp', 'basecamp_id');
     }
 }
 

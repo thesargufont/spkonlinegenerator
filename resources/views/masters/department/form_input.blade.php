@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Tambah Data Bagian</h4>
+<h4 class="pull-left page-title">Tambah Data Departemen</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Tambah Data Bagian</li>
+    <li class="active">Tambah Data Departemen</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -25,17 +25,27 @@
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Form Data Bagian</h3>
+                        <h3 class="panel-title">Form Data Departemen</h3>
                     </div>
                     <div class="panel-body">
                         <span id="form_result"></span>
-                        {{-- NAMA BAGIAN --}}
+                        {{-- NAMA DEPARTEMEN --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NAMA BAGIAN *</label>
+                            <label class="col-md-2">NAMA DEPARTEMEN *</label>
                             <div class="col-md-6">
-                                <input required id="department_name" type="text" class="text-uppercase form-control" name="department_name" title="NAMA BAGIAN" placeholder="NAMA BAGIAN">
+                                <input required id="department_name" type="text" class="text-uppercase form-control" name="department_name" title="NAMA DEPARTEMEN" placeholder="NAMA DEPARTEMEN">
                             </div>
                             <small class="text-danger" id="department_name_error"></small>
+                        </div>
+                        <br>
+
+                        {{-- KODE DEPARTEMEN --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">KODE DEPARTEMEN *</label>
+                            <div class="col-md-6">
+                                <input required maxlength="3" id="department_code" type="text" class="text-uppercase form-control" name="department_code" title="KODE DEPARTEMEN" placeholder="KODE DEPARTEMEN">
+                            </div>
+                            <small class="text-danger" id="department_code_error"></small>
                         </div>
                         <br>
 
@@ -114,46 +124,52 @@
         $('#form_result').html('');
 
         var department_name = $('#department_name').val();
+        var department_code = $('#department_code').val();
         var description = $('#description').val();
 
-        $.ajax({
-            url: "{!! route('masters/department/create-new/create') !!}",
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{!!csrf_token()!!}'
-            },
-            dataType: "json",
-            data: {
-                'department_name': department_name,
-                'description': description,
-            },
-            success: function(data) {
-                if (data.errors) {
-                    $('#form_result').html(data.message);
-                }
-                if (data.success) {
-                    $('#form_result').html(data.message);
-                    $('#department_name').val('');
-                    $('#description').val('');
-                    setTimeout(function() {
-                        window.location.href = "{{url('masters/department/index')}}";
-                    }, 1500);
-                }
-            },
-            error: function(data) {
-                console.log(data);
-                html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                $('#form_result').html(html);
-                if (data.responseJSON.message) {
-                    var target = data.responseJSON.errors;
-                    for (var k in target) {
-                        if (!Array.isArray(target[k]['0'])) {
-                            var msg = target[k]['0'];
-                            artCreateFlashMsg(msg, "danger", true);
+        artLoadingDialogDo("Please wait, we process your request..",function(){
+            $.ajax({
+                url: "{!! route('masters/department/create-new/create') !!}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{!!csrf_token()!!}'
+                },
+                dataType: "json",
+                data: {
+                    'department_name': department_name,
+                    'department_code': department_code,
+                    'description': description,
+                },
+                success: function(data) {
+                    artLoadingDialogClose();
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                    }
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        $('#department_name').val('');
+                        $('#department_code').val('');
+                        $('#description').val('');
+                        setTimeout(function() {
+                            window.location.href = "{{url('masters/department/index')}}";
+                        }, 1500);
+                    }
+                },
+                error: function(data) {
+                    artLoadingDialogClose();
+                    html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                    if (data.responseJSON.message) {
+                        var target = data.responseJSON.errors;
+                        for (var k in target) {
+                            if (!Array.isArray(target[k]['0'])) {
+                                var msg = target[k]['0'];
+                                artCreateFlashMsg(msg, "danger", true);
+                            }
                         }
                     }
                 }
-            }
+            });
         });
         return false;
     }
