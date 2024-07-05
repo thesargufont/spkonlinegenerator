@@ -383,11 +383,11 @@ class ApprovalController extends Controller
         $month =  $now->month;
 
         //get user department
-        $dept_id = Auth::user()->department_id;
-        $dept_code = Department::where('id', $dept_id)->first()->department_code;
+        $dept_code = substr($spongeheader->department, 0, 3);
 
+        //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
         //get number
-        $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
+        $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
         $number = 0;
         if ($cek_number) {
             $number = intval(substr($cek_number->spk_number, 0, 5));

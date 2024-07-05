@@ -418,6 +418,7 @@ class WorkingOrderController extends Controller
                 'job_category' => $request->job_category ? $request->job_category : '',
                 'department' => Department::find($request->department)->department,
                 'effective_date' => Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta'),
+                'status' => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
                 'created_by'              => Auth::user()->id,
                 'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
                 'updated_by'              => Auth::user()->id,
@@ -452,7 +453,7 @@ class WorkingOrderController extends Controller
                     'reporter_location' => Location::find($detail['location'])->location,
                     'device_id' => $detail['device'],
                     'disturbance_category' => $detail['disturbance_category'],
-                    'wo_decription' => $detail['description'],
+                    'wo_description' => $detail['description'],
                     'wo_attachment1' => 'public/' . $newFilename1,
                     'wo_attachment2' => 'public/' . $newFilename2,
                     'wo_attachment3' => 'public/' . $newFilename3,
@@ -491,11 +492,38 @@ class WorkingOrderController extends Controller
         }
     }
 
-    public function detail($id)
+    public function checkDetail($id)
     {
         $spongeheader = SpongeHeader::find($id);
+        if (!$spongeheader) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger"> Server Error : Data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>'
+            ]);
+        }
         $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
-        $job_category = Job::find($spongeheader->job_category);
+        if (empty($spongedetails->toArray())) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger"> Server Error : Detail data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function detail($id)
+    {
+        $id = 50;
+        $spongeheader = SpongeHeader::find($id);
+        if (!$spongeheader) {
+            return back()->with('status', '<div class="alert alert-success"> Data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>');;
+        }
+        // dd($spongeheader);
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        $job_category = $spongeheader->job_category;
 
         $details = [];
         $index = 1;
@@ -522,7 +550,7 @@ class WorkingOrderController extends Controller
             'wo_number' => $spongeheader->wo_number,
             'wo_category' => $spongeheader->wo_type,
             'department' => $spongeheader->department,
-            'job_category' => $job_category->job_category,
+            'job_category' => $job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'details' => $details,
         ];

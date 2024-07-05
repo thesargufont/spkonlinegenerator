@@ -133,6 +133,7 @@
                             </div>
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][location]" id="details${detailIndex}location" onchange="getdevicemodel(${detailIndex})">
+                                    <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($location as $location)
                                         <option value="{{$location->id}}">{{$location->location}} - {{$location->location_type}}</option>
                                     @endforeach
@@ -175,7 +176,7 @@
                                 <label>MODEL ALAT</label>
                             </div>
                             <div>
-                                <select class="form-control" name="details[${detailIndex}][device_model]" id="details${detailIndex}device_model" onchange="getdevicecode(${detailIndex})">
+                                <select class="form-control" name="details[${detailIndex}][device_model]" id="details${detailIndex}device_model" onchange="getdevicecode(${detailIndex})" disabled>
                                 </select>
                             </div>
                         </div>
@@ -369,9 +370,9 @@
                 if (data.success == true) {
                     $('#job_category').empty();
                     console.log(data.job_categories.length);
-                    $('#job_category').append('<option value="">PILIH SATU</option>');
+                    $('#job_category').append('<option value="" selected disabled hidden>PILIH SATU</option>');
                     $.each(data.job_categories, function(key, value) {
-                        $('#job_category').append('<option value="' + value.id + '">' + value.job_category + '</option>');
+                        $('#job_category').append('<option value="' + value.job_category + '">' + value.job_category + '</option>');
                     });
                     if (data.job_categories.length == 1) {
                         console.log(1);
@@ -419,10 +420,15 @@
                 if (data.success == true) {
                     console.log('getdevicemodel', data.devices);
                     $(device_model_id).empty();
-                    $(device_model_id).append('<option value="">PILIH SATU</option>');
-                    $.each(data.devices, function(key, value) {
-                        $(device_model_id).append('<option value="' + value.id + '">' + value.brand + '</option>');
-                    });
+                    $(device_model_id).append('<option value="" selected disabled hidden>PILIH SATU</option>');
+                    if (data.devices == null) {
+                        $(device_model_id).prop("disabled", true);
+                    } else {
+                        $(device_model_id).prop("disabled", false);
+                        $.each(data.devices, function(key, value) {
+                            $(device_model_id).append('<option value="' + value.id + '">' + value.brand + '</option>');
+                        });
+                    }
                     document.getElementById(device_code_id).value = '';
                     $(disturbance_category_id).empty();
                 } else {
@@ -492,7 +498,7 @@
                 if (data.success == true) {
                     console.log(data);
                     $(disturbance_category_id).empty();
-                    $(disturbance_category_id).append('<option value="">PILIH SATU</option>');
+                    $(disturbance_category_id).append('<option value="" selected disabled hidden>PILIH SATU</option>');
                     $.each(data.disturbances, function(key, value) {
                         console.log(value);
                         $(disturbance_category_id).append('<option value="' + value.id + '">' + value.disturbance_category + '</option>');
