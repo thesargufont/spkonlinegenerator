@@ -43,7 +43,7 @@
                             <label class="col-sm-2">KATEGORI WORK ORDER</label>
                             <div class="col-sm-6">
                                 <select class="form-control" name="wo_category" id="wo_category" onchange="getjobcategory()">
-                                    <option value="">PILIH SATU</option>
+                                    <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($wo_category as $wo_category)
                                     <option value="{{$wo_category->wo_category}}">{{$wo_category->wo_category}}</option>
                                     @endforeach
@@ -163,6 +163,7 @@
                             </div>
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][device]" id="details${detailIndex}device" onchange="getdevicemodel(${detailIndex})">
+                                    <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($device as $device)
                                         <option value="{{$device->device_name}}">{{$device->device_name}}</option>
                                     @endforeach
@@ -281,11 +282,12 @@
                 success: function(data) {
                     if (data.errors) {
                         $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 5000);
                     }
                     if (data.success) {
-                        setTimeout(function() {
-                            $('#form_result').html(data.message);
-                        }, 2500);
+                        $('#form_result').html(data.message);
                         //Optionally, redirect to another page after success
                         setTimeout(function() {
                             window.location.href = "{{ route('form-input.working-order.index') }}";
