@@ -32,7 +32,7 @@ class ApprovalController extends Controller
     public function getData($request, $isExcel = '')
     {
         $user = Auth::user()->id;
-        $spongeheader = SpongeHeader::where('status', '!=', 'NOT APPROVE')->where('wo_number', 'like', '%' . $request->wo_number . '%');
+        $spongeheader = SpongeHeader::where('status', '!=', 'DONE')->where('wo_number', 'like', '%' . $request->wo_number . '%');
 
         return $spongeheader;
     }
@@ -53,18 +53,18 @@ class ApprovalController extends Controller
             $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\"title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
             return $txt;
         })
-            ->editColumn('job_category', function ($item) {
-                $job_category = Job::where('id', $item->job_category)->first();
-                if ($job_category) {
-                    if ($job_category->$job_category != '' || $job_category->$job_category != null) {
-                        return $job_category->job_category;
-                    } else {
-                        return '-';
-                    }
-                } else {
-                    return '-';
-                }
-            })
+            // ->editColumn('job_category', function ($item) {
+            //     $job_category = Job::where('id', $item->job_category)->first();
+            //     if ($job_category) {
+            //         if ($job_category->$job_category != '' || $job_category->$job_category != null) {
+            //             return $job_category->job_category;
+            //         } else {
+            //             return '-';
+            //         }
+            //     } else {
+            //         return '-';
+            //     }
+            // })
             ->editColumn('created_by', function ($item) {
                 $cek = User::find($item->created_by);
                 if ($cek) {
@@ -228,6 +228,26 @@ class ApprovalController extends Controller
                 $spongeDetail->start_at = Carbon::createFromFormat('d/m/Y', $detail['start_at']);
                 $spongeDetail->estimated_end = Carbon::createFromFormat('d/m/Y', $detail['estimated_end']);
                 $spongeDetail->save();
+
+                $spongeDetailHist = new SpongeDetailHist([
+                    'sponge_detail_id' => $spongeDetail->id,
+                    'wo_number_id' => $spongeDetail->wo_number_id,
+                    'reporter_location' => $spongeDetail->reporter_location,
+                    'device_id' => $spongeDetail->device_id,
+                    'disturbance_category' => $spongeDetail->disturbance_category,
+                    'wo_description' => $spongeDetail->wo_description,
+                    'wo_attachment1' => $spongeDetail->wo_attachment1,
+                    'wo_attachment2' => $spongeDetail->wo_attachment2,
+                    'wo_attachment3' => $spongeDetail->wo_attachment3,
+                    'start_at' => $spongeDetail->start_at,
+                    'estimated_end' => $spongeDetail->estimated_end,
+                    'action' => 'UPDATE',
+                    'created_by'              => Auth::user()->id,
+                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                    'updated_by'              => Auth::user()->id,
+                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                ]);
+                $spongeDetailHist->save();
             }
 
             DB::commit();
@@ -330,12 +350,11 @@ class ApprovalController extends Controller
     {
         $spongeheader = SpongeHeader::find($id);
         $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
-        $job_category = Job::find($spongeheader->job_category);
 
         $get_engineers = Role::where('role', 'ENGINEER')->where('active', 1)->pluck('user_id')->toArray();
         $engineers = [];
         foreach ($get_engineers as $id) {
-            $engineer = User::find($id);
+            $engineer = User::where('id', $id)->where('active', 1)->first();
             if ($engineer) {
                 $engineers[] = [
                     'id' => $engineer->id,
@@ -347,7 +366,7 @@ class ApprovalController extends Controller
         $get_spvs = Role::where('role', 'SPV')->where('active', 1)->pluck('id')->toArray();
         $spvs = [];
         foreach ($get_spvs as $id) {
-            $spv = User::find($id);
+            $spv = User::where('id', $id)->where('active', 1)->first();
             if ($spv) {
                 $spvs[] = [
                     'id' => $spv->id,
@@ -407,7 +426,7 @@ class ApprovalController extends Controller
             'wo_number' => $spongeheader->wo_number,
             'wo_category' => $spongeheader->wo_type,
             'department' => $spongeheader->department,
-            'job_category' => $job_category->job_category,
+            'job_category' => $spongeheader->job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'engineers' => $engineers,
             'spvs' => $spvs,

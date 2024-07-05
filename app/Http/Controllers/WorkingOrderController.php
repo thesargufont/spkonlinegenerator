@@ -168,7 +168,7 @@ class WorkingOrderController extends Controller
     public function getJobCategory(Request $request)
     {
         try {
-            $job_categories = Job::select('id', 'job_category')->where('wo_category', $request->wo_category)->where('department_id', $request->department)->get();
+            $job_categories = Job::select('id', 'job_category')->where('wo_category', $request->wo_category)->where('department_id', $request->department)->orderBy('id')->get();
 
             return response()->json(['success' => true, 'message' => '', 'job_categories' => $job_categories]);
         } catch (\Exception $e) {
@@ -457,8 +457,8 @@ class WorkingOrderController extends Controller
                     'wo_attachment1' => 'public/' . $newFilename1,
                     'wo_attachment2' => 'public/' . $newFilename2,
                     'wo_attachment3' => 'public/' . $newFilename3,
-                    'start_at' => $spongeHeader->effective_date,
-                    'estimated_end' => $spongeHeader->effective_date,
+                    'start_at' => NULL,
+                    'estimated_end' => NULL,
                     'action' => 'CREATE',
                     'created_by'              => Auth::user()->id,
                     'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
