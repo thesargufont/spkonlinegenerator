@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Exception;
 use Carbon\Carbon;
+use App\Models\Basecamp;
 use App\Models\Location;
 use App\Models\LocationHist;
 use Illuminate\Http\Request;
@@ -18,7 +19,11 @@ class LocationController extends Controller
 {
     public function index()
     {
-        return view('masters.location.location_index');
+        $basecamps = Basecamp::where('active', 1)->get();
+
+        return view('masters.location.location_index', [
+            'basecamps' => $basecamps,
+        ]);
     }
 
     public function getData($request,$isExcel='')
@@ -28,18 +33,25 @@ class LocationController extends Controller
         {
             session([
                     'department'.'.location_name' => $request->has('location_name')?  $request->input('location_name') : '',
+                    'department'.'.basecamp' => $request->has('basecamp')?  $request->input('basecamp'): '', 
                     'department'.'.status' => $request->has('status')?  $request->input('status'): '', 
             ]);
         } 
 
         $location_name  = session('department'.'.location_name')!=''?session('department'.'.location_name'):'';
+        $basecamp       = session('department'.'.basecamp')!=''?session('department'.'.basecamp'):'';
         $status         = session('department'.'.status')!=''?session('department'.'.status'):'';
 
         $location_name  = strtoupper($location_name);
+        $basecamp       = strtoupper($basecamp);
         $status         = strtoupper($status);
 
         $locationDatas = Location::where('active', $status);
         
+        if($basecamp != ''){
+            $locationDatas = $locationDatas->where('basecamp_id', $basecamp);
+        }
+
         if($location_name != ''){
             $locationDatas = $locationDatas->where('location', $location_name);
         }
@@ -71,6 +83,9 @@ class LocationController extends Controller
                 return 'TIDAK AKTIF';
             }
         })
+        ->addColumn('basecamp', function ($item) {
+            return optional($item->basecamp)->basecamp;    
+        })
         ->editColumn('start_effective', function ($item) {
             return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
         })
@@ -99,7 +114,11 @@ class LocationController extends Controller
 
     public function createNew()
     {
-        return view('masters.location.form_input');
+        $basecamps = Basecamp::where('active', 1)->get();
+
+        return view('masters.location.form_input', [
+            'basecamps' => $basecamps,
+        ]);
     }
 
     public function submitData(Request $request)
@@ -107,6 +126,7 @@ class LocationController extends Controller
         $locationtName  = strtoupper($request->location_name);
         $description    = strtoupper($request->description);
         $locationType   = strtoupper($request->location_type);
+        $basecamp       = strtoupper($request->basecamp);
         $addresss       = strtoupper($request->addresss);
 
         if($locationtName == ''){
@@ -118,6 +138,12 @@ class LocationController extends Controller
         if($description == ''){
             return response()->json(['errors' => true, 
                             "message"=> '<div class="alert alert-danger">Deskripsi wajib terisi, harap periksa kembali formulir pengisian data</div>'
+                    ]);    
+        }
+
+        if($basecamp == ''){
+            return response()->json(['errors' => true, 
+                            "message"=> '<div class="alert alert-danger">Basecamp wajib terisi, harap periksa kembali formulir pengisian data</div>'
                     ]);    
         }
 
@@ -139,6 +165,7 @@ class LocationController extends Controller
                 'location'                => $locationtName, 
                 'location_description'    => $description,
                 'location_type'           => $locationType,
+                'basecamp_id'             => $basecamp,
                 'address'                 => $addresss,
                 'code'                    => '',
                 'sub_district'            => '',
@@ -161,6 +188,7 @@ class LocationController extends Controller
                 'location'                => $insertLocation->location,
                 'location_description'    => $insertLocation->location_description,
                 'location_type'           => $insertLocation->location_type,
+                'basecamp_id'             => $insertLocation->basecamp_id,
                 'address'                 => $insertLocation->address,
                 'code'                    => $insertLocation->code,
                 'sub_district'            => $insertLocation->sub_district,
@@ -193,5 +221,101 @@ class LocationController extends Controller
     {
         $datas = $this->getData(null, 'excel');
         return Excel::download(new LocationExport($datas), 'LocationMaster.xlsx');
+    }
+
+    public function deleteData(Request $request)
+    {
+        $location = Location::where('id', $request->id)->first();
+        
+        try {
+            DB::beginTransaction();
+            if($location){
+                $location->active         = 0;
+                $location->end_effective  = Carbon::now();
+                $location->updated_by     = Auth::user()->id;
+                $location->updated_at     = Carbon::now();
+                $location->save();
+
+                $insertLocationHist = new LocationHist([
+                    'location_id'             => $location->id,
+                    'location'                => $location->location,
+                    'location_description'    => $location->location_description,
+                    'location_type'           => $location->location_type,
+                    'basecamp_id'             => $location->basecamp_id,
+                    'address'                 => $location->address,
+                    'code'                    => $location->code,
+                    'sub_district'            => $location->sub_district,
+                    'district'                => $location->district,
+                    'city'                    => $location->city,
+                    'province'                => $location->province,
+                    'country'                 => $location->country,
+                    'active'                  => $location->active,
+                    'start_effective'         => $location->start_effective,
+                    'end_effective'           => $location->end_effective,
+                    'action'                  => 'UPDATE',
+                    'created_by'              => Auth::user()->id,
+                    'created_at'              => Carbon::now(),
+                ]);
+                $insertLocationHist->save();
+
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    "message" => '<div class="alert alert-success">Data lokasi berhasil dihapus, status : TIDAK AKTIF</div>'
+                ]);
+            } else {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Data gagal di proses, data lokasi tidak ditemukan</div>'
+                ]);
+            }
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Data gagal di proses, terjadi kesalah system</div>'
+            ]);
+        }
+    }
+
+    public function detailData($id)
+    {
+        $location = Location::where('id', $id)->first();
+        if($location){
+            if($location->active == 1){
+                $active = 'AkTIF';
+            } else {
+                $active = 'TIDAK AkTIF';
+            }
+            return view('masters.location.form_detail', [
+                'location'             => $location->location,
+                'location_description' => $location->location_description != '' ? $location->location_description : '-',
+                'location_type'        => $location->location_type != '' ? $location->location_type : '-',
+                'basecamp'             => optional($location->basecamp)->basecamp,
+                'address'              => $location->address != '' ? $location->address : '-',
+                'active'               => $active,
+                'start_effective'      => $location->start_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $location->start_effective)->format('d/m/Y H:i:s') : '-',
+                'end_effective'        => $location->end_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $location->end_effective)->format('d/m/Y H:i:s') : '-',
+                'created_by'           => optional($location->createdBy)->name,
+                'created_at'           => $location->created_at != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $location->created_at)->format('d/m/Y H:i:s') : '-',
+                'updated_by'           => optional($location->updatedBy)->name,
+                'updated_at'           => $location->updated_at != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $location->updated_at)->format('d/m/Y H:i:s') : '-',
+            ]);
+        } else {
+            return view('masters.location.form_detail', [
+                'location'             => '',
+                'location_description' => '',
+                'location_type'        => '',
+                'basecamp'             => '',
+                'address'              => '',
+                'active'               => '',
+                'start_effective'      => '',
+                'end_effective'        => '',
+                'created_by'           => '',
+                'created_at'           => '',
+                'updated_by'           => '',
+                'updated_at'           => '',
+            ]);
+        }
     }
 }

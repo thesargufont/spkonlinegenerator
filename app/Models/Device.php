@@ -9,8 +9,14 @@ class Device extends Model
     protected $table = "devices";
     protected $fillable = [
         'id',
-        'department',
-        'department_description',
+        'device_name',
+        'device_description',
+        'brand',
+        'location_id',
+        'department_id',
+        'device_category_id',
+        'serial_number',
+        'eq_id',
         'active',
         'start_effective',
         'end_effective',
@@ -33,5 +39,20 @@ class Device extends Model
     public function updatedBy()
     {
         return $this->belongsTo('App\User', 'updated_by');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo('App\Models\Location', 'location_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo('App\Models\Department', 'department_id');
+    }
+
+    public function deviceCategory()
+    {
+        return $this->belongsTo('App\Models\DeviceCategory', 'device_category_id');
     }
 }

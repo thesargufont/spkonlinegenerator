@@ -12,6 +12,7 @@ class DepartmentHist extends Model
         'id',
         'department_id',
         'department',
+        'department_code',
         'department_description',
         'active',
         'start_effective',

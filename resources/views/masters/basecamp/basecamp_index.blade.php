@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Data Lokasi</h4>
+<h4 class="pull-left page-title">Data Basecamp</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Data Lokasi</li>
+    <li class="active">Data Basecamp</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -15,9 +15,9 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
-                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/location/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
+                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/basecamp/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
                 {{-- <button type="button" name="download" id="btn_download_xlsx" class="btn btn-secondary"><i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}</button>
-                <button disabled type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button> --}}
+                <button type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button> --}}
             </div>
         </div>
     </div>
@@ -27,26 +27,12 @@
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
                     <div class="panel-body">
-                        {{-- NAMA LOKASI --}}
+                        {{-- NAMA BASECAMP --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NAMA LOKASI</label>
+                            <label class="col-md-2">NAMA BASECAMP</label>
                             <div class="col-md-6">
-                                <input maxlength="50" id="location_name" type="text" class="text-uppercase form-control" name="location_name" title="NAMA LOKASI" placeholder="NAMA LOKASI">
-                                <input name="location_name_id" id="location_name_id" type="hidden"/>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- BASECAMP --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">BASECAMP</label>
-                            <div class="col-md-6">
-                                <select title="BASECAMP" id="basecamp" class="form-control">
-                                    <option value="" selected>SEMUA BASECAMP</option>
-                                    @foreach ($basecamps as $item)
-                                        <option value={{ $item->id }}>{{ $item->basecamp }}</option>
-                                    @endforeach
-                                </select>
+                                <input id="basecamp_name" type="text" class="text-uppercase form-control" name="basecamp_name" title="NAMA BASECAMP" placeholder="NAMA BASECAMP">
+                                <input name="basecamp_name_id" id="basecamp_name_id" type="hidden"/>
                             </div>
                         </div>
                         <br>
@@ -57,12 +43,11 @@
                             <div class="col-sm-6">
                                 <select title="STATUS" id="status" class="form-control">
                                     <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
+                                    <option value="0">TIDAK AKTIF</option>
                                 </select>
                             </div>
                         </div>
                         <br>
-
                         <br>
                         <br>
                         {{-- SEARCH --}}
@@ -79,7 +64,7 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Data Bagian</h3>
+                    <h3 class="panel-title">Data Basecamp</h3>
                 </div>
                 <div class="panel-body">
                     <span id="form_result"></span>
@@ -87,12 +72,9 @@
                         <thead>
                             <tr>
                                 <th>Action</th>
-                                <th>Lokasi</th>
-                                <th>Deskripsi</th>
-                                <th>Tipe Lokasi</th>
                                 <th>Basecamp</th>
-                                <th>Status</th>
-                                <th>Alamat</th>
+                                <th>Deskripsi</th>
+                                <th>Aktif</th>
                                 <th>Start Effective</th>
                                 <th>End Effective</th>
                                 <th>Dibuat Oleh</th>
@@ -139,31 +121,27 @@
                 infoEmpty:      ""
             },
             ajax: {
-                'url': '{!! route('masters/location/dashboard-data') !!}',
+                'url': '{!! route('masters/basecamp/dashboard-data') !!}',
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
                 },
                 'data': function (d) {
-                    d.location_name = $('#location_name').val();
-                    d.basecamp      = $('#basecamp').val();
-                    d.status        = $('#status').val();
+                    d.basecamp_name  = $('#basecamp_name').val();
+                    d.status         = $('#status').val();
                 }
             },
             columns: [
                 { data: 'action', name: 'action', orderable: false, searchable: false}, 
-                { data : 'location' ,                name :  'location'              },
-                { data : 'location_description' ,    name :  'location_description'  },
-                { data : 'location_type' ,           name :  'location_type'         },
-                { data : 'basecamp' ,                name :  'basecamp'              },
-                { data : 'active' ,                  name :  'active'                },
-                { data : 'address' ,                 name :  'address'               },
-                { data : 'start_effective' ,         name :  'start_effective'       },
-                { data : 'end_effective' ,           name :  'end_effective'         },
-                { data : 'created_by' ,              name :  'created_by',           },
-                { data : 'created_at' ,              name :  'created_at',           },
-                { data : 'updated_by' ,              name :  'updated_by',           },
-                { data : 'updated_at' ,              name :  'updated_at',           },
+                { data : 'basecamp' ,                 name :  'basecamp'                 },
+                { data : 'basecamp_description' ,     name :  'basecamp_description'     },
+                { data : 'active' ,                   name :  'active'                   },
+                { data : 'start_effective' ,          name :  'start_effective'          },
+                { data : 'end_effective' ,            name :  'end_effective'            },
+                { data : 'created_by' ,               name :  'created_by',              },
+                { data : 'created_at' ,               name :  'created_at',              },
+                { data : 'updated_by' ,               name :  'updated_by',              },
+                { data : 'updated_at' ,               name :  'updated_at',              },
             ],
             // order: [[ 2, "desc" ]],
             rowCallback: function( row, data, iDisplayIndex ) {
@@ -185,20 +163,20 @@
     $('#btn_download_xlsx').click(function() {
         $('#search-form').submit();
         $('#main-table').DataTable().ajax.reload();
-        var uri = encodeURI("{{url('masters/location/export-excel')}}");
+        var uri = encodeURI("{{url('masters/department/export-excel')}}");
         window.open(uri,'_blank');
     });
 
     $('#btn_upload_xlsx').click(function() {
-    location.replace('{{ url('masters/location/import-excel') }}');
-});
+        location.replace('{{ url('masters/department/import-excel') }}');
+    });
 
     function deleteItem(id) {
         $('#form_result').html('');
 
         artLoadingDialogDo("Please wait, we process your request..",function(){
             $.ajax({
-                url : '{!! route('masters/location/delete-data') !!}',
+                url : '{!! route('masters/basecamp/delete-data') !!}',
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{!!csrf_token()!!}'
@@ -236,7 +214,7 @@
     }
 
     function showItem(id) {
-        location.replace('{{ url('masters/location/detail-data') }}/' + id);
+        location.replace('{{ url('masters/basecamp/detail-data') }}/' + id);
     }
 </script>
 @endsection

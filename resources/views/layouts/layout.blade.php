@@ -189,15 +189,17 @@
                         </li>
 
                         <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Admin
-                                    Panel </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
+                                    Data </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
-                                <li><a href="{{ route('masters/role/index') }}">Data Pengaturan Pengguna</a></li>
                                 <li><a href="{{ route('masters/employee/index') }}">Data Pengguna</a></li>
-                                <li><a href="{{ route('masters/department/index') }}">Data Departemen</a></li>
                                 <li><a href="{{ route('masters/location/index') }}">Data Lokasi</a></li>
+                                <li><a href="{{ route('masters/basecamp/index') }}">Data Basecamp</a></li>
+                                <li><a href="{{ route('masters/department/index') }}">Data Departemen</a></li>
                                 <li><a href="{{ route('masters/job/index') }}">Data Pekerjaan</a></li>
                                 <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
+                                <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a></li>
+                                {{-- <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a></li> --}}
                             </ul>
                         </li>
                     </ul>

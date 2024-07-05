@@ -32,11 +32,18 @@ class DepartmentController extends Controller
     public function submitData(Request $request)
     {
         $departmentName = strtoupper($request->department_name);
+        $departmentCode = strtoupper($request->department_code);
         $description = strtoupper($request->description);
 
         if($departmentName == ''){
             return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Nama bagian wajib terisi, harap periksa kembali formulir pengisian data</div>'
+                            "message"=> '<div class="alert alert-danger">Nama departemen wajib terisi, harap periksa kembali formulir pengisian data</div>'
+                    ]);    
+        }
+
+        if($departmentCode == ''){
+            return response()->json(['errors' => true, 
+                            "message"=> '<div class="alert alert-danger">Kode bagian wajib terisi, harap periksa kembali formulir pengisian data</div>'
                     ]);    
         }
         
@@ -52,7 +59,7 @@ class DepartmentController extends Controller
                                              
         if($checkDuplicateData){
             return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Telah ditemukan data bagian '.$departmentName.' yang masih aktif</div>'
+                            "message"=> '<div class="alert alert-danger">Telah ditemukan data departemen '.$departmentName.' yang masih aktif</div>'
                     ]);    
         }
 
@@ -62,6 +69,7 @@ class DepartmentController extends Controller
             
             $insertDepartment = new Department([
                 'department'              => $departmentName,
+                'department_code'         => $departmentCode,
                 'department_description'  => $description,
                 'active'                  => 1,
                 'start_effective'         => Carbon::now(),
@@ -76,6 +84,7 @@ class DepartmentController extends Controller
             $insertDepartmentHist = new DepartmentHist([
                 'department_id'           => $insertDepartment->id,
                 'department'              => $insertDepartment->department,
+                'department_code'         => $insertDepartment->department_code,
                 'department_description'  => $insertDepartment->department_description,
                 'active'                  => $insertDepartment->active,
                 'start_effective'         => $insertDepartment->start_effective,
@@ -304,5 +313,90 @@ class DepartmentController extends Controller
     {
         $filename = 'Template_Master_Bidang.xlsx';
         return response()->download(storage_path('app/files/'.$filename));
+    }
+
+    public function deleteData(Request $request)
+    {
+        $department = Department::where('id', $request->id)->first();
+
+        try {
+            DB::beginTransaction();
+            if($department){
+                $department->active         = 0;
+                $department->end_effective  = Carbon::now();
+                $department->updated_by     = Auth::user()->id;
+                $department->updated_at     = Carbon::now();
+                $department->save();
+
+                $insertDepartmentHist = new DepartmentHist([
+                    'department_id'           => $department->id,
+                    'department'              => $department->department,
+                    'department_code'         => $department->department_code,
+                    'department_description'  => $department->department_description,
+                    'active'                  => $department->active,
+                    'start_effective'         => $department->start_effective,
+                    'end_effective'           => $department->end_effective,
+                    'action'                  => 'UPDATE',
+                    'created_by'              => Auth::user()->id,
+                    'created_at'              => Carbon::now(),
+                ]);
+                $insertDepartmentHist->save();
+
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    "message" => '<div class="alert alert-success">Data departemen berhasil dihapus, status : TIDAK AKTIF</div>'
+                ]);
+            } else {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Data gagal di proses, data departemen tidak ditemukan</div>'
+                ]);
+            }
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Data gagal di proses, terjadi kesalah system</div>'
+            ]);
+        }
+    }
+
+    public function detailData($id)
+    {
+        $department = Department::where('id', $id)->first();
+
+        if($department){
+            if($department->active == 1){
+                $active = 'AkTIF';
+            } else {
+                $active = 'TIDAK AkTIF';
+            }
+            return view('masters.department.form_detail', [
+                'department'             => $department->department,
+                'department_code'        => $department->department_code,
+                'department_description' => $department->department_description != '' ? $department->department_description : '-',
+                'active'                 => $active,
+                'start_effective'        => $department->start_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $department->start_effective)->format('d/m/Y H:i:s') : '-',
+                'end_effective'          => $department->end_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $department->end_effective)->format('d/m/Y H:i:s') : '-',
+                'created_by'             => optional($department->createdBy)->name,
+                'created_at'             => $department->created_at != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $department->created_at)->format('d/m/Y H:i:s') : '-',
+                'updated_by'             => optional($department->updatedBy)->name,
+                'updated_at'             => $department->updated_at != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $department->updated_at)->format('d/m/Y H:i:s') : '-',
+            ]);
+        } else {
+            return view('masters.department.form_detail', [
+                'department'             => '',
+                'department_code'        => '',
+                'department_description' => '',
+                'active'                 => '',
+                'start_effective'        => '',
+                'end_effective'          => '',
+                'created_by'             => '',
+                'created_at'             => '',
+                'updated_by'             => '',
+                'updated_at'             => '',
+            ]);
+        }
     }
 }

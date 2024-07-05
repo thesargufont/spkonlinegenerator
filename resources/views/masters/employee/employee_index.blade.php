@@ -57,7 +57,7 @@
                         
                         {{-- GENDER --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">STATUS *</label>
+                            <label class="col-md-2">STATUS</label>
                             <div class="col-md-6">
                                 <select title="STATUS" id="status" class="form-control">
                                     <option value="1" selected>AKTIF</option>
