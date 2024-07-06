@@ -174,7 +174,12 @@
                             </ul>
                         </li>
 
-                        <li class="has_sub">
+                        <li>
+                            <a href="#" class="waves-effect"><i class="ti-agenda"></i><span> Laporan
+                                </span></a>
+                        </li>
+
+                        <!-- <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="ti-agenda"></i> <span> Laporan
                                 </span> <span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
@@ -182,7 +187,7 @@
                                 <li><a href="#">Surat Perintah Kerja</a></li>
                                 <li><a href="#">Berita Acara</a></li>
                             </ul>
-                        </li>
+                        </li> -->
 
                         <li>
                             <a href="calendar.html" class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span class="badge badge-primary pull-right">NEW</span></span></a>
@@ -199,9 +204,10 @@
                                 <li><a href="{{ route('masters/job/index') }}">Data Pekerjaan</a></li>
                                 <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
                                 <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a></li>
-                                {{-- <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a></li> --}}
-                            </ul>
-                        </li>
+                                {{-- <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a>
+                        </li> --}}
+                    </ul>
+                    </li>
                     </ul>
                 </div>
                 <div class="clearfix"></div>

@@ -9,6 +9,7 @@ class SpongeDetailHist extends Model
     protected $table = "sponge_detail_history";
     protected $fillable = [
         'id',
+        'sponge_detail_id',
         'wo_number_id',
         'cr_number',
         'reporter_location',

@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Working Order</h4>
+<h4 class="pull-left page-title">Approval</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Working Order</li>
+    <li class="active">Approval</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -137,7 +137,7 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Data Work Order</h3>
+                    <h3 class="panel-title">Data Approval</h3>
                 </div>
                 <div class="panel-body">
                     <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">

@@ -141,6 +141,7 @@
                     <h3 class="panel-title">Data Work Order</h3>
                 </div>
                 <div class="panel-body">
+                    <span id="form_result"></span>
                     <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                         <thead>
                             <tr>
@@ -271,8 +272,38 @@
 
     function showItem(id) {
         {
-            var url = "{{route('form-input.working-order.detail', '')}}" + "/" + id;
-            window.location.href = url;
+            var urlcek = "{{route('form-input.working-order.cekdetail', '')}}" + "/" + id;
+            var urldet = "{{route('form-input.working-order.detail', '')}}" + "/" + id;
+            $.ajax({
+                url: urlcek,
+                type: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: "json",
+                data: id,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 4000);
+                    }
+                    if (data.success) {
+                        window.location.href = urldet
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error Status:', status);
+                    console.log('Error:', error);
+                    console.log('Response:', xhr.responseText);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                }
+            });
+            // window.location.href = url;
         }
     }
 </script>

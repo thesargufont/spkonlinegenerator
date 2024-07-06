@@ -68,6 +68,7 @@ Route::get('form-input/working-order/getdevicecode', [WorkingOrderController::cl
 Route::get('form-input/working-order/getdisturbancecategory', [WorkingOrderController::class, 'getDisturbanceCategory'])->name('form-input.working-order.getdisturbancecategory')->middleware('auth');
 Route::post('form-input/working-order/dashboard-data', [WorkingOrderController::class, 'data'])->name('form-input.working-order.dashboard-data')->middleware('auth');
 Route::post('form-input/working-order/create-new', [WorkingOrderController::class, 'submitData'])->name('form-input.working-order.create-new')->middleware('auth');
+Route::get('form-input/working-order/cekdetail/{id}', [WorkingOrderController::class, 'checkDetail'])->name('form-input.working-order.cekdetail')->middleware('auth');
 Route::get('form-input/working-order/detail/{id}', [WorkingOrderController::class, 'detail'])->name('form-input.working-order.detail')->middleware('auth');
 
 //APPROVAL
@@ -148,5 +149,3 @@ Route::get('masters/device-category/detail-data/{id}', [DeviceCategoryController
 
 // otorisasi
 Route::get('masters/autorisation/index', [AutorisationController::class, 'index'])->name('masters/autorisation/index')->middleware('auth');
-
-

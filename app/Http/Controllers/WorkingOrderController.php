@@ -117,15 +117,17 @@ class WorkingOrderController extends Controller
     public function createNew()
     {
         $department_arr = Department::select('id', 'department', 'department_code')->where('active', 1)->get();
-        $wo_category_arr = Job::select('wo_category')->groupBy('wo_category')->get();
+        $wo_category_arr = Job::select('wo_category')->groupBy('wo_category')->orderBy('id')->get();
         $location_arr = Location::select('id', 'location', 'location_type')->where('active', 1)->where('end_effective', null)->get();
         $device_arr = Device::select('device_name')->where('active', 1)->where('end_effective', null)->groupBy('device_name')->get();
+        $effective_date = Carbon::now()->format('d/m/Y');
 
         $data = [
             'department' => $department_arr,
             'wo_category' => $wo_category_arr,
             'location' => $location_arr,
             'device' => $device_arr,
+            'effective_date' => $effective_date,
         ];
 
         return view('forms.working_order.form_input', $data);
@@ -166,7 +168,7 @@ class WorkingOrderController extends Controller
     public function getJobCategory(Request $request)
     {
         try {
-            $job_categories = Job::select('id', 'job_category')->where('wo_category', $request->wo_category)->where('department_id', $request->department)->get();
+            $job_categories = Job::select('id', 'job_category')->where('wo_category', $request->wo_category)->where('department_id', $request->department)->orderBy('id')->get();
 
             return response()->json(['success' => true, 'message' => '', 'job_categories' => $job_categories]);
         } catch (\Exception $e) {
@@ -413,63 +415,58 @@ class WorkingOrderController extends Controller
             $spongeHeader = new SpongeHeader([
                 'wo_number' => $request->wo_number,
                 'wo_type' => $request->wo_category,
-                'job_category' => $request->job_category,
+                'job_category' => $request->job_category ? $request->job_category : '',
                 'department' => Department::find($request->department)->department,
-                'effective_date' => Carbon::createFromFormat('d/m/Y', $request->effective_date),
+                'effective_date' => Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta'),
+                'status' => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
                 'created_by'              => Auth::user()->id,
-                'created_at'              => Carbon::now(),
+                'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
                 'updated_by'              => Auth::user()->id,
-                'updated_at'              => Carbon::now(),
+                'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
             ]);
             $spongeHeader->save();
 
-            $spongeDetails = [];
-            $spongeDetailHists = [];
+            // $spongeDetails = [];
+            // $spongeDetailHists = [];
             foreach ($request->details as $detail) {
                 $spongeDetail = new SpongeDetail([
                     'wo_number_id' => $spongeHeader->id,
                     'reporter_location' => Location::find($detail['location'])->location,
                     'device_id' => $detail['device'],
                     'disturbance_category' => $detail['disturbance_category'],
-                    'wo_decription' => $detail['description'],
+                    'wo_description' => $detail['description'],
                     'wo_attachment1' => 'public/' . $newFilename1,
                     'wo_attachment2' => 'public/' . $newFilename2,
                     'wo_attachment3' => 'public/' . $newFilename3,
-                    'start_at' => $spongeHeader->effective_date,
-                    'estimated_end' => $spongeHeader->effective_date,
+                    'start_at' => NULL,
+                    'estimated_end' => NULL,
                     'created_by'              => Auth::user()->id,
-                    'created_at'              => Carbon::now(),
+                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
                     'updated_by'              => Auth::user()->id,
-                    'updated_at'              => Carbon::now(),
+                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
                 ]);
-                $spongeDetails[] = $spongeDetail;
-                // $spongeDetailHist = new SpongeDetailHist([
-                //     'sponge_detail_id' => $spongeDetail->id,
-                //     'wo_number_id' => $spongeHeader->id,
-                //     'reporter_location' => Location::find($detail['location'])->location,
-                //     'device_id' => $detail['device'],
-                //     'disturbance_category' => $detail['disturbance_category'],
-                //     'wo_decription' => $detail['description'],
-                //     'wo_attachment1' => 'public/' . $newFilename1,
-                //     'wo_attachment2' => 'public/' . $newFilename2,
-                //     'wo_attachment3' => 'public/' . $newFilename3,
-                //     'start_at' => $spongeHeader->effective_date,
-                //     'estimated_end' => $spongeHeader->effective_date,
-                //     'action' => 'CREATE',
-                //     'created_by'              => Auth::user()->id,
-                //     'created_at'              => Carbon::now(),
-                //     'updated_by'              => Auth::user()->id,
-                //     'updated_at'              => Carbon::now(),
-                // ]);
-                // $spongeDetailHists[] = $spongeDetailHist;
-            }
+                $spongeDetail->save();
 
-            foreach ($spongeDetails as $insert) {
-                $insert->save();
+                $spongeDetailHist = new SpongeDetailHist([
+                    'sponge_detail_id' => $spongeDetail->id,
+                    'wo_number_id' => $spongeHeader->id,
+                    'reporter_location' => Location::find($detail['location'])->location,
+                    'device_id' => $detail['device'],
+                    'disturbance_category' => $detail['disturbance_category'],
+                    'wo_description' => $detail['description'],
+                    'wo_attachment1' => 'public/' . $newFilename1,
+                    'wo_attachment2' => 'public/' . $newFilename2,
+                    'wo_attachment3' => 'public/' . $newFilename3,
+                    'start_at' => NULL,
+                    'estimated_end' => NULL,
+                    'action' => 'CREATE',
+                    'created_by'              => Auth::user()->id,
+                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                    'updated_by'              => Auth::user()->id,
+                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                ]);
+                $spongeDetailHist->save();
             }
-            // foreach ($spongeDetailHists as $insert) {
-            //     $insert->save();
-            // }
 
             DB::commit();
 
@@ -495,11 +492,38 @@ class WorkingOrderController extends Controller
         }
     }
 
-    public function detail($id)
+    public function checkDetail($id)
     {
         $spongeheader = SpongeHeader::find($id);
+        if (!$spongeheader) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger"> Server Error : Data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>'
+            ]);
+        }
         $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
-        $job_category = Job::find($spongeheader->job_category);
+        if (empty($spongedetails->toArray())) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger"> Server Error : Detail data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function detail($id)
+    {
+        $id = 50;
+        $spongeheader = SpongeHeader::find($id);
+        if (!$spongeheader) {
+            return back()->with('status', '<div class="alert alert-success"> Data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>');;
+        }
+        // dd($spongeheader);
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        $job_category = $spongeheader->job_category;
 
         $details = [];
         $index = 1;
@@ -526,7 +550,7 @@ class WorkingOrderController extends Controller
             'wo_number' => $spongeheader->wo_number,
             'wo_category' => $spongeheader->wo_type,
             'department' => $spongeheader->department,
-            'job_category' => $job_category->job_category,
+            'job_category' => $job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'details' => $details,
         ];

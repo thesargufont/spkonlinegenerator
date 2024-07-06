@@ -43,6 +43,7 @@
                             <label class="col-sm-2">KATEGORI WORK ORDER</label>
                             <div class="col-sm-6">
                                 <select class="form-control" name="wo_category" id="wo_category" onchange="getjobcategory()">
+                                    <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($wo_category as $wo_category)
                                     <option value="{{$wo_category->wo_category}}">{{$wo_category->wo_category}}</option>
                                     @endforeach
@@ -75,7 +76,7 @@
                         <div class="form-group">
                             <label class="col-sm-2">TANGGAL EFEKTIF</label>
                             <div class="col-sm-2 input-group">
-                                <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date">
+                                <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date" value="{{$effective_date}}">
                                 <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
                             </div><!-- input-group -->
                         </div>
@@ -132,6 +133,7 @@
                             </div>
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][location]" id="details${detailIndex}location" onchange="getdevicemodel(${detailIndex})">
+                                    <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($location as $location)
                                         <option value="{{$location->id}}">{{$location->location}} - {{$location->location_type}}</option>
                                     @endforeach
@@ -162,6 +164,7 @@
                             </div>
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][device]" id="details${detailIndex}device" onchange="getdevicemodel(${detailIndex})">
+                                    <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($device as $device)
                                         <option value="{{$device->device_name}}">{{$device->device_name}}</option>
                                     @endforeach
@@ -173,7 +176,7 @@
                                 <label>MODEL ALAT</label>
                             </div>
                             <div>
-                                <select class="form-control" name="details[${detailIndex}][device_model]" id="details${detailIndex}device_model" onchange="getdevicecode(${detailIndex})">
+                                <select class="form-control" name="details[${detailIndex}][device_model]" id="details${detailIndex}device_model" onchange="getdevicecode(${detailIndex})" disabled>
                                 </select>
                             </div>
                         </div>
@@ -280,6 +283,9 @@
                 success: function(data) {
                     if (data.errors) {
                         $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 5000);
                     }
                     if (data.success) {
                         $('#form_result').html(data.message);
@@ -364,8 +370,9 @@
                 if (data.success == true) {
                     $('#job_category').empty();
                     console.log(data.job_categories.length);
+                    $('#job_category').append('<option value="" selected disabled hidden>PILIH SATU</option>');
                     $.each(data.job_categories, function(key, value) {
-                        $('#job_category').append('<option value="' + value.id + '">' + value.job_category + '</option>');
+                        $('#job_category').append('<option value="' + value.job_category + '">' + value.job_category + '</option>');
                     });
                     if (data.job_categories.length == 1) {
                         console.log(1);
@@ -413,9 +420,15 @@
                 if (data.success == true) {
                     console.log('getdevicemodel', data.devices);
                     $(device_model_id).empty();
-                    $.each(data.devices, function(key, value) {
-                        $(device_model_id).append('<option value="' + value.id + '">' + value.brand + '</option>');
-                    });
+                    $(device_model_id).append('<option value="" selected disabled hidden>PILIH SATU</option>');
+                    if (data.devices == null) {
+                        $(device_model_id).prop("disabled", true);
+                    } else {
+                        $(device_model_id).prop("disabled", false);
+                        $.each(data.devices, function(key, value) {
+                            $(device_model_id).append('<option value="' + value.id + '">' + value.brand + '</option>');
+                        });
+                    }
                     document.getElementById(device_code_id).value = '';
                     $(disturbance_category_id).empty();
                 } else {
@@ -485,6 +498,7 @@
                 if (data.success == true) {
                     console.log(data);
                     $(disturbance_category_id).empty();
+                    $(disturbance_category_id).append('<option value="" selected disabled hidden>PILIH SATU</option>');
                     $.each(data.disturbances, function(key, value) {
                         console.log(value);
                         $(disturbance_category_id).append('<option value="' + value.id + '">' + value.disturbance_category + '</option>');
