@@ -171,7 +171,7 @@ class WorkingOrderController extends Controller
         } catch (\Exception $e) {
             $data = [
                 'hidden_status' => '',
-                'return_msg' => $e->getMessage(),
+                'return_msg' => 'Service Error :' . $e->getMessage(),
             ];
 
             return view('forms.working_order.working_order_index', $data);
