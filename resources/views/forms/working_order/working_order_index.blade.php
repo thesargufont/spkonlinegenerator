@@ -12,6 +12,7 @@
 @section('content')
 <div class="container">
     <div class="card-header">
+        <div class="alert alert-danger" {{$hidden_status}}>{{$return_msg}}</div>
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>

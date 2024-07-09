@@ -25,8 +25,12 @@ class WorkingOrderController extends Controller
     public function index()
     {
         $department = Department::where('active', 1)->get()->toArray();
+        $data = [
+            'hidden_status' => 'hidden',
+            'return_msg' => '',
+        ];
 
-        return view('forms.working_order.working_order_index');
+        return view('forms.working_order.working_order_index', $data);
     }
 
     public function getData($request, $isExcel = '')
@@ -116,21 +120,62 @@ class WorkingOrderController extends Controller
 
     public function createNew()
     {
-        $department_arr = Department::select('id', 'department', 'department_code')->where('active', 1)->get();
-        $wo_category_arr = Job::select('wo_category')->groupBy('wo_category')->orderBy('id')->get();
-        $location_arr = Location::select('id', 'location', 'location_type')->where('active', 1)->where('end_effective', null)->get();
-        $device_arr = Device::select('device_name')->where('active', 1)->where('end_effective', null)->groupBy('device_name')->get();
-        $effective_date = Carbon::now()->format('d/m/Y');
+        try {
+            $department_arr = Department::select('id', 'department', 'department_code')->where('active', 1)->get()->toArray();
+            if (empty($department_arr)) {
+                $data = [
+                    'hidden_status' => '',
+                    'return_msg' => 'Data departemen tidak ditemukan. Pastikan Master Departemen sudah disetting.',
+                ];
 
-        $data = [
-            'department' => $department_arr,
-            'wo_category' => $wo_category_arr,
-            'location' => $location_arr,
-            'device' => $device_arr,
-            'effective_date' => $effective_date,
-        ];
+                return view('forms.working_order.working_order_index', $data);
+            }
+            $wo_category_arr = Job::select('wo_category')->orderBy('id')->distinct()->get()->toArray();
+            if (empty($wo_category_arr)) {
+                $data = [
+                    'hidden_status' => '',
+                    'return_msg' => 'Kategori WO tidak ditemukan. Pastikan Master Pekerjaan sudah disetting.',
+                ];
 
-        return view('forms.working_order.form_input', $data);
+                return view('forms.working_order.working_order_index', $data);
+            }
+            $location_arr = Location::select('id', 'location', 'location_type')->where('active', 1)->where('end_effective', null)->get()->toArray();
+            if (empty($location_arr)) {
+                $data = [
+                    'hidden_status' => '',
+                    'return_msg' => 'Data lokasi tidak ditemukan. Pastikan Master Lokasi sudah disetting.',
+                ];
+
+                return view('forms.working_order.working_order_index', $data);
+            }
+            $device_arr = Device::select('device_name')->where('active', 1)->where('end_effective', null)->groupBy('device_name')->get()->toArray();
+            if (empty($device_arr)) {
+                $data = [
+                    'hidden_status' => '',
+                    'return_msg' => 'Data alat tidak ditemukan. Pastikan Master Alat sudah disetting.',
+                ];
+
+                return view('forms.working_order.working_order_index', $data);
+            }
+            $effective_date = Carbon::now()->format('d/m/Y');
+
+            $data = [
+                'department' => $department_arr,
+                'wo_category' => $wo_category_arr,
+                'location' => $location_arr,
+                'device' => $device_arr,
+                'effective_date' => $effective_date,
+            ];
+
+            return view('forms.working_order.form_input', $data);
+        } catch (\Exception $e) {
+            $data = [
+                'hidden_status' => '',
+                'return_msg' => $e->getMessage(),
+            ];
+
+            return view('forms.working_order.working_order_index', $data);
+        }
     }
 
     public function getWONumber(Request $request)

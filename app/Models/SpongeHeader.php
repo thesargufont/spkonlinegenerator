@@ -12,6 +12,7 @@ class SpongeHeader extends Model
         'wo_number',
         'wo_type',
         'spk_number',
+        'wp_number',
         'job_category',
         'department',
         'priority',
