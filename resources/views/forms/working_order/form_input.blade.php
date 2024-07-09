@@ -45,7 +45,7 @@
                                 <select class="form-control" name="wo_category" id="wo_category" onchange="getjobcategory()">
                                     <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($wo_category as $wo_category)
-                                    <option value="{{$wo_category->wo_category}}">{{$wo_category->wo_category}}</option>
+                                    <option value="{{$wo_category['wo_category']}}">{{$wo_category['wo_category']}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -57,7 +57,7 @@
                             <div class="col-sm-6">
                                 <select class="form-control" name="department" onchange="getwonumber()">
                                     @foreach($department as $department)
-                                    <option value="{{$department->id}}" @if (Auth::user()->department_id == $department->id) selected @endif>{{$department->department_code}} - {{$department->department}}</option>
+                                    <option value="{{$department['id']}}" @if (Auth::user()->department_id == $department['id']) selected @endif>{{$department['department_code']}} - {{$department['department']}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -135,7 +135,7 @@
                                 <select class="form-control" name="details[${detailIndex}][location]" id="details${detailIndex}location" onchange="getdevicemodel(${detailIndex})">
                                     <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($location as $location)
-                                        <option value="{{$location->id}}">{{$location->location}} - {{$location->location_type}}</option>
+                                        <option value="{{$location['id']}}">{{$location['location']}} - {{$location['location_type']}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -166,7 +166,7 @@
                                 <select class="form-control" name="details[${detailIndex}][device]" id="details${detailIndex}device" onchange="getdevicemodel(${detailIndex})">
                                     <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($device as $device)
-                                        <option value="{{$device->device_name}}">{{$device->device_name}}</option>
+                                        <option value="{{$device['device_name']}}">{{$device['device_name']}}</option>
                                     @endforeach
                                 </select>
                             </div>
