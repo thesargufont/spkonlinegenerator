@@ -130,7 +130,7 @@ class WorkingOrderController extends Controller
 
                 return view('forms.working_order.working_order_index', $data);
             }
-            $wo_category_arr = Job::select('wo_category')->orderBy('id')->distinct()->get()->toArray();
+            $wo_category_arr = Job::select('wo_category')->distinct()->get()->toArray();
             if (empty($wo_category_arr)) {
                 $data = [
                     'hidden_status' => '',
@@ -171,7 +171,7 @@ class WorkingOrderController extends Controller
         } catch (\Exception $e) {
             $data = [
                 'hidden_status' => '',
-                'return_msg' => $e->getMessage(),
+                'return_msg' => 'Service Error :' . $e->getMessage(),
             ];
 
             return view('forms.working_order.working_order_index', $data);
