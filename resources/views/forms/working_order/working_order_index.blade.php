@@ -16,7 +16,9 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
+                @if($access)
                 <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('form-input/working-order/create')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
+                @endif
             </div>
         </div>
     </div>
@@ -293,14 +295,14 @@
                         }, 4000);
                     }
                     if (data.success) {
-                        window.location.href = urldet
+                        window.location.href = urldet;
                     }
                 },
                 error: function(xhr, status, error) {
                     console.log('Error Status:', status);
                     console.log('Error:', error);
                     console.log('Response:', xhr.responseText);
-                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan : ' + error + '</div>';
                     $('#form_result').html(html);
                 }
             });

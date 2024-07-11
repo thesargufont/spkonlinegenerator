@@ -10,7 +10,7 @@ use App\Models\Job;
 use App\Models\Device;
 use App\Models\DeviceCategory;
 use App\Models\Location;
-use App\Models\GeneralCode;
+use App\Models\Role;
 use App\Models\SpongeHeader;
 use App\Models\SpongeDetail;
 use App\Models\SpongeDetailHist;
@@ -19,15 +19,25 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Concerns\ToArray;
 
 class WorkingOrderController extends Controller
 {
     public function index()
     {
-        $department = Department::where('active', 1)->get()->toArray();
+        $user_id = Auth::user()->id;
+        $roles = Role::where('user_id', $user_id)->where('active', 1)->distinct()->pluck('role')->toArray();
+        $access_right = array('SUPERADMIN', 'USER');
+        if (count(array_intersect($roles, $access_right)) == 0) {
+            $access = false;
+            return redirect()->route('home');
+        } else {
+            $access = true;
+        }
         $data = [
             'hidden_status' => 'hidden',
             'return_msg' => '',
+            'access' => $access,
         ];
 
         return view('forms.working_order.working_order_index', $data);
@@ -121,11 +131,26 @@ class WorkingOrderController extends Controller
     public function createNew()
     {
         try {
+            $user_id = Auth::user()->id;
+            $roles = Role::where('user_id', $user_id)->where('active', 1)->distinct()->pluck('role')->toArray();
+            $access_right = array('SUPERADMIN', 'USER');
+            if (count(array_intersect($roles, $access_right)) == 0) {
+                $access = false;
+                $data = [
+                    'hidden_status' => '',
+                    'return_msg' => 'Anda tidak punya hak akses untuk membuat laporan work order.',
+                    'access' => $access,
+                ];
+                return view('forms.working_order.working_order_index', $data);
+            } else {
+                $access = true;
+            }
             $department_arr = Department::select('id', 'department', 'department_code')->where('active', 1)->get()->toArray();
             if (empty($department_arr)) {
                 $data = [
                     'hidden_status' => '',
                     'return_msg' => 'Data departemen tidak ditemukan. Pastikan Master Departemen sudah disetting.',
+                    'access' => $access,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -135,6 +160,7 @@ class WorkingOrderController extends Controller
                 $data = [
                     'hidden_status' => '',
                     'return_msg' => 'Kategori WO tidak ditemukan. Pastikan Master Pekerjaan sudah disetting.',
+                    'access' => $access,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -144,6 +170,7 @@ class WorkingOrderController extends Controller
                 $data = [
                     'hidden_status' => '',
                     'return_msg' => 'Data lokasi tidak ditemukan. Pastikan Master Lokasi sudah disetting.',
+                    'access' => $access,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -153,6 +180,7 @@ class WorkingOrderController extends Controller
                 $data = [
                     'hidden_status' => '',
                     'return_msg' => 'Data alat tidak ditemukan. Pastikan Master Alat sudah disetting.',
+                    'access' => $access,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -172,6 +200,7 @@ class WorkingOrderController extends Controller
             $data = [
                 'hidden_status' => '',
                 'return_msg' => 'Service Error :' . $e->getMessage(),
+                'access' => true,
             ];
 
             return view('forms.working_order.working_order_index', $data);
@@ -561,19 +590,20 @@ class WorkingOrderController extends Controller
 
     public function detail($id)
     {
-        $id = 50;
         $spongeheader = SpongeHeader::find($id);
         if (!$spongeheader) {
-            return back()->with('status', '<div class="alert alert-success"> Data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>');;
+            return back()->with('status', '<div class="alert alert-success"> Data tidak ditemukan. Silahkan coba lagi atau hubungi admin.</div>');
         }
-        // dd($spongeheader);
         $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        if (empty($spongedetails->toArray())) {
+            return back()->with('status', '<div class="alert alert-success"> Detail data tidak ditemukan. Silahkan coba lagi atau hubungi admin.</div>');
+        }
         $job_category = $spongeheader->job_category;
 
         $details = [];
         $index = 1;
         foreach ($spongedetails as $detail) {
-            $device = Device::find($detail->device_id);
+            //$device = Device::find($detail->device_id);
             $details[$index] = [
                 'location' => $detail->reporter_location,
                 'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
@@ -581,14 +611,12 @@ class WorkingOrderController extends Controller
                 'image_path1' => $detail->wo_attachment1,
                 'image_path2' => $detail->wo_attachment2,
                 'image_path3' => $detail->wo_attachment3,
-                'device' => $device->device_name,
-                'device_model' => $device->brand,
-                'device_code' => $device->eq_id,
+                'device' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->device_name : '-',
+                'device_model' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->brand : '-',
+                'device_code' => Device::find($detail->device_id) ?  Device::find($detail->device_id)->eq_id : '-',
             ];
             $index++;
         }
-
-        // dd($details);
 
         $data = [
             'spk_number' => $spongeheader->spk_number,

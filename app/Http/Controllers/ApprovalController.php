@@ -24,7 +24,12 @@ class ApprovalController extends Controller
 {
     public function index()
     {
-        $department = Department::where('active', 1)->get()->toArray();
+        $user_id = Auth::user()->id;
+        $roles = Role::where('user_id', $user_id)->where('active', 1)->distinct()->pluck('role')->toArray();
+        $access_right = array('SUPERADMIN', 'SPV');
+        if (count(array_intersect($roles, $access_right)) == 0) {
+            return redirect()->route('home');
+        }
 
         return view('forms.approval.approval_index');
     }
