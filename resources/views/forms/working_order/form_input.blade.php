@@ -209,14 +209,21 @@
                         <label>LAMPIRAN FOTO</label>
                     </div>
                     <div>
-                        <input type="file" name="details[${detailIndex}][photo1]" id="photo1_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 1)">
-                        <button type="button" id="clear_photo1_${detailIndex}" onclick="clearFileInput(${detailIndex}, 1)" style="display: none;">Clear</button>
-                        <br>
-                        <input type="file" name="details[${detailIndex}][photo2]" id="photo2_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 2)">
-                        <button type="button" id="clear_photo2_${detailIndex}" onclick="clearFileInput(${detailIndex}, 2)" style="display: none;">Clear</button>
-                        <br>
-                        <input type="file" name="details[${detailIndex}][photo3]" id="photo3_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 3)">
-                        <button type="button" id="clear_photo3_${detailIndex}" onclick="clearFileInput(${detailIndex}, 3)" style="display: none;">Clear</button>
+                        <div class="col-sm-10">
+                            <input type="file" name="details[${detailIndex}][photo1]" id="photo1_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 1)">
+                            <br>
+                            <input type="file" name="details[${detailIndex}][photo2]" id="photo2_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 2)">
+                            <br>
+                            <input type="file" name="details[${detailIndex}][photo3]" id="photo3_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 3)">
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_photo1_${detailIndex}" onclick="clearFileInput(${detailIndex}, 1)" style="display: none;">Clear</button>
+                            <br>
+                            <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_photo2_${detailIndex}" onclick="clearFileInput(${detailIndex}, 2)" style="display: none;">Clear</button>
+                            <br>
+                            <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_photo3_${detailIndex}" onclick="clearFileInput(${detailIndex}, 3)" style="display: none;">Clear</button>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
