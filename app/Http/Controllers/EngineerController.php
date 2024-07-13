@@ -10,6 +10,7 @@ use App\Models\Job;
 use App\Models\Device;
 use App\Models\DeviceCategory;
 use App\Models\Location;
+use App\Models\GeneralCode;
 use App\Models\Role;
 use App\Models\SpongeHeader;
 use App\Models\SpongeDetail;
@@ -37,7 +38,10 @@ class EngineerController extends Controller
     public function getData($request, $isExcel = '')
     {
         $user = Auth::user()->id;
-        $spongeheader = SpongeHeader::where('status', 'ONGOING')->where('wo_number', 'like', '%' . $request->wo_number . '%');
+        $spongeheader = SpongeHeader::leftJoin('sponge_details', 'sponge_headers.id', '=', 'sponge_details.wo_number_id')
+            ->where('sponge_headers.status', 'ONGOING')
+            ->where('sponge_headers.wo_number', 'like', '%' . $request->wo_number . '%')
+            ->where('sponge_details.job_executor', $user);
 
         return $spongeheader;
     }
@@ -52,7 +56,6 @@ class EngineerController extends Controller
             });
 
         $datatables = $datatables->addColumn('action', function ($item) use ($request) {
-            $show_url = route('form-input.working-order.detail', ['id' => $item->id]);
 
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\"title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
@@ -117,8 +120,9 @@ class EngineerController extends Controller
         return $datatables->make(TRUE);
     }
 
-    public function approve(Request $request)
+    public function submit(Request $request)
     {
+        dd($request);
         //HEADER VALIDATION
         if ($request->spk_number == '' || $request->spk_number == null) {
             return response()->json([
@@ -355,31 +359,7 @@ class EngineerController extends Controller
     {
         $spongeheader = SpongeHeader::find($id);
         $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
-
-        $get_engineers = Role::where('role', 'ENGINEER')->where('active', 1)->pluck('user_id')->toArray();
-        $engineers = [];
-        foreach ($get_engineers as $id) {
-            $engineer = User::where('id', $id)->where('active', 1)->first();
-            if ($engineer) {
-                $engineers[] = [
-                    'id' => $engineer->id,
-                    'name' => $engineer->name,
-                    'nik' => $engineer->nik,
-                ];
-            }
-        }
-        $get_spvs = Role::where('role', 'SPV')->where('active', 1)->pluck('id')->toArray();
-        $spvs = [];
-        foreach ($get_spvs as $id) {
-            $spv = User::where('id', $id)->where('active', 1)->first();
-            if ($spv) {
-                $spvs[] = [
-                    'id' => $spv->id,
-                    'name' => $spv->name,
-                    'nik' => $spv->nik,
-                ];
-            }
-        }
+        $status_detail = GeneralCode::where('section', 'SPONGE')->where('label', 'STATUS_DETAIL')->pluck('reff1')->toArray();
 
         $index = 1;
         foreach ($spongedetails as $detail) {
@@ -395,10 +375,17 @@ class EngineerController extends Controller
                 'device' => $device->device_name,
                 'device_model' => $device->brand,
                 'device_code' => $device->eq_id,
+                'supervisor' => $detail->job_supervisor,
+                'engineer' => $detail->job_executor,
+                'engineer_status' => $detail->executor_progress != '' ? $detail->executor_progress : 'ONGOING',
+                'executor_desc' => $detail->executor_description,
+                'start_effective' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y'),
+                'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y'),
             ];
             $index++;
         }
         $count = count($details);
+        //dd($details);
 
         /*SPK NUMBER Preparation*/
         //get month year
@@ -433,12 +420,11 @@ class EngineerController extends Controller
             'department' => $spongeheader->department,
             'job_category' => $spongeheader->job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
-            'engineers' => $engineers,
-            'spvs' => $spvs,
             'details' => $details,
+            'status_detail' => $status_detail,
             'length' => $count,
         ];
 
-        return view('forms.approval.detail', $data);
+        return view('forms.engineer.detail', $data);
     }
 }

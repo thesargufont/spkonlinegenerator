@@ -83,6 +83,8 @@ Route::post('form-input/approval/cancel', [ApprovalController::class, 'cancel'])
 //ENGINEER
 Route::get('form-input/engineer/index', [EngineerController::class, 'index'])->name('form-input.engineer.index')->middleware('auth');
 Route::post('form-input/engineer/dashboard-data', [EngineerController::class, 'data'])->name('form-input.engineer.dashboard-data')->middleware('auth');
+Route::get('form-input/engineer/detail/{id}', [EngineerController::class, 'detail'])->name('form-input.engineer.detail')->middleware('auth');
+Route::post('form-input/engineer/submit', [EngineerController::class, 'submit'])->name('form-input.engineer.submit')->middleware('auth');
 
 
 // THESAR

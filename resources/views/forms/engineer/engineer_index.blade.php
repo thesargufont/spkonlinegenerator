@@ -180,7 +180,7 @@
 
     function showItem(id) {
         {
-            var url = "{{route('form-input.approval.detail', '')}}" + "/" + id;
+            var url = "{{route('form-input.engineer.detail', '')}}" + "/" + id;
             window.location.href = url;
         }
     }
