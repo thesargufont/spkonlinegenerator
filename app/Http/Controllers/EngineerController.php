@@ -58,7 +58,7 @@ class EngineerController extends Controller
         $datatables = $datatables->addColumn('action', function ($item) use ($request) {
 
             $txt = '';
-            $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\"title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"showItem($item[wo_number_id]);\"title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
             return $txt;
         })
             // ->editColumn('job_category', function ($item) {
