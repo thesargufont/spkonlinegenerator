@@ -122,12 +122,13 @@ class EngineerController extends Controller
 
     public function submit(Request $request)
     {
-        dd($request);
+        //dd($request);
+
         //HEADER VALIDATION
-        if ($request->spk_number == '' || $request->spk_number == null) {
+        if ($request->header_id == '' || $request->header_id == null) {
             return response()->json([
                 'errors' => true,
-                "message" => '<div class="alert alert-danger">Nomor SPK belum diisi. Mohon cek kembali.</div>'
+                "message" => '<div class="alert alert-danger">Terjadi Kesalahan. ID Work Order tidak ditemukan. Coba muat ulang halaman.</div>'
             ]);
         }
 
@@ -139,16 +140,6 @@ class EngineerController extends Controller
             ]);
         }
 
-        //HEADER VALIDATION - CHECK WO NUMBER DUPLICATION
-        $spk_number_cek = SpongeHeader::where('spk_number', $request->spk_number)->first();
-        if ($spk_number_cek) {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Nomor SPK sudah terpakai. Mohon muat ulang halaman.</div>'
-            ]);
-        }
-
-
         //DETAIL VALIDATION
         if (!isset($request->detail)) {
             return response()->json([
@@ -157,62 +148,12 @@ class EngineerController extends Controller
             ]);
         }
         foreach ($request->detail as $detail) {
-            if ($detail['engineer'] == '' || $detail['engineer'] == null) {
+            if ($detail['status_engineer'] == '' || $detail['status_engineer'] == null) {
                 return response()->json([
                     'errors' => true,
-                    "message" => '<div class="alert alert-danger">Ada engineer yang belum dipilih. Mohon cek kembali.</div>'
-                ]);
-            } else {
-                $engineer_cek = User::find($detail['engineer']);
-                //dd($location_cek);
-                if (!$engineer_cek) {
-                    return response()->json([
-                        'errors' => true,
-                        "message" => '<div class="alert alert-danger">Data engineer tidak ditemukan. Mohon cek kembali</div>'
-                    ]);
-                } else {
-                    if ($engineer_cek->active != 1) {
-                        return response()->json([
-                            'errors' => true,
-                            "message" => '<div class="alert alert-danger">Engineer ' . $engineer_cek->name . ' sudah tidak aktif. Mohon cek kembali</div>'
-                        ]);
-                    }
-                }
-            }
-            if ($detail['supervisor'] == '' || $detail['supervisor'] == null) {
-                return response()->json([
-                    'errors' => true,
-                    "message" => '<div class="alert alert-danger">Ada supervisor yang belum diisi. Mohon cek kembali.</div>'
-                ]);
-            } else {
-                $supervisor_cek = User::find($detail['supervisor']);
-                if (!$supervisor_cek) {
-                    return response()->json([
-                        'errors' => true,
-                        "message" => '<div class="alert alert-danger">Data supervisor tidak ditemukan. Mohon cek kembali</div>'
-                    ]);
-                } else {
-                    if ($supervisor_cek->active != 1) {
-                        return response()->json([
-                            'errors' => true,
-                            "message" => '<div class="alert alert-danger">Supervisor ' . $supervisor_cek->name . ' sudah tidak aktif. Mohon cek kembali</div>'
-                        ]);
-                    }
-                }
-            }
-            if ($detail['start_at'] == '' || $detail['start_at'] == null) {
-                return response()->json([
-                    'errors' => true,
-                    "message" => '<div class="alert alert-danger">Ada tanggal mulai yang belum diisi. Mohon cek kembali.</div>'
+                    "message" => '<div class="alert alert-danger">Status Engineer kosong. Mohon cek kembali.</div>'
                 ]);
             }
-            if ($detail['estimated_end'] == '' || $detail['estimated_end'] == null) {
-                return response()->json([
-                    'errors' => true,
-                    "message" => '<div class="alert alert-danger">Ada estimasi selesai yang belum diisi. Mohon cek kembali.</div>'
-                ]);
-            }
-
             $spongeDetail = SpongeDetail::find($detail['id']);
             if (!$spongeDetail) {
                 return response()->json([
@@ -220,22 +161,36 @@ class EngineerController extends Controller
                     "message" => '<div class="alert alert-danger">Detail Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
                 ]);
             }
+            $newFilename1 = '';
+            if (array_key_exists('photo1', $detail)) {
+                //dd($detail);
+                //dd(strval($detail['photo1']->getClientOriginalExtension()));
+                if (strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpeg') {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                    ]);
+                }
+                if (filesize($detail['photo1']) > 512000) {
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                    ]);
+                }
+                $newFilename1 = str_replace('/', '-', $spongeHeader->wo_number) . '-photo1_job' . '.' . $detail['photo1']->getClientOriginalExtension();
+                Storage::putFileAs('local', $detail['photo1'], $newFilename1);
+            }
         }
 
         //TRANSACTION
         try {
             DB::beginTransaction();
-            $spongeHeader->spk_number = $request->spk_number;
-            $spongeHeader->status = $request->action;
-            $spongeHeader->save();
-
 
             foreach ($request->detail as $detail) {
                 $spongeDetail = SpongeDetail::find($detail['id']);
-                $spongeDetail->job_executor = $detail['engineer'];
-                $spongeDetail->job_supervisor = $detail['supervisor'];
-                $spongeDetail->start_at = Carbon::createFromFormat('d/m/Y', $detail['start_at']);
-                $spongeDetail->estimated_end = Carbon::createFromFormat('d/m/Y', $detail['estimated_end']);
+                $spongeDetail->executor_progress = $detail['status_engineer'];
+                $spongeDetail->executor_desc = $detail['desc_engineer'];
+                $spongeDetail->job_attachment1 = 'public/' . $newFilename1;
                 $spongeDetail->save();
 
                 $spongeDetailHist = new SpongeDetailHist([
@@ -248,6 +203,9 @@ class EngineerController extends Controller
                     'wo_attachment1' => $spongeDetail->wo_attachment1,
                     'wo_attachment2' => $spongeDetail->wo_attachment2,
                     'wo_attachment3' => $spongeDetail->wo_attachment3,
+                    'job_attachment1' => $spongeDetail->job_attachment1,
+                    'executor_progress' => $spongeDetail->executor_progress,
+                    'executor_desc' => $spongeDetail->executor_desc,
                     'start_at' => $spongeDetail->start_at,
                     'estimated_end' => $spongeDetail->estimated_end,
                     'action' => 'UPDATE',
@@ -260,91 +218,13 @@ class EngineerController extends Controller
             }
 
             DB::commit();
+
+            // if (array_key_exists('photo1', $detail)) {
+            //     Storage::putFileAs('public', $detail['photo1'], $newFilename1);
+            // }
             return response()->json([
                 'success' => true,
                 "message" => '<div class="alert alert-success">' . $spongeHeader->wo_number . ' berhasil diupdate</div>'
-            ]);
-        } catch (Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger"> Server Error : ' . $e->getMessage() . '. Silahkan kontak developer atau admin.</div>'
-            ]);
-        }
-    }
-
-    public function notApprove(Request $request)
-    {
-
-        $spongeHeader = SpongeHeader::find($request->header_id);
-        if (!$spongeHeader) {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Data Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
-            ]);
-        }
-
-        //TRANSACTION
-        try {
-            DB::beginTransaction();
-            $spongeHeader->status = $request->action;
-            $spongeHeader->save();
-
-            DB::commit();
-            return response()->json([
-                'success' => true,
-                "message" => '<div class="alert alert-success">' . $spongeHeader->wo_number . ' berhasil diupdate</div>'
-            ]);
-        } catch (Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger"> Server Error : ' . $e->getMessage() . '. Silahkan kontak developer atau admin.</div>'
-            ]);
-        }
-    }
-
-    public function cancel(Request $request)
-    {
-        $spongeHeader = SpongeHeader::find($request->header_id);
-        if (!$spongeHeader) {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Data Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
-            ]);
-        }
-
-        foreach ($request->detail as $detail) {
-            $spongeDetail = SpongeDetail::find($detail['id']);
-            if (!$spongeDetail) {
-                return response()->json([
-                    'errors' => true,
-                    "message" => '<div class="alert alert-danger">Detail Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
-                ]);
-            }
-        }
-
-        //TRANSACTION
-        try {
-            DB::beginTransaction();
-            $spongeHeader->spk_number = '';
-            $spongeHeader->status = '';
-            $spongeHeader->save();
-
-
-            foreach ($request->detail as $detail) {
-                $spongeDetail = SpongeDetail::find($detail['id']);
-                $spongeDetail->job_executor = null;
-                $spongeDetail->job_supervisor = null;
-                $spongeDetail->start_at = null;
-                $spongeDetail->estimated_end = null;
-                $spongeDetail->save();
-            }
-
-            DB::commit();
-            return response()->json([
-                'success' => true,
-                "message" => '<div class="alert alert-success">' . $spongeHeader->wo_number . ' berhasil dibatalkan</div>'
             ]);
         } catch (Exception $e) {
             DB::rollback();

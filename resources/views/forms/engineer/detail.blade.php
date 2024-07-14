@@ -16,7 +16,7 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button type="button" name="back" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
-                <button type="button" name="back" id="submitBtn" class="btn btn-info"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Simpan'))}}</button>
+                <button type="button" name="back" id="approveBtn" class="btn btn-info"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Submit'))}}</button>
             </div>
         </div>
     </div>
@@ -177,38 +177,38 @@
                                 {{-- TANGGAL MULAI --}}
                                 <div class="form-group">
                                     <label class="col-sm-2">TANGGAL MULAI</label>
-                                    <div class="col-sm-6 input-group">
-                                        <input name="detail_description_{{ $index }}" id="detail_description_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['start_effective'] }}">
+                                    <div class="col-sm-6">
+                                        <input name="detail[{{ $index }}][start_at]" id="detail[{{ $index }}][start_at]" type="text" class="form-control" readonly="readonly" value="{{ $detail['start_effective'] }}">
                                     </div><!-- input-group -->
                                 </div>
                                 {{-- ESTIMASI SELESAI --}}
                                 <div class="form-group">
                                     <label class="col-sm-2">ESTIMASI SELESAI</label>
-                                    <div class="col-sm-6 input-group">
-                                        <input name="detail_description_{{ $index }}" id="detail_description_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['estimated_end'] }}">
+                                    <div class="col-sm-6">
+                                        <input name="detail[{{ $index }}][estimated_end]" id="detail[{{ $index }}][estimated_end]" type="text" class="form-control" readonly="readonly" value="{{ $detail['estimated_end'] }}">
                                     </div><!-- input-group -->
                                 </div>
                                 {{-- ENGINEER --}}
                                 <div class="form-group">
                                     <label class="col-sm-2">ASSIGN ENGINEER</label>
                                     <div class="col-sm-6">
-                                        <input name="detail_description_{{ $index }}" id="detail_description_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['engineer'] }}">
+                                        <input name="detail[{{ $index }}][engineer]" id="detail[{{ $index }}][engineer]" type="text" class="form-control" readonly="readonly" value="{{ $detail['engineer'] }}">
                                     </div>
                                 </div>
                                 {{-- SUPERVISOR --}}
                                 <div class="form-group">
                                     <label class="col-sm-2">ASSIGN SUPERVISOR</label>
                                     <div class="col-sm-6">
-                                        <input name="detail_description_{{ $index }}" id="detail_description_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['supervisor'] }}">
+                                        <input name="detail[{{ $index }}][supervisor]" id="detail[{{ $index }}][supervisor]" type="text" class="form-control" readonly="readonly" value="{{ $detail['supervisor'] }}">
                                     </div>
                                 </div>
-                                {{-- STATUS ENGINEER--}}
+                                {{-- STATUS ENGINEER --}}
                                 <div class="form-group">
                                     <label class="col-sm-2">STATUS ENGINEER</label>
                                     <div class="col-sm-6">
                                         <select class="form-control" name="detail[{{ $index }}][status_engineer]">
-                                            @foreach($status_detail as $key => $value)
-                                            <option value="{{$value}}">{{$value}}</option>
+                                            @foreach($status_detail as $status_detail)
+                                            <option value="{{$status_detail}}" @if ($status_detail=='ONGOING' ) selected @endif>{{$status_detail}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -217,7 +217,14 @@
                                 <div class="form-group">
                                     <label class="col-sm-2">DESKRIPSI ENGINEER</label>
                                     <div class="col-sm-6">
-                                        <input name="detail[{{ $index }}][deskripsi_engineer]" id="detail[{{ $index }}][deskripsi_engineer]" type="text" class="form-control" readonly="readonly" value="{{ $detail['executor_desc'] }}">
+                                        <input name="detail[{{ $index }}][desc_engineer]" id="detail[{{ $index }}][desc_engineer]" type="text" class="form-control" value="{{ $detail['description'] }}">
+                                    </div>
+                                </div>
+                                {{-- NOMOR WP --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">NOMOR WP</label>
+                                    <div class="col-sm-6">
+                                        <input name="detail[{{ $index }}][wp_number]" id="detail[{{ $index }}][wp_number]" type="text" class="form-control" value="{{ $detail['description'] }}">
                                     </div>
                                 </div>
                                 {{-- LAMPIRAN FOTO --}}
@@ -225,13 +232,6 @@
                                     <label class="col-sm-2">LAMPIRAN FOTO</label>
                                     <div class="col-sm-6">
                                         <input type="file" name="detail[{{ $index }}][photo1]" id="detail[{{ $index }}][photo1]">
-                                    </div>
-                                </div>
-                                {{-- NOMOR WP --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">NOMOR WP</label>
-                                    <div class="col-sm-6">
-                                        <input name="detail[{{ $index }}][nomor_wp]" id="detail[{{ $index }}][nomor_wp]" type="text" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -266,22 +266,27 @@
             window.location.href = "{{ route('form-input.engineer.index') }}";
         });
 
-        $(document).on('click', '#submitBtn', function() {
+        $(document).on('click', '#approveBtn', function() {
             $('#form_result').html('');
             var length_ = $('#count').val();
-            // document.getElementById('action').value = 'ONGOING';
             console.log()
             var formData = new FormData($('#wo-form')[0]);
             formData.append('header_id', $("input[name=header_id]").val());
-            formData.append('spk_number', $("input[name=spk_number]").val());
-            // formData.append('action', $("input[name=action]").val());
             // Append form data for each detail block
             for (let i = 1; i <= length_; i++) {
                 formData.append('detail[' + i + '][id]', $('input[name="detail[' + i + '][id]"]').val());
-                formData.append('detail[' + i + '][status_engineer]', $('input[name="detail[' + i + '][status_engineer]"]').val());
-                formData.append('detail[' + i + '][deskripsi_engineer]', $('input[name="detail[' + i + '][deskripsi_engineer]"]').val());
-                formData.append('detail[' + i + '][photo1]', $('select[name="detail[' + i + '][photo1]"]').val());
-                formData.append('detail[' + i + '][nomor_wp]', $('select[name="detail[' + i + '][nomor_wp]"]').val());
+                formData.append('detail[' + i + '][desc_engineer]', $('input[name="detail[' + i + '][desc_engineer]"]').val());
+                formData.append('detail[' + i + '][wp_number]', $('input[name="detail[' + i + '][wp_number]"]').val());
+                formData.append('detail[' + i + '][start_at]', $('input[name="detail[' + i + '][start_at]"]').val());
+                formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
+                formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
+                formData.append('detail[' + i + '][status_engineer]', $('select[name="detail[' + i + '][status_engineer]"]').val());
+
+                let fileInput = $('input[name="detail[' + i + '][photo1]"]')[0];
+                if (fileInput.files[0]) {
+                    formData.append('detail[' + i + '][photo1]', fileInput.files[0]);
+                }
+
             }
 
             console.log(formData);
@@ -320,7 +325,16 @@
             return false; // Prevent default form submission
 
         });
-
     });
+
+    function toggleClearButton(detailIndex, photoIndex) {
+        var fileInput = document.getElementById('photo' + photoIndex + '_' + detailIndex);
+        var clearButton = document.getElementById('clear_photo' + photoIndex + '_' + detailIndex);
+        if (fileInput.value) {
+            clearButton.style.display = 'inline-block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+    }
 </script>
 @endsection
