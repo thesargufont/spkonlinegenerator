@@ -238,8 +238,17 @@ class EngineerController extends Controller
     public function detail($id)
     {
         $spongeheader = SpongeHeader::find($id);
+        if (!$spongeheader) {
+            return back();
+        }
         $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        if (empty($spongedetails->toArray())) {
+            return back();
+        }
         $status_detail = GeneralCode::where('section', 'SPONGE')->where('label', 'STATUS_DETAIL')->pluck('reff1')->toArray();
+        if (empty($status_detail)) {
+            return back();
+        }
 
         $index = 1;
         foreach ($spongedetails as $detail) {
