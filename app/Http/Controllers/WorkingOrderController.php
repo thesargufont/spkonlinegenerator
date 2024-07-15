@@ -448,7 +448,7 @@ class WorkingOrderController extends Controller
                     ]);
                 }
                 $newFilename1 = str_replace('/', '-', $request->wo_number) . '-photo1' . '.' . $detail['photo1']->getClientOriginalExtension();
-                Storage::putFileAs('local', $detail['photo1'], $newFilename1);
+                // Storage::putFileAs('local', $detail['photo1'], $newFilename1);
             }
             if (array_key_exists('photo2', $detail)) {
                 if (strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpeg') {

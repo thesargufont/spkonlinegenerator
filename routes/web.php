@@ -8,6 +8,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\BasecampController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EngineerController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
@@ -78,6 +79,12 @@ Route::get('form-input/approval/detail/{id}', [ApprovalController::class, 'detai
 Route::post('form-input/approval/approve', [ApprovalController::class, 'approve'])->name('form-input.approval.approve')->middleware('auth');
 Route::post('form-input/approval/notapprove', [ApprovalController::class, 'notApprove'])->name('form-input.approval.notapprove')->middleware('auth');
 Route::post('form-input/approval/cancel', [ApprovalController::class, 'cancel'])->name('form-input.approval.cancel')->middleware('auth');
+
+//ENGINEER
+Route::get('form-input/engineer/index', [EngineerController::class, 'index'])->name('form-input.engineer.index')->middleware('auth');
+Route::post('form-input/engineer/dashboard-data', [EngineerController::class, 'data'])->name('form-input.engineer.dashboard-data')->middleware('auth');
+Route::get('form-input/engineer/detail/{id}', [EngineerController::class, 'detail'])->name('form-input.engineer.detail')->middleware('auth');
+Route::post('form-input/engineer/submit', [EngineerController::class, 'submit'])->name('form-input.engineer.submit')->middleware('auth');
 
 
 // THESAR

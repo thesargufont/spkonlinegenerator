@@ -172,7 +172,7 @@
                             <ul class="list-unstyled">
                                 <li><a href="{{ route('form-input.working-order.index') }}">Pelaporan</a></li>
                                 <li><a href="{{ route('form-input.approval.index') }}">Approval</a></li>
-                                <li><a href="#">Engineer</a></li>
+                                <li><a href="{{ route('form-input.engineer.index') }}">Engineer</a></li>
                             </ul>
                         </li>
 
