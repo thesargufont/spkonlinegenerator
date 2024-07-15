@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Working Order</h4>
+<h4 class="pull-left page-title">Engineer</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Working Order</li>
+    <li class="active">Engineer</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -12,13 +12,9 @@
 @section('content')
 <div class="container">
     <div class="card-header">
-        <div class="alert alert-danger" {{$hidden_status}}>{{$return_msg}}</div>
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
-                @if($access)
-                <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('form-input/working-order/create')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
-                @endif
             </div>
         </div>
     </div>
@@ -37,96 +33,6 @@
                         </div>
                         <br>
 
-                        <div class="row mb-2">
-                            <label class="col-md-2">more filter still under development.</label>
-                        </div>
-
-                        <!-- {{-- TIPE WORK ORDER --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">TIPE WORK ORDER</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="wo_type" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- KATEGORI PEKERJAAN --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">KATEGORI PEKERJAAN</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="wo_category" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- KATEGORI GANGGUAN --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">KATEGORI GANGGUAN</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="disturbance_category" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- DEPARTEMEN --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">DEPARTEMEN</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="department" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- LOKASI PELAPOR --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">LOKASI PELAPOR</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="location" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- STATUS WORK ORDER --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">STATUS WORK ORDER</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="wo_status" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- STATUS ENGINEER --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">STATUS ENGINEER</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="engineer_status" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div> -->
-                        <br>
-
-                        <br>
-
                         {{-- SEARCH --}}
                         <div class="row">
                             <div class="col col-md-3"><button type="submit" class="btn btn-primary" title="search"><i class="fa fa-search"></i> {{ucwords(__('search'))}}</button> </div>
@@ -141,10 +47,9 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Data Work Order</h3>
+                    <h3 class="panel-title">List Work Order</h3>
                 </div>
                 <div class="panel-body">
-                    <span id="form_result"></span>
                     <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                         <thead>
                             <tr>
@@ -200,7 +105,7 @@
                 infoEmpty: ""
             },
             ajax: {
-                'url': "{!! route('form-input.working-order.dashboard-data') !!}",
+                'url': "{!! route('form-input.engineer.dashboard-data') !!}",
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
@@ -275,38 +180,8 @@
 
     function showItem(id) {
         {
-            var urlcek = "{{route('form-input.working-order.cekdetail', '')}}" + "/" + id;
-            var urldet = "{{route('form-input.working-order.detail', '')}}" + "/" + id;
-            $.ajax({
-                url: urlcek,
-                type: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                dataType: "json",
-                data: id,
-                processData: false,
-                contentType: false,
-                success: function(data) {
-                    if (data.errors) {
-                        $('#form_result').html(data.message);
-                        setTimeout(function() {
-                            $('#form_result').html('');
-                        }, 4000);
-                    }
-                    if (data.success) {
-                        window.location.href = urldet;
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log('Error Status:', status);
-                    console.log('Error:', error);
-                    console.log('Response:', xhr.responseText);
-                    var html = '<div class="alert alert-danger">Terjadi kesalahan : ' + error + '</div>';
-                    $('#form_result').html(html);
-                }
-            });
-            // window.location.href = url;
+            var url = "{{route('form-input.engineer.detail', '')}}" + "/" + id;
+            window.location.href = url;
         }
     }
 </script>

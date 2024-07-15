@@ -29,53 +29,57 @@
                         <h3 class="panel-title">Header</h3>
                     </div>
                     <div class="panel-body">
-                        {{-- NOMOR SPK --}}
-                        <div class="form-group">
-                            <label class="col-md-2">NOMOR SPK</label>
-                            <div class="col-md-6">
-                                <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly" value="{{$spk_number}}">
+                        <div class="col-md-6">
+                            {{-- NOMOR SPK --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">NOMOR SPK</label>
+                                <div class="col-sm-7">
+                                    <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly" value="{{$spk_number}}">
+                                </div>
+                            </div>
+
+                            {{-- NOMOR WORK ORDER --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">NOMOR WORK ORDER</label>
+                                <div class="col-sm-7">
+                                    <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly" value="{{$wo_number}}">
+                                </div>
+                            </div>
+
+                            {{-- KATEGORI WORK ORDER --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">KATEGORI WORK ORDER</label>
+                                <div class="col-sm-7">
+                                    <input name="wo_category" id='wo_category' type="text" class="form-control" readonly="readonly" value="{{$wo_category}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {{-- DEPARTEMEN --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">DEPARTEMEN</label>
+                                <div class="col-sm-7">
+                                    <input name="department" id='department' type="text" class="form-control" readonly="readonly" value="{{$department}}">
+                                </div>
+                            </div>
+
+                            {{-- KATEGORI PEKERJAAN --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">KATEGORI PEKERJAAN</label>
+                                <div class="col-sm-7">
+                                    <input name="job_category" id='job_category' type="text" class="form-control" readonly="readonly" value="{{$job_category}}">
+                                </div>
+                            </div>
+
+                            {{-- TANGGAL EFEKTIF --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">TANGGAL EFEKTIF</label>
+                                <div class="col-sm-7">
+                                    <input name="effective_date" id='effective_date' type="text" class="form-control" readonly="readonly" value="{{$effective_date}}">
+                                </div>
                             </div>
                         </div>
 
-                        {{-- NOMOR WORK ORDER --}}
-                        <div class="form-group">
-                            <label class="col-md-2">NOMOR WORK ORDER</label>
-                            <div class="col-md-6">
-                                <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly" value="{{$wo_number}}">
-                            </div>
-                        </div>
-
-                        {{-- KATEGORI WORK ORDER --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">KATEGORI WORK ORDER</label>
-                            <div class="col-sm-6">
-                                <input name="wo_category" id='wo_category' type="text" class="form-control" readonly="readonly" value="{{$wo_category}}">
-                            </div>
-                        </div>
-
-                        {{-- DEPARTEMEN --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">DEPARTEMEN</label>
-                            <div class="col-sm-6">
-                                <input name="department" id='department' type="text" class="form-control" readonly="readonly" value="{{$department}}">
-                            </div>
-                        </div>
-
-                        {{-- KATEGORI PEKERJAAN --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">KATEGORI PEKERJAAN</label>
-                            <div class="col-sm-6">
-                                <input name="job_category" id='job_category' type="text" class="form-control" readonly="readonly" value="{{$job_category}}">
-                            </div>
-                        </div>
-
-                        {{-- TANGGAL EFEKTIF --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">TANGGAL EFEKTIF</label>
-                            <div class="col-sm-6">
-                                <input name="effective_date" id='effective_date' type="text" class="form-control" readonly="readonly" value="{{$effective_date}}">
-                            </div>
-                        </div>
                     </div> <!-- panel-body -->
                 </div> <!-- panel -->
 

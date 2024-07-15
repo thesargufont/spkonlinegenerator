@@ -22,6 +22,8 @@
     <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
@@ -170,7 +172,7 @@
                             <ul class="list-unstyled">
                                 <li><a href="{{ route('form-input.working-order.index') }}">Pelaporan</a></li>
                                 <li><a href="{{ route('form-input.approval.index') }}">Approval</a></li>
-                                <li><a href="#">Engineer</a></li>
+                                <li><a href="{{ route('form-input.engineer.index') }}">Engineer</a></li>
                             </ul>
                         </li>
 
@@ -318,6 +320,7 @@
     }
 </style>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     function artLoadingDialogDo(text, onShownCallback = null, onHiddenCallback = null, modalWidth = 500) {
         $('#artLoadingDialogText').html(text);

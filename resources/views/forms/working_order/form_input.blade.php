@@ -30,56 +30,60 @@
                         <h3 class="panel-title">Form Header</h3>
                     </div>
                     <div class="panel-body">
-                        {{-- NOMOR WORK ORDER --}}
-                        <div class="form-group">
-                            <label class="col-md-2">NOMOR WORK ORDER</label>
-                            <div class="col-md-6">
-                                <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly">
+                        <div class="col-md-6">
+                            {{-- NOMOR WORK ORDER --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">NOMOR WORK ORDER</label>
+                                <div class="col-sm-7">
+                                    <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly">
+                                </div>
+                            </div>
+
+                            {{-- KATEGORI WORK ORDER --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">KATEGORI WORK ORDER</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="wo_category" id="wo_category" onchange="getjobcategory()">
+                                        <option value="" selected disabled hidden>PILIH SATU</option>
+                                        @foreach($wo_category as $wo_category)
+                                        <option value="{{$wo_category['wo_category']}}">{{$wo_category['wo_category']}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            {{-- DEPARTEMEN --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">DEPARTEMEN</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="department" onchange="getwonumber()">
+                                        @foreach($department as $department)
+                                        <option value="{{$department['id']}}" @if (Auth::user()->department_id == $department['id']) selected @endif>{{$department['department_code']}} - {{$department['department']}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {{-- KATEGORI PEKERJAAN --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">KATEGORI PEKERJAAN</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" name="job_category" id="job_category">
+                                    </select>
+                                </div>
+                            </div>
+
+                            {{-- TANGGAL EFEKTIF --}}
+                            <div class="form-group">
+                                <label class="col-sm-3">TANGGAL EFEKTIF</label>
+                                <div class="col-sm-7 input-group">
+                                    <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date" value="{{$effective_date}}">
+                                    <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
+                                </div><!-- input-group -->
                             </div>
                         </div>
 
-                        {{-- KATEGORI WORK ORDER --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">KATEGORI WORK ORDER</label>
-                            <div class="col-sm-6">
-                                <select class="form-control" name="wo_category" id="wo_category" onchange="getjobcategory()">
-                                    <option value="" selected disabled hidden>PILIH SATU</option>
-                                    @foreach($wo_category as $wo_category)
-                                    <option value="{{$wo_category['wo_category']}}">{{$wo_category['wo_category']}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- DEPARTEMEN --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">DEPARTEMEN</label>
-                            <div class="col-sm-6">
-                                <select class="form-control" name="department" onchange="getwonumber()">
-                                    @foreach($department as $department)
-                                    <option value="{{$department['id']}}" @if (Auth::user()->department_id == $department['id']) selected @endif>{{$department['department_code']}} - {{$department['department']}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- KATEGORI PEKERJAAN --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">KATEGORI PEKERJAAN</label>
-                            <div class="col-sm-6">
-                                <select class="form-control" name="job_category" id="job_category">
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- TANGGAL EFEKTIF --}}
-                        <div class="form-group">
-                            <label class="col-sm-2">TANGGAL EFEKTIF</label>
-                            <div class="col-sm-2 input-group">
-                                <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date" value="{{$effective_date}}">
-                                <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
-                            </div><!-- input-group -->
-                        </div>
                     </div> <!-- panel-body -->
                 </div> <!-- panel -->
 
@@ -132,7 +136,7 @@
                                 <label>LOKASI</label>
                             </div>
                             <div>
-                                <select class="form-control" name="details[${detailIndex}][location]" id="details${detailIndex}location" onchange="getdevicemodel(${detailIndex})">
+                                <select class="form-control wo-select" name="details[${detailIndex}][location]" id="details${detailIndex}location" onchange="getdevicemodel(${detailIndex})">
                                     <option value="" selected disabled hidden>PILIH SATU</option>
                                     @foreach($location as $location)
                                         <option value="{{$location['id']}}">{{$location['location']}} - {{$location['location_type']}}</option>
@@ -205,11 +209,21 @@
                         <label>LAMPIRAN FOTO</label>
                     </div>
                     <div>
-                        <input type="file" name="details[${detailIndex}][photo1]">
-                        <br>
-                        <input type="file" name="details[${detailIndex}][photo2]">
-                        <br>
-                        <input type="file" name="details[${detailIndex}][photo3]">
+                        <div class="col-sm-10">
+                            <input type="file" name="details[${detailIndex}][photo1]" id="photo1_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 1)">
+                            <br>
+                            <input type="file" name="details[${detailIndex}][photo2]" id="photo2_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 2)">
+                            <br>
+                            <input type="file" name="details[${detailIndex}][photo3]" id="photo3_${detailIndex}" onchange="toggleClearButton(${detailIndex}, 3)">
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_photo1_${detailIndex}" onclick="clearFileInput(${detailIndex}, 1)" style="display: none;">Clear</button>
+                            <br>
+                            <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_photo2_${detailIndex}" onclick="clearFileInput(${detailIndex}, 2)" style="display: none;">Clear</button>
+                            <br>
+                            <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_photo3_${detailIndex}" onclick="clearFileInput(${detailIndex}, 3)" style="display: none;">Clear</button>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -232,6 +246,8 @@
             todayHighlight: 'TRUE',
             autoclose: true,
         });
+
+        $('.wo-select').select2();
 
         $(document).on('click', '#saveBtn', function() {
             $('#form_result').html('');
@@ -310,6 +326,23 @@
             window.location.href = "{{ route('form-input.working-order.index') }}";
         });
     });
+
+    function toggleClearButton(detailIndex, photoIndex) {
+        var fileInput = document.getElementById('photo' + photoIndex + '_' + detailIndex);
+        var clearButton = document.getElementById('clear_photo' + photoIndex + '_' + detailIndex);
+        if (fileInput.value) {
+            clearButton.style.display = 'inline-block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+    }
+
+    function clearFileInput(detailIndex, photoIndex) {
+        var fileInput = document.getElementById('photo' + photoIndex + '_' + detailIndex);
+        var clearButton = document.getElementById('clear_photo' + photoIndex + '_' + detailIndex);
+        fileInput.value = '';
+        clearButton.style.display = 'none';
+    }
 
     function checkwocategory() {
         if ($('#wo_category').val() == 'PEKERJAAN') {
