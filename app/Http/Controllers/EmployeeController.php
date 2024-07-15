@@ -16,14 +16,37 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        return view('masters.employee.employee_index');
+        $departments = Department::where('active', 1)->get();
+
+        return view('masters.employee.employee_index', [
+            'departments' => $departments,
+        ]);
     }
 
     public function getData($request, $isExcel = '')
     {
-        $employee_name = strtoupper($request->employee_name);
-        $employee_nik = strtoupper($request->employee_nik);
-        $status = strtoupper($request->status);
+        if($isExcel == "")
+        {
+            session([
+                    'employee'.'.employee_name' => $request->has('employee_name')?  $request->input('employee_name') : '',
+                    'employee'.'.employee_nik' => $request->has('employee_nik')?  $request->input('employee_nik') : '',
+                    'employee'.'.department' => $request->has('department')?  $request->input('department') : '',
+                    'employee'.'.gender' => $request->has('gender')?  $request->input('gender') : '',
+                    'employee'.'.status' => $request->has('status')?  $request->input('status'): '', 
+            ]);
+        } 
+
+        $employee_name  = session('employee'.'.employee_name')!=''?session('employee'.'.employee_name'):'';
+        $employee_nik   = session('employee'.'.employee_nik')!=''?session('employee'.'.employee_nik'):'';
+        $department     = session('employee'.'.department')!=''?session('employee'.'.department'):'';
+        $gender         = session('employee'.'.gender')!=''?session('employee'.'.gender'):'';
+        $status         = session('employee'.'.status')!=''?session('employee'.'.status'):'';
+
+        $employee_name = strtoupper($employee_name);
+        $employee_nik = strtoupper($employee_nik);
+        $department = strtoupper($department);
+        $gender = strtoupper($gender);
+        $status = strtoupper($status);
 
         $employeeDatas = User::where('active', $status);
         if ($employee_name != '') {
@@ -32,6 +55,14 @@ class EmployeeController extends Controller
 
         if ($employee_nik != '') {
             $employeeDatas = $employeeDatas->where('nik', 'LIKE',  "%{$employee_nik}%");
+        }
+
+        if ($department != '') {
+            $employeeDatas = $employeeDatas->where('department_id', $department);
+        }
+
+        if ($gender != '') {
+            $employeeDatas = $employeeDatas->where('gender', $gender);
         }
 
         return $employeeDatas;
@@ -56,12 +87,38 @@ class EmployeeController extends Controller
 
             return $txt;
         })
+            ->addColumn('active', function ($item) {
+                if($item->active == 1){
+                    return 'AKTIF';
+                } else {
+                    return 'TIDAK AKTIF';
+                }
+            })
             ->addColumn('department', function ($item) {
                 $department = Department::where('id', $item->department_id)->first()->department;
                 return $department;
             })
             ->editColumn('start_effective', function ($item) {
                 return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y');
+            })
+            ->editColumn('end_effective', function ($item) {
+                if($item->end_effective == null){
+                    return '-';
+                } else {
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
+                }
+            })
+            ->addColumn('created_by', function ($item) {
+                return optional($item->createdBy)->name;
+            })
+            ->editColumn('created_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
+            })
+            ->addColumn('updated_by', function ($item) {
+                return optional($item->updatedBy)->name;
+            })
+            ->editColumn('updated_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
             });
         return $datatables->make(TRUE);
     }

@@ -82,9 +82,9 @@ class JobController extends Controller
         })
         ->addColumn('active', function ($item) {
             if($item->active == 1){
-                return 'YA';
+                return 'AKTIF';
             } else {
-                return 'TIDAK';
+                return 'TIDAK AKTIF';
             }
         })
         ->addColumn('department', function ($item) {

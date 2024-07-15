@@ -24,9 +24,6 @@
         <div class="card card-body">
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
-                    {{-- <div class="panel-heading">
-                        <h3 class="panel-title">Form Header</h3>
-                    </div> --}}
 
                     <div class="panel-body">
                         {{-- EMPLOYEE NAME --}}
@@ -35,9 +32,6 @@
                             <div class="col-md-6">
                                 <input id="employee_name" type="text" class="text-uppercase form-control" name="employee_name" title="NAMA KARYAWAN" placeholder="NAMA KARYAWAN">
                                 <input name="employee_name_id" id="employee_name_id" type="hidden" />
-                                <!-- <div class="input-group-append">
-                                    <button class="btn btn-info" type="button" onclick="employeeName();"><i class="fa fa-ellipsis-h"></i></button>
-                                </div> -->
                             </div>
                         </div>
                         <br>
@@ -47,10 +41,33 @@
                             <label class="col-md-2">NIK KARYAWAN</label>
                             <div class="col-md-6">
                                 <input id="employee_nik" type="text" class="text-uppercase form-control" name="employee_nik" title="NIK KARYAWAN" placeholder="NAMA KARYAWAN">
-                                <!-- <input name="employee_name_id" id="employee_name_id" type="hidden" /> -->
-                                <!-- <div class="input-group-append">
-                                    <button class="btn btn-info" type="button" onclick="employeeName();"><i class="fa fa-ellipsis-h"></i></button>
-                                </div> -->
+                            </div>
+                        </div>
+                        <br>
+
+                        {{-- DEPARTMENT --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">DEPARTMENT *</label>
+                            <div class="col-md-6">
+                                <select title="DEPARTMENT" id="department" class="form-control">
+                                    <option value="" selected>SEMUA</option>
+                                    @foreach ($departments as $item)
+                                        <option value={{ $item->id }}>{{ $item->department }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+
+                        {{-- GENDER --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">JENIS KELAMIN *</label>
+                            <div class="col-md-6">
+                                <select title="JENIS KELAMIN" id="gender" class="form-control">
+                                    <option value="" selected>SEMUA</option>
+                                    <option value="PRIA">PRIA</option>
+                                    <option value="WANITA">WANITA</option>
+                                </select>
                             </div>
                         </div>
                         <br>
@@ -96,7 +113,13 @@
                                 <th>Jenis Kelamin</th>
                                 <th>Email</th>
                                 <th>No. Telp</th>
-                                <th>Mulai Efektif</th>
+                                <th>Status</th>
+                                <th>Start Effective</th>
+                                <th>End Effective</th>
+                                <th>Dibuat Oleh</th>
+                                <th>Dibuat Pada</th>
+                                <th>Diubah Oleh</th>
+                                <th>Diubah Pada</th>
                             </tr>
                         </thead>
                     </table>
@@ -136,43 +159,26 @@
                 'data': function(d) {
                     d.employee_name = $('#employee_name').val();
                     d.employee_nik = $('#employee_nik').val();
+                    d.department = $('#department').val();
+                    d.gender = $('#gender').val();
                     d.status = $('#status').val();
                 }
             },
-            columns: [{
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'nik',
-                    name: 'nik'
-                },
-                {
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'department',
-                    name: 'department'
-                },
-                {
-                    data: 'gender',
-                    name: 'gender'
-                },
-                {
-                    data: 'email',
-                    name: 'email'
-                },
-                {
-                    data: 'phone_number',
-                    name: 'phone_number',
-                },
-                {
-                    data: 'start_effective',
-                    name: 'start_effective',
-                },
+            columns: [
+                { data : 'action', name: 'action', orderable: false, searchable: false},
+                { data : 'nik',                    name : 'nik'                       },
+                { data : 'name',                   name : 'name'                      },
+                { data : 'department',             name : 'department'                },
+                { data : 'gender',                 name : 'gender'                    },
+                { data : 'email',                  name : 'email'                     },
+                { data : 'phone_number',           name : 'phone_number'              },
+                { data : 'active' ,                name : 'active'                    },
+                { data : 'start_effective' ,       name : 'start_effective'           },
+                { data : 'end_effective' ,         name : 'end_effective'             },
+                { data : 'created_by' ,            name : 'created_by',               },
+                { data : 'created_at' ,            name : 'created_at',               },
+                { data : 'updated_by' ,            name : 'updated_by',               },
+                { data : 'updated_at' ,            name : 'updated_at',               },
             ],
             // order: [[ 2, "desc" ]],
             rowCallback: function(row, data, iDisplayIndex) {
