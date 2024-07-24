@@ -368,7 +368,8 @@ class ApprovalController extends Controller
                 ];
             }
         }
-        $get_spvs = Role::where('role', 'SPV')->where('active', 1)->pluck('id')->toArray();
+
+        $get_spvs = Role::where('role', 'SPV')->where('active', 1)->pluck('user_id')->toArray();
         $spvs = [];
         foreach ($get_spvs as $id) {
             $spv = User::where('id', $id)->where('active', 1)->first();
@@ -421,8 +422,6 @@ class ApprovalController extends Controller
         //generate wo number
         $spk_number = str_pad($number, 5, '0', STR_PAD_LEFT) . '/' . 'SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' . $year;
         /*WO NUMBER complete*/
-
-        // dd($engineers, $spvs);
 
         $data = [
             'spk_number' => $spk_number,

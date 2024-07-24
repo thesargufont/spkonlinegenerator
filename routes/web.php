@@ -37,6 +37,8 @@ Route::post('actionlogout', [LoginController::class, 'actionlogout'])->name('act
 Route::post('profile-user', [ProfileController::class, 'index'])->name('profile-user');
 
 Route::get('home', [HomeController::class, 'index'])->name('home')->middleware('auth');
+Route::post('dashboard/dashboard-data', [HomeController::class, 'data'])->name('dashboard.dashboard-data')->middleware('auth');
+
 Route::get('actionlogout', [LoginController::class, 'actionlogout'])->name('actionlogout')->middleware('auth');
 
 /*
