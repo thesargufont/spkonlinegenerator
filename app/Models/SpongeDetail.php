@@ -51,4 +51,14 @@ class SpongeDetail extends Model
     {
         return $this->belongsTo('App\User', 'updated_by');
     }
+
+    public function executorBy()
+    {
+        return $this->belongsTo('App\User', 'job_executor');
+    }
+
+    public function supervisorBy()
+    {
+        return $this->belongsTo('App\User', 'job_supervisor');
+    }
 }

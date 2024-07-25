@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\User;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Job;
-use App\Models\Device;
-use App\Models\DeviceCategory;
-use App\Models\Location;
 use App\Models\Role;
-use App\Models\SpongeHeader;
+use App\Models\Device;
+use App\Models\Location;
+// use Barryvdh\DomPDF\PDF;
+use Barryvdh\DomPDF\Facade as PDF;
+use App\Models\Department;
 use App\Models\SpongeDetail;
-use App\Models\SpongeDetailHist;
+use App\Models\SpongeHeader;
 use Illuminate\Http\Request;
+use App\Models\DeviceCategory;
+use App\Models\SpongeDetailHist;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class ApprovalController extends Controller
 {
@@ -56,6 +58,9 @@ class ApprovalController extends Controller
 
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\"title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            if($item->spk_number != ''){
+                $txt .= "<a href=\"#\" onclick=\"downloadItem($item[id]);\"title=\"" . ucfirst(__('download')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-download fa-fw fa-xs\"></i></a>";
+            }
             return $txt;
         })
             // ->editColumn('job_category', function ($item) {
@@ -222,6 +227,8 @@ class ApprovalController extends Controller
         try {
             DB::beginTransaction();
             $spongeHeader->spk_number = $request->spk_number;
+            $spongeHeader->approve_by = Auth::user()->id;
+            $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->status = $request->action;
             $spongeHeader->save();
 
@@ -235,18 +242,18 @@ class ApprovalController extends Controller
                 $spongeDetail->save();
 
                 $spongeDetailHist = new SpongeDetailHist([
-                    'sponge_detail_id' => $spongeDetail->id,
-                    'wo_number_id' => $spongeDetail->wo_number_id,
-                    'reporter_location' => $spongeDetail->reporter_location,
-                    'device_id' => $spongeDetail->device_id,
-                    'disturbance_category' => $spongeDetail->disturbance_category,
-                    'wo_description' => $spongeDetail->wo_description,
-                    'wo_attachment1' => $spongeDetail->wo_attachment1,
-                    'wo_attachment2' => $spongeDetail->wo_attachment2,
-                    'wo_attachment3' => $spongeDetail->wo_attachment3,
-                    'start_at' => $spongeDetail->start_at,
-                    'estimated_end' => $spongeDetail->estimated_end,
-                    'action' => 'UPDATE',
+                    'sponge_detail_id'        => $spongeDetail->id,
+                    'wo_number_id'            => $spongeDetail->wo_number_id,
+                    'reporter_location'       => $spongeDetail->reporter_location,
+                    'device_id'               => $spongeDetail->device_id,
+                    'disturbance_category'    => $spongeDetail->disturbance_category,
+                    'wo_description'          => $spongeDetail->wo_description,
+                    'wo_attachment1'          => $spongeDetail->wo_attachment1,
+                    'wo_attachment2'          => $spongeDetail->wo_attachment2,
+                    'wo_attachment3'          => $spongeDetail->wo_attachment3,
+                    'start_at'                => $spongeDetail->start_at,
+                    'estimated_end'           => $spongeDetail->estimated_end,
+                    'action'                  => 'UPDATE',
                     'created_by'              => Auth::user()->id,
                     'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
                     'updated_by'              => Auth::user()->id,
@@ -439,5 +446,34 @@ class ApprovalController extends Controller
         ];
 
         return view('forms.approval.detail', $data);
+    }
+
+    public function generatePDF($id)
+    {
+        $dataHeader = SpongeHeader::where('id', $id)->first();
+        $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->first();
+
+        $getData [] = [
+            'spk_number'     => $dataHeader->spk_number,
+            'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d-m-Y'),
+            'location'       => $dataDetail->reporter_location,
+            'description'    => $dataHeader->description,
+            'approve_by'     => $dataHeader->approveBy != '' ? optional($dataHeader->approveBy)->name : '',
+            'job_executor'   => $dataDetail->executorBy != '' ? optional($dataDetail->executorBy)->name : '',
+            'job_supervisor' => $dataDetail->supervisorBy != '' ? optional($dataDetail->supervisorBy)->name : '',
+            'wo_description' => $dataDetail->wo_description,
+        ];
+        
+        $pdf = PDF::loadView('forms.approval.pdf.print',[
+            'data'=>$getData
+            ])->setOptions(['dpi' => 150]); 
+
+        $pdf = $pdf->setPaper('a4', 'potrait');
+        $documentNumber = str_replace('/', '', $getData[0]['spk_number']);
+        
+        $today = Carbon::now()->format('Y/m');
+        Storage::put('dms/stok/'.$today.'/'.$documentNumber.'.pdf', $pdf->output());
+        
+        return $pdf->download($documentNumber.'.pdf');
     }
 }

@@ -41,4 +41,9 @@ class SpongeHeader extends Model
     {
         return $this->belongsTo('App\User', 'updated_by');
     }
+
+    public function approveBy()
+    {
+        return $this->belongsTo('App\User', 'approve_by');
+    }
 }

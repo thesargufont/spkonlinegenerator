@@ -274,5 +274,15 @@
             window.location.href = url;
         }
     }
+
+    function downloadItem(id) {
+        {
+            var url = "{{route('form-input.approval.download', '')}}" + "/" + id;
+            window.open(url,'_blank');
+        }
+    }
+
+    // var uri = encodeURI("{{url('masters/department/export-excel')}}");
+        
 </script>
 @endsection

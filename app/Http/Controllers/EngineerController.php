@@ -40,7 +40,6 @@ class EngineerController extends Controller
         $user = Auth::user()->id;
         $spongeheader = SpongeHeader::leftJoin('sponge_details', 'sponge_headers.id', '=', 'sponge_details.wo_number_id')
             ->where('sponge_headers.status', 'ONGOING')
-            ->where('sponge_headers.wo_number', 'like', '%' . $request->wo_number . '%')
             ->where('sponge_details.job_executor', $user);
 
         return $spongeheader;
@@ -189,30 +188,30 @@ class EngineerController extends Controller
             foreach ($request->detail as $detail) {
                 $spongeDetail = SpongeDetail::find($detail['id']);
                 $spongeDetail->executor_progress = $detail['status_engineer'];
-                $spongeDetail->executor_desc = $detail['desc_engineer'];
-                $spongeDetail->job_attachment1 = 'public/' . $newFilename1;
+                $spongeDetail->executor_desc     = $detail['desc_engineer'];
+                $spongeDetail->job_attachment1   = 'public/' . $newFilename1;
                 $spongeDetail->save();
 
                 $spongeDetailHist = new SpongeDetailHist([
-                    'sponge_detail_id' => $spongeDetail->id,
-                    'wo_number_id' => $spongeDetail->wo_number_id,
-                    'reporter_location' => $spongeDetail->reporter_location,
-                    'device_id' => $spongeDetail->device_id,
+                    'sponge_detail_id'     => $spongeDetail->id,
+                    'wo_number_id'         => $spongeDetail->wo_number_id,
+                    'reporter_location'    => $spongeDetail->reporter_location,
+                    'device_id'            => $spongeDetail->device_id,
                     'disturbance_category' => $spongeDetail->disturbance_category,
-                    'wo_description' => $spongeDetail->wo_description,
-                    'wo_attachment1' => $spongeDetail->wo_attachment1,
-                    'wo_attachment2' => $spongeDetail->wo_attachment2,
-                    'wo_attachment3' => $spongeDetail->wo_attachment3,
-                    'job_attachment1' => $spongeDetail->job_attachment1,
-                    'executor_progress' => $spongeDetail->executor_progress,
-                    'executor_desc' => $spongeDetail->executor_desc,
-                    'start_at' => $spongeDetail->start_at,
-                    'estimated_end' => $spongeDetail->estimated_end,
-                    'action' => 'UPDATE',
-                    'created_by'              => Auth::user()->id,
-                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                    'updated_by'              => Auth::user()->id,
-                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                    'wo_description'       => $spongeDetail->wo_description,
+                    'wo_attachment1'       => $spongeDetail->wo_attachment1,
+                    'wo_attachment2'       => $spongeDetail->wo_attachment2,
+                    'wo_attachment3'       => $spongeDetail->wo_attachment3,
+                    'job_attachment1'      => $spongeDetail->job_attachment1,
+                    'executor_progress'    => $spongeDetail->executor_progress,
+                    'executor_desc'        => $spongeDetail->executor_desc,
+                    'start_at'             => $spongeDetail->start_at,
+                    'estimated_end'        => $spongeDetail->estimated_end,
+                    'action'               => 'UPDATE',
+                    'created_by'           => Auth::user()->id,
+                    'created_at'           => Carbon::now()->timezone('Asia/Jakarta'),
+                    'updated_by'           => Auth::user()->id,
+                    'updated_at'           => Carbon::now()->timezone('Asia/Jakarta'),
                 ]);
                 $spongeDetailHist->save();
             }

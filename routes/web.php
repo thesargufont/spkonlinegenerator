@@ -81,6 +81,7 @@ Route::get('form-input/approval/detail/{id}', [ApprovalController::class, 'detai
 Route::post('form-input/approval/approve', [ApprovalController::class, 'approve'])->name('form-input.approval.approve')->middleware('auth');
 Route::post('form-input/approval/notapprove', [ApprovalController::class, 'notApprove'])->name('form-input.approval.notapprove')->middleware('auth');
 Route::post('form-input/approval/cancel', [ApprovalController::class, 'cancel'])->name('form-input.approval.cancel')->middleware('auth');
+Route::get('form-input/approval/download/{id}', [ApprovalController::class, 'generatePDF'])->name('form-input.approval.download')->middleware('auth');
 
 //ENGINEER
 Route::get('form-input/engineer/index', [EngineerController::class, 'index'])->name('form-input.engineer.index')->middleware('auth');
