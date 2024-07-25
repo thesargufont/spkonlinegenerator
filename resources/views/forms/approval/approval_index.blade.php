@@ -34,7 +34,7 @@
                         <br>
 
                         <div class="row mb-2">
-                            <label class="col-md-2">more filter still under development.</label>
+                            {{-- <label class="col-md-2">more filter still under development.</label> --}}
                         </div>
 
                         <!-- {{-- TIPE WORK ORDER --}}
