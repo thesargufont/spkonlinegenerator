@@ -487,57 +487,65 @@ class WorkingOrderController extends Controller
         try {
             DB::beginTransaction();
             $spongeHeader = new SpongeHeader([
-                'wo_number' => $request->wo_number,
-                'wo_type' => $request->wo_category,
-                'job_category' => $request->job_category ? $request->job_category : '',
-                'department' => Department::find($request->department)->department,
-                'effective_date' => Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta'),
-                'status' => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
-                'created_by'              => Auth::user()->id,
-                'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                'updated_by'              => Auth::user()->id,
-                'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                'wo_number'       => $request->wo_number,
+                'wo_type'         => $request->wo_category,
+                'job_category'    => $request->job_category ? $request->job_category : '',
+                'department'      => Department::find($request->department)->department,
+                'effective_date'  => Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta'),
+                'status'          => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
+                'created_by'      => Auth::user()->id,
+                'created_at'      => Carbon::now()->timezone('Asia/Jakarta'),
+                'updated_by'      => Auth::user()->id,
+                'updated_at'      => Carbon::now()->timezone('Asia/Jakarta'),
             ]);
             $spongeHeader->save();
 
             // $spongeDetails = [];
             // $spongeDetailHists = [];
             foreach ($request->details as $detail) {
+                if($request->wo_category == 'LAPORAN GANGGUAN'){
+                    $closeAt = Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta');
+                } else {
+                    $closeAt = null; 
+                }
+                
                 $spongeDetail = new SpongeDetail([
-                    'wo_number_id' => $spongeHeader->id,
-                    'reporter_location' => Location::find($detail['location'])->location,
-                    'device_id' => $detail['device'],
-                    'disturbance_category' => $detail['disturbance_category'],
-                    'wo_description' => $detail['description'],
-                    'wo_attachment1' => 'public/' . $newFilename1,
-                    'wo_attachment2' => 'public/' . $newFilename2,
-                    'wo_attachment3' => 'public/' . $newFilename3,
-                    'start_at' => NULL,
-                    'estimated_end' => NULL,
-                    'created_by'              => Auth::user()->id,
-                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                    'updated_by'              => Auth::user()->id,
-                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                    'wo_number_id'          => $spongeHeader->id,
+                    'reporter_location'     => Location::find($detail['location'])->location,
+                    'device_id'             => $detail['device'],
+                    'disturbance_category'  => $detail['disturbance_category'],
+                    'wo_description'        => $detail['description'],
+                    'wo_attachment1'        => 'public/' . $newFilename1,
+                    'wo_attachment2'        => 'public/' . $newFilename2,
+                    'wo_attachment3'        => 'public/' . $newFilename3,
+                    'start_at'              => null,
+                    'estimated_end'         => null,
+                    'close_at'              => $closeAt,
+                    'created_by'            => Auth::user()->id,
+                    'created_at'            => Carbon::now()->timezone('Asia/Jakarta'),
+                    'updated_by'            => Auth::user()->id,
+                    'updated_at'            => Carbon::now()->timezone('Asia/Jakarta'),
                 ]);
                 $spongeDetail->save();
 
                 $spongeDetailHist = new SpongeDetailHist([
-                    'sponge_detail_id' => $spongeDetail->id,
-                    'wo_number_id' => $spongeHeader->id,
-                    'reporter_location' => Location::find($detail['location'])->location,
-                    'device_id' => $detail['device'],
-                    'disturbance_category' => $detail['disturbance_category'],
-                    'wo_description' => $detail['description'],
-                    'wo_attachment1' => 'public/' . $newFilename1,
-                    'wo_attachment2' => 'public/' . $newFilename2,
-                    'wo_attachment3' => 'public/' . $newFilename3,
-                    'start_at' => NULL,
-                    'estimated_end' => NULL,
-                    'action' => 'CREATE',
-                    'created_by'              => Auth::user()->id,
-                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                    'updated_by'              => Auth::user()->id,
-                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                    'sponge_detail_id'      => $spongeDetail->id,
+                    'wo_number_id'          => $spongeHeader->id,
+                    'reporter_location'     => Location::find($detail['location'])->location,
+                    'device_id'             => $detail['device'],
+                    'disturbance_category'  => $detail['disturbance_category'],
+                    'wo_description'        => $detail['description'],
+                    'wo_attachment1'        => 'public/' . $newFilename1,
+                    'wo_attachment2'        => 'public/' . $newFilename2,
+                    'wo_attachment3'        => 'public/' . $newFilename3,
+                    'start_at'              => null,
+                    'estimated_end'         => null,
+                    'close_at'              => $closeAt,
+                    'action'                => 'CREATE',
+                    'created_by'            => Auth::user()->id,
+                    'created_at'            => Carbon::now()->timezone('Asia/Jakarta'),
+                    'updated_by'            => Auth::user()->id,
+                    'updated_at'            => Carbon::now()->timezone('Asia/Jakarta'),
                 ]);
                 $spongeDetailHist->save();
             }
