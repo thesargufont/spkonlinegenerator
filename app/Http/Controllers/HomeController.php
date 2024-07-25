@@ -21,8 +21,16 @@ class HomeController extends Controller
         $totalReportJob     = $totalReportJob->where('wo_type', 'PEKERJAAN')->count();
         $totalReportProblem = $totalReportProblem->where('wo_type', 'LAPORAN GANGGUAN')->count();
 
-        $jobPercentage    = ($totalReportJob * 100) / $totalReport;
-        $problemPercentage = ($totalReportProblem * 100) / $totalReport;
+        if($totalReportJob != 0){
+            $jobPercentage    = ($totalReportJob * 100) / $totalReport;
+        } else {
+            $jobPercentage = 0;
+        }
+        if($totalReportJob != 0){
+            $problemPercentage = ($totalReportProblem * 100) / $totalReport;
+        } else {
+            $problemPercentage = 0;
+        }
 
         // REPORT PROBLEM
         $ReportDatas = SpongeHeader::where('status', '!=', 'NOT APPROVE');
