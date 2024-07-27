@@ -48,7 +48,7 @@ class DeviceController extends Controller
                     'device'.'.department' => $request->has('department')?  $request->input('department'): '', 
                     'device'.'.device_category' => $request->has('device_category')?  $request->input('device_category'): '', 
                     'device'.'.serial_number' => $request->has('serial_number')?  $request->input('serial_number'): '', 
-                    'device'.'.eq_id' => $request->has('eq_id')?  $request->input('eq_id'): '', 
+                    'device'.'.activa_number' => $request->has('activa_number')?  $request->input('activa_number'): '', 
                     'device'.'.status' => $request->has('status')?  $request->input('status'): '', 
             ]);
         } 
@@ -59,7 +59,7 @@ class DeviceController extends Controller
         $department       = session('device'.'.department')!=''?session('device'.'.department'):'';
         $device_category  = session('device'.'.device_category')!=''?session('device'.'.device_category'):'';
         $serial_number    = session('device'.'.serial_number')!=''?session('device'.'.serial_number'):'';
-        $eq_id            = session('device'.'.eq_id')!=''?session('device'.'.eq_id'):'';
+        $activa_number    = session('device'.'.activa_number')!=''?session('device'.'.activa_number'):'';
         $status           = session('device'.'.status')!=''?session('device'.'.status'):'';
 
         $device_name     = strtoupper($device_name);
@@ -68,7 +68,7 @@ class DeviceController extends Controller
         $department      = strtoupper($department);
         $device_category = strtoupper($device_category);
         $serial_number   = strtoupper($serial_number);
-        $eq_id           = strtoupper($eq_id);
+        $activa_number   = strtoupper($activa_number);
         $status          = strtoupper($status);
 
         $deviceDatas = Device::where('active', $status);
@@ -97,8 +97,8 @@ class DeviceController extends Controller
             $deviceDatas = $deviceDatas->where('serial_number', 'LIKE',  "%{$serial_number}%");
         }
 
-        if($eq_id != ''){
-            $deviceDatas = $deviceDatas->where('eq_id', 'LIKE',  "%{$eq_id}%");
+        if($activa_number != ''){
+            $deviceDatas = $deviceDatas->where('activa_number', 'LIKE',  "%{$activa_number}%");
         }
         
         return $deviceDatas;
@@ -185,7 +185,7 @@ class DeviceController extends Controller
         $department      = strtoupper($request->department);
         $device_category = strtoupper($request->device_category);
         $serial_number   = strtoupper($request->serial_number);
-        $eq_id           = strtoupper($request->eq_id);
+        $activa_number   = strtoupper($request->activa_number);
 
         if($device_name == ''){
             return response()->json(['errors' => true, 
@@ -223,7 +223,7 @@ class DeviceController extends Controller
                     ]);    
         }
 
-        if($eq_id == ''){
+        if($activa_number == ''){
             return response()->json(['errors' => true, 
                             "message"=> '<div class="alert alert-danger">EQ ID peralatan wajib terisi, harap periksa kembali formulir pengisian data</div>'
                     ]);    
@@ -235,7 +235,7 @@ class DeviceController extends Controller
                                     ->where('department_id', $department)
                                     ->where('device_category_id', $device_category)
                                     ->where('serial_number', $serial_number)
-                                    ->where('eq_id', $eq_id)
+                                    ->where('activa_number', $activa_number)
                                     ->where('active', 1)
                                     ->first();
                                              
@@ -257,7 +257,7 @@ class DeviceController extends Controller
                 'department_id'        => $department,
                 'device_category_id'   => $device_category,
                 'serial_number'        => $serial_number,
-                'eq_iq'                => $eq_id,
+                'activa_number'        => $activa_number,
                 'active'               => 1,
                 'start_effective'      => Carbon::now(),
                 'end_effective'        => null,
@@ -277,7 +277,7 @@ class DeviceController extends Controller
                 'department_id'        => $insertDevice->department_id,
                 'device_category_id'   => $insertDevice->device_category_id,
                 'serial_number'        => $insertDevice->serial_number,
-                'eq_iq'                => $insertDevice->eq_iq,
+                'activa_number'        => $insertDevice->activa_number,
                 'active'               => $insertDevice->active,
                 'start_effective'      => $insertDevice->start_effective,
                 'end_effective'        => $insertDevice->end_effective,
@@ -322,7 +322,7 @@ class DeviceController extends Controller
                     'department_id'        => $device->department_id,
                     'device_category_id'   => $device->device_category_id,
                     'serial_number'        => $device->serial_number,
-                    'eq_iq'                => $device->eq_iq,
+                    'activa_number'        => $device->activa_number,
                     'active'               => $device->active,
                     'start_effective'      => $device->start_effective,
                     'end_effective'        => $device->end_effective,
@@ -369,7 +369,7 @@ class DeviceController extends Controller
                 'department'           => optional($device->department)->department,
                 'device_category'      => optional($device->deviceCategory)->device_category,
                 'serial_number'        => $device->serial_number,
-                'eq_id'                => $device->eq_id,
+                'activa_number'        => $device->activa_number,
                 'active'               => $active,
                 'start_effective'      => $device->start_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $device->start_effective)->format('d/m/Y H:i:s') : '-',
                 'end_effective'        => $device->end_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $device->end_effective)->format('d/m/Y H:i:s') : '-',
@@ -387,7 +387,7 @@ class DeviceController extends Controller
                 'department'           => '',
                 'device_category'      => '',
                 'serial_number'        => '',
-                'eq_id'                => '',
+                'activa_number'        => '',
                 'active'               => '',
                 'start_effective'      => '',
                 'end_effective'        => '',

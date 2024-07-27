@@ -101,10 +101,10 @@
 
                         {{-- EQ ID --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">EQ ID</label>
+                            <label class="col-md-2">NOMOR AKTIVA</label>
                             <div class="col-md-6">
-                                <input maxlength="50" id="eq_id" type="text" class="text-uppercase form-control" name="eq_id" title="EQ ID" placeholder="EQ ID">
-                                <input name="eq_id_id" id="location_name_id" type="hidden"/>
+                                <input maxlength="50" id="activa_number" type="text" class="text-uppercase form-control" name="activa_number" title="NOMOR AKTIVA" placeholder="NOMOR AKTIVA">
+                                <input name="activa_number_id" id="location_name_id" type="hidden"/>
                             </div>
                         </div>
                         <br>
@@ -150,8 +150,8 @@
                                 <th>Lokasi</th>
                                 <th>Departemen</th>
                                 <th>Kategori Alat</th>
-                                <th>Nomor Ser</th>
-                                <th>EQ ID</th>
+                                <th>Nomor Seri</th>
+                                <th>Nomor Aktiva</th>
                                 <th>Status</th>
                                 <th>Start Effective</th>
                                 <th>End Effective</th>
@@ -211,7 +211,7 @@
                     d.department      = $('#department').val(); 
                     d.device_category = $('#device_category').val(); 
                     d.serial_number   = $('#serial_number').val(); 
-                    d.eq_id           = $('#eq_id').val(); 
+                    d.activa_number   = $('#activa_number').val(); 
                     d.status          = $('#status').val(); 
                 }
             },
@@ -224,7 +224,7 @@
                 { data : 'department' ,              name :  'department'            },
                 { data : 'device_category' ,         name :  'device_category'       },
                 { data : 'serial_number' ,           name :  'serial_number'         },
-                { data : 'eq_id' ,                   name :  'eq_id'                 },
+                { data : 'activa_number' ,           name :  'activa_number'                 },
                 { data : 'active' ,                  name :  'active'                },
                 { data : 'start_effective' ,         name :  'start_effective'       },
                 { data : 'end_effective' ,           name :  'end_effective'         },

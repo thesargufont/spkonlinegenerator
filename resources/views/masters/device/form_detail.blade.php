@@ -100,11 +100,11 @@
 
                         {{-- EQ ID --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">EQ ID</label>
+                            <label class="col-md-2">NOMOR AKTIVA</label>
                             <div class="col-md-6">
-                                <input disabled required id="eq_id" type="text" class="text-uppercase form-control" name="eq_id" title="EQ ID" placeholder="EQ ID">
+                                <input disabled required id="activa_number" type="text" class="text-uppercase form-control" name="activa_number" title="NOMOR AKTIVA" placeholder="NOMOR AKTIVA">
                             </div>
-                            <small class="text-danger" id="eq_id_error"></small>
+                            <small class="text-danger" id="activa_number_error"></small>
                         </div>
                         <br>
 
@@ -193,7 +193,7 @@
         $('#department').val('{{ $department }}');
         $('#device_category').val('{{ $device_category }}');
         $('#serial_number').val('{{ $serial_number }}');
-        $('#eq_id').val('{{ $eq_id }}');
+        $('#activa_number').val('{{ $activa_number }}');
         $('#status').val('{{ $active }}');
         $('#start_effective').val('{{ $start_effective }}');
         $('#end_effective').val('{{ $end_effective }}');

@@ -112,10 +112,10 @@
 
                         {{-- EQ ID --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">EQ ID *</label>
+                            <label class="col-md-2">NOMOR AKTIVA *</label>
                             <div class="col-md-6">
-                                <input maxlength="50" id="eq_id" type="text" class="text-uppercase form-control" name="eq_id" title="EQ ID" placeholder="EQ ID">
-                                <input name="eq_id_id" id="location_name_id" type="hidden"/>
+                                <input maxlength="50" id="activa_number" type="text" class="text-uppercase form-control" name="activa_number" title="NOMOR AKTIVA" placeholder="NOMOR AKTIVA">
+                                <input name="activa_number_id" id="location_name_id" type="hidden"/>
                             </div>
                         </div>
                         <br>
@@ -139,7 +139,7 @@
         var department       = $('#department').val();
         var device_category  = $('#device_category').val();
         var serial_number    = $('#serial_number').val();
-        var eq_id            = $('#eq_id').val();
+        var activa_number    = $('#activa_number').val();
         
         artLoadingDialogDo("Please wait, we process your request..",function(){
             $.ajax({
@@ -157,7 +157,7 @@
                     'department'      : department,
                     'device_category' : device_category,
                     'serial_number'   : serial_number,
-                    'eq_id'           : eq_id,
+                    'activa_number'   : activa_number,
                 },
                 success: function(data){
                     artLoadingDialogClose();
@@ -175,7 +175,7 @@
                         $('#department').val('');
                         $('#device_category').val('');
                         $('#serial_number').val('');
-                        $('#eq_id').val('');
+                        $('#activa_number').val('');
                         setTimeout(function(){ window.location.href = '{{url('masters/device/index')}}'; }, 1500);
                     }  
                 },
