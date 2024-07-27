@@ -37,9 +37,25 @@
                         </div>
                         <br>
 
+                        {{-- NOMOR SPK --}}
                         <div class="row mb-2">
-                            {{-- <label class="col-md-2">more filter still under development.</label> --}}
+                            <label class="col-md-2">NOMOR SPK</label>
+                            <div class="col-md-6">
+                                <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
+                            </div>
                         </div>
+                        <br>
+
+                        <div class="row mb-2">
+                            <label class="col-sm-2">KATEGORI WORK ORDER</label>
+                            <div class="col-sm-6">
+                                <select title="STATUS" id="wo_type" class="form-control">
+                                    <option value="1">LAPORAN GANGGUAN</option>
+                                    <option value="0">PEKERJAAN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
 
                         <!-- {{-- TIPE WORK ORDER --}}
                         <div class="row mb-2">
