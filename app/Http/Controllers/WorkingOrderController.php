@@ -34,19 +34,61 @@ class WorkingOrderController extends Controller
         } else {
             $access = true;
         }
-        $data = [
+
+        $locations        = Location::where('active', 1)->get();
+        $departments      = Department::where('active', 1)->get();
+
+        return view('forms.working_order.working_order_index', [
             'hidden_status' => 'hidden',
             'return_msg' => '',
             'access' => $access,
-        ];
-
-        return view('forms.working_order.working_order_index', $data);
+            'locations' => $locations,
+            'departments' => $departments,
+        ]);
     }
 
     public function getData($request, $isExcel = '')
     {
+        if($isExcel == "")
+        {
+            session([
+                    'working_order'.'.wo_number' => $request->has('wo_number')?  $request->input('wo_number') : '',
+                    'working_order'.'.spk_number' => $request->has('spk_number')?  $request->input('spk_number') : '',
+                    'working_order'.'.wo_category' => $request->has('wo_category')?  $request->input('wo_category'): '', 
+                    'working_order'.'.department' => $request->has('department')?  $request->input('department'): '', 
+                    'working_order'.'.location' => $request->has('location')?  $request->input('location'): '', 
+            ]);
+        } 
+
+        $wo_number    = session('working_order'.'.wo_number')!=''?session('working_order'.'.wo_number'):'';
+        $spk_number   = session('working_order'.'.spk_number')!=''?session('working_order'.'.spk_number'):'';
+        $wo_category  = session('working_order'.'.wo_category')!=''?session('working_order'.'.wo_category'):'';
+        $department   = session('working_order'.'.department')!=''?session('working_order'.'.department'):'';
+        $location     = session('working_order'.'.location')!=''?session('working_order'.'.location'):'';
+
+
         $user = Auth::user()->id;
-        $spongeheader = SpongeHeader::where('created_by', $user)->where('wo_number', 'like', '%' . $request->wo_number . '%');
+        $spongeheader = SpongeHeader::where('created_by', $user);
+        
+        if($wo_number != ''){
+            $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
+        }
+
+        if($spk_number != ''){
+            $spongeheader = $spongeheader->where('spk_number', 'LIKE',  "%{$spk_number}%");
+        }
+
+        if($wo_category != ''){
+            $spongeheader = $spongeheader->where('wo_category', 'LIKE',  "%{$wo_category}%");
+        }
+
+        if($department != ''){
+            $spongeheader = $spongeheader->where('department_id', 'LIKE',  "%{$department}%");
+        }
+
+        if($location != ''){
+            // $spongeheader = $spongeheader->where('location_id', 'LIKE',  "%{$location}%");
+        }
 
         return $spongeheader;
     }

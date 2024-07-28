@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
   
 use Carbon\Carbon;
+use App\Models\Department;
 use App\Models\SpongeHeader;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -18,8 +19,8 @@ class HomeController extends Controller
         $totalReportProblem  = clone $spongeDatas;
 
         $totalReport        = $totalReport->count();
-        $totalReportJob     = $totalReportJob->where('wo_type', 'PEKERJAAN')->count();
-        $totalReportProblem = $totalReportProblem->where('wo_type', 'LAPORAN GANGGUAN')->count();
+        $totalReportJob     = $totalReportJob->where('wo_category', 'PEKERJAAN')->count();
+        $totalReportProblem = $totalReportProblem->where('wo_category', 'LAPORAN GANGGUAN')->count();
 
         if($totalReportJob != 0){
             $jobPercentage    = ($totalReportJob * 100) / $totalReport;
@@ -37,8 +38,8 @@ class HomeController extends Controller
         $ReportDatasJob     = Clone $ReportDatas;
         $ReportDatasProblem = Clone $ReportDatas;
 
-        $ReportJob     = $ReportDatasJob->where('wo_type', 'PEKERJAAN');
-        $ReportProblem = $ReportDatasProblem->where('wo_type', 'LAPORAN GANGGUAN');
+        $ReportJob     = $ReportDatasJob->where('wo_category', 'PEKERJAAN');
+        $ReportProblem = $ReportDatasProblem->where('wo_category', 'LAPORAN GANGGUAN');
 
         $jobTlkm   = clone $ReportJob;
         $jobScd    = clone $ReportJob;
@@ -46,11 +47,17 @@ class HomeController extends Controller
         $jobUpt    = clone $ReportJob;
         $jobDspc   = clone $ReportJob;
 
-        $jobTlkm   = $jobTlkm->where('department', 'TELEKOMUNIKASI')->count();
-        $jobScd    = $jobScd->where('department', 'SCADA')->count();
-        $jobPsis   = $jobPsis->where('department', 'PROSIS')->count();
-        $jobUpt    = $jobUpt->where('department', 'UPT')->count();
-        $jobDspc   = $jobDspc->where('department', 'DISPATCHER')->count();
+        $deptTel = Department::where('department', 'TELEKOMUNIKASI')->first();
+        $deptSca = Department::where('department', 'SCADA')->first();
+        $deptPro = Department::where('department', 'PROSIS')->first();
+        $deptUpt = Department::where('department', 'UPT')->first();
+        $deptDis = Department::where('department', 'DISPATCHER')->first();
+
+        $jobTlkm   = $jobTlkm->where('department_id', $deptTel->id)->count();
+        $jobScd    = $jobScd->where('department_id', $deptSca->id)->count();
+        $jobPsis   = $jobPsis->where('department_id', $deptPro->id)->count();
+        $jobUpt    = $jobUpt->where('department_id', $deptUpt->id)->count();
+        $jobDspc   = $jobDspc->where('department_id', $deptDis->id)->count();
 
         $jobCount = [$jobTlkm, $jobScd, $jobPsis, $jobUpt, $jobDspc];
         
@@ -60,11 +67,11 @@ class HomeController extends Controller
         $problemUpt   = clone $ReportProblem;
         $problemDspc  = clone $ReportProblem;
 
-        $problemTlkm  = $problemTlkm->where('department', 'TELEKOMUNIKASI')->count();
-        $problemScd   = $problemScd->where('department', 'SCADA')->count();
-        $problemPsis  = $problemPsis->where('department', 'PROSIS')->count();
-        $problemUpt   = $problemUpt->where('department', 'UPT')->count();
-        $problemDspc  = $problemDspc->where('department', 'DISPATCHER')->count();
+        $problemTlkm  = $problemTlkm->where('department_id', $deptTel->id)->count();
+        $problemScd   = $problemScd->where('department_id', $deptSca->id)->count();
+        $problemPsis  = $problemPsis->where('department_id', $deptPro->id)->count();
+        $problemUpt   = $problemUpt->where('department_id', $deptUpt->id)->count();
+        $problemDspc  = $problemDspc->where('department_id', $deptDis->id)->count();
 
         $problemCount = [$problemTlkm, $problemScd, $problemPsis, $problemUpt, $problemDspc];
 

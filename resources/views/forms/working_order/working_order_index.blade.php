@@ -41,53 +41,19 @@
                         <div class="row mb-2">
                             <label class="col-md-2">NOMOR SPK</label>
                             <div class="col-md-6">
-                                <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
+                                <input maxlength="50" id="spk_number" type="text" class="text-uppercase form-control" name="spk_number" title="NOMOR SPK" placeholder="NOMOR SPK">
                             </div>
                         </div>
                         <br>
 
+                        {{-- KATEGORI WORK ORDER --}}
                         <div class="row mb-2">
-                            <label class="col-sm-2">KATEGORI WORK ORDER</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="wo_type" class="form-control">
-                                    <option value="1">LAPORAN GANGGUAN</option>
-                                    <option value="0">PEKERJAAN</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        <!-- {{-- TIPE WORK ORDER --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">TIPE WORK ORDER</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="wo_type" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- KATEGORI PEKERJAAN --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">KATEGORI PEKERJAAN</label>
-                            <div class="col-sm-6">
+                            <label class="col-md-2">KATEGORI WORK ORDER</label>
+                            <div class="col-md-6">
                                 <select title="STATUS" id="wo_category" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- KATEGORI GANGGUAN --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">KATEGORI GANGGUAN</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="disturbance_category" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
+                                    <option value="" selected>SEMUA KATEGORI</option>
+                                    <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
+                                    <option value="PEKERJAAN">PEKERJAAN</option>
                                 </select>
                             </div>
                         </div>
@@ -95,54 +61,33 @@
 
                         {{-- DEPARTEMEN --}}
                         <div class="row mb-2">
-                            <label class="col-sm-2">DEPARTEMEN</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="department" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
+                            <label class="col-md-2">DEPARTEMEN</label>
+                            <div class="col-md-6">
+                                <select title="DEPARTEMEN" id="department" class="form-control">
+                                    <option value="" selected>SEMUA DEPARTEMEN</option>
+                                    @foreach ($departments as $item)
+                                        <option value={{ $item->id }}>{{ $item->department }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
                         <br>
 
-                        {{-- LOKASI PELAPOR --}}
+                        {{-- LOKASI --}}
                         <div class="row mb-2">
-                            <label class="col-sm-2">LOKASI PELAPOR</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="location" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
+                            <label class="col-md-2">LOKASI</label>
+                            <div class="col-md-6">
+                                <select title="LOKASI" id="location" class="form-control">
+                                    <option value="" selected>SEMUA LOKASI</option>
+                                    @foreach ($locations as $item)
+                                        <option value={{ $item->id }}>{{ $item->location }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
                         <br>
-
-                        {{-- STATUS WORK ORDER --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">STATUS WORK ORDER</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="wo_status" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div>
                         <br>
-
-                        {{-- STATUS ENGINEER --}}
-                        <div class="row mb-2">
-                            <label class="col-sm-2">STATUS ENGINEER</label>
-                            <div class="col-sm-6">
-                                <select title="STATUS" id="engineer_status" class="form-control">
-                                    <option value="1">AKTIF</option>
-                                    <option value="0">NON AKTIF</option>
-                                </select>
-                            </div>
-                        </div> -->
                         <br>
-
-                        <br>
-
                         {{-- SEARCH --}}
                         <div class="row">
                             <div class="col col-md-3"><button type="submit" class="btn btn-primary" title="search"><i class="fa fa-search"></i> {{ucwords(__('search'))}}</button> </div>
@@ -223,54 +168,24 @@
                 },
                 'data': function(d) {
                     d.wo_number = $('#wo_number').val();
+                    d.spk_number = $('#spk_number').val();
+                    d.wo_category = $('#wo_category').val();
+                    d.department = $('#department').val();
+                    d.location = $('#location').val();
                 }
             },
-            columns: [{
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'wo_number',
-                    name: 'wo_number'
-                },
-                {
-                    data: 'wo_type',
-                    name: 'wo_type'
-                },
-                {
-                    data: 'spk_number',
-                    name: 'spk_number'
-                },
-                {
-                    data: 'department',
-                    name: 'department'
-                },
-                {
-                    data: 'job_category',
-                    name: 'job_category'
-                },
-                {
-                    data: 'status',
-                    name: 'status',
-                },
-                {
-                    data: 'approve_by',
-                    name: 'approve_by',
-                },
-                {
-                    data: 'approve_at',
-                    name: 'approve_at',
-                },
-                {
-                    data: 'created_by',
-                    name: 'created_by',
-                },
-                {
-                    data: 'effective_date',
-                    name: 'effective_date',
-                },
+            columns: [
+                {data: 'action', name: 'action', orderable: false, searchable: false},
+                {data: 'wo_number',              name: 'wo_number'                  },
+                {data: 'wo_category',            name: 'wo_category'                },
+                {data: 'spk_number',             name: 'spk_number'                 },
+                {data: 'department',             name: 'department'                 },
+                {data: 'job_category',           name: 'job_category'               },
+                {data: 'status',                 name: 'status',                    },
+                {data: 'approve_by',             name: 'approve_by',                },
+                {data: 'approve_at',             name: 'approve_at',                },
+                {name: 'created_by',             data: 'created_by',                },
+                {data: 'effective_date',         name: 'effective_date',            },
             ],
             // order: [[ 2, "desc" ]],
             rowCallback: function(row, data, iDisplayIndex) {
