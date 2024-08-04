@@ -10,11 +10,11 @@ class SpongeHeader extends Model
     protected $fillable = [
         'id',
         'wo_number',
-        'wo_type',
+        'wo_category',
         'spk_number',
         'wp_number',
         'job_category',
-        'department',
+        'department_id',
         'priority',
         'description',
         'approve_by',

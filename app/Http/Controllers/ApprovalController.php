@@ -58,7 +58,7 @@ class ApprovalController extends Controller
 
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\"title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            if($item->spk_number != ''){
+            if ($item->spk_number != '') {
                 $txt .= "<a href=\"#\" onclick=\"downloadItem($item[id]);\"title=\"" . ucfirst(__('download')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-download fa-fw fa-xs\"></i></a>";
             }
             return $txt;
@@ -244,7 +244,7 @@ class ApprovalController extends Controller
                 $spongeDetailHist = new SpongeDetailHist([
                     'sponge_detail_id'        => $spongeDetail->id,
                     'wo_number_id'            => $spongeDetail->wo_number_id,
-                    'reporter_location'       => $spongeDetail->reporter_location,
+                    'location_id'       => $spongeDetail->location_id,
                     'device_id'               => $spongeDetail->device_id,
                     'disturbance_category'    => $spongeDetail->disturbance_category,
                     'wo_description'          => $spongeDetail->wo_description,
@@ -331,7 +331,7 @@ class ApprovalController extends Controller
         try {
             DB::beginTransaction();
             $spongeHeader->spk_number = '';
-            $spongeHeader->status = '';
+            $spongeHeader->status = 'NOT APPROVE';
             $spongeHeader->save();
 
 
@@ -394,7 +394,7 @@ class ApprovalController extends Controller
             $device = Device::find($detail->device_id);
             $details[$index] = [
                 'id' => $detail->id,
-                'location' => $detail->reporter_location,
+                'location' => Location::find($detail->location_id)->location,
                 'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
                 'description' => $detail->wo_description,
                 'image_path1' => $detail->wo_attachment1,
@@ -435,8 +435,8 @@ class ApprovalController extends Controller
             'id' => $spongeheader->id,
             'status' => $spongeheader->status,
             'wo_number' => $spongeheader->wo_number,
-            'wo_category' => $spongeheader->wo_type,
-            'department' => $spongeheader->department,
+            'wo_category' => $spongeheader->wo_category,
+            'department' => Department::find($spongeheader->department_id)->department,
             'job_category' => $spongeheader->job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'engineers' => $engineers,
@@ -453,27 +453,27 @@ class ApprovalController extends Controller
         $dataHeader = SpongeHeader::where('id', $id)->first();
         $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->first();
 
-        $getData [] = [
+        $getData[] = [
             'spk_number'     => $dataHeader->spk_number,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d-m-Y'),
-            'location'       => $dataDetail->reporter_location,
+            'location'       => $dataDetail->location_id,
             'description'    => $dataHeader->description,
             'approve_by'     => $dataHeader->approveBy != '' ? optional($dataHeader->approveBy)->name : '',
             'job_executor'   => $dataDetail->executorBy != '' ? optional($dataDetail->executorBy)->name : '',
             'job_supervisor' => $dataDetail->supervisorBy != '' ? optional($dataDetail->supervisorBy)->name : '',
             'wo_description' => $dataDetail->wo_description,
         ];
-        
-        $pdf = PDF::loadView('forms.approval.pdf.print',[
-            'data'=>$getData
-            ])->setOptions(['dpi' => 150]); 
+
+        $pdf = PDF::loadView('forms.approval.pdf.print', [
+            'data' => $getData
+        ])->setOptions(['dpi' => 150]);
 
         $pdf = $pdf->setPaper('a4', 'potrait');
         $documentNumber = str_replace('/', '', $getData[0]['spk_number']);
-        
+
         $today = Carbon::now()->format('Y/m');
-        Storage::put('dms/stok/'.$today.'/'.$documentNumber.'.pdf', $pdf->output());
-        
-        return $pdf->download($documentNumber.'.pdf');
+        Storage::put('dms/stok/' . $today . '/' . $documentNumber . '.pdf', $pdf->output());
+
+        return $pdf->download($documentNumber . '.pdf');
     }
 }
