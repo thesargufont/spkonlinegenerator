@@ -14,7 +14,7 @@ class SpongeHeader extends Model
         'spk_number',
         'wp_number',
         'job_category',
-        'department',
+        'department_id',
         'priority',
         'description',
         'approve_by',
@@ -45,5 +45,10 @@ class SpongeHeader extends Model
     public function approveBy()
     {
         return $this->belongsTo('App\User', 'approve_by');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo('App\Models\Department', 'department_id');
     }
 }
