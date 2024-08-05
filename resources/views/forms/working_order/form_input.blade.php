@@ -494,7 +494,7 @@
             success: function(data) {
                 if (data.success == true) {
                     console.log(data);
-                    document.getElementById(device_code_id).value = data.devices.eq_id;
+                    document.getElementById(device_code_id).value = data.devices.activa_number;
                     if ($('#wo_category').val() == 'LAPORAN GANGGUAN') {
                         getDisturbanceCategory(d);
                     }

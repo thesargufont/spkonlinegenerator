@@ -16,7 +16,7 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button type="button" name="back" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
-                @if($status != 'APPROVE')
+                @if($status == 'NOT APPROVE')
                 <button type="button" name="back" id="approveBtn" class="btn btn-info"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Setujui'))}}</button>
                 <button type="button" name="back" id="notApproveBtn" class="btn btn-danger"><i class="fa fa-solid fa-square-xmark"></i> {{ucwords(__('Tidak Setujui'))}}</button>
                 @else

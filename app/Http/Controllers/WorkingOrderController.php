@@ -49,44 +49,43 @@ class WorkingOrderController extends Controller
 
     public function getData($request, $isExcel = '')
     {
-        if($isExcel == "")
-        {
+        if ($isExcel == "") {
             session([
-                    'working_order'.'.wo_number' => $request->has('wo_number')?  $request->input('wo_number') : '',
-                    'working_order'.'.spk_number' => $request->has('spk_number')?  $request->input('spk_number') : '',
-                    'working_order'.'.wo_category' => $request->has('wo_category')?  $request->input('wo_category'): '', 
-                    'working_order'.'.department' => $request->has('department')?  $request->input('department'): '', 
-                    'working_order'.'.location' => $request->has('location')?  $request->input('location'): '', 
+                'working_order' . '.wo_number' => $request->has('wo_number') ?  $request->input('wo_number') : '',
+                'working_order' . '.spk_number' => $request->has('spk_number') ?  $request->input('spk_number') : '',
+                'working_order' . '.wo_category' => $request->has('wo_category') ?  $request->input('wo_category') : '',
+                'working_order' . '.department' => $request->has('department') ?  $request->input('department') : '',
+                'working_order' . '.location' => $request->has('location') ?  $request->input('location') : '',
             ]);
-        } 
+        }
 
-        $wo_number    = session('working_order'.'.wo_number')!=''?session('working_order'.'.wo_number'):'';
-        $spk_number   = session('working_order'.'.spk_number')!=''?session('working_order'.'.spk_number'):'';
-        $wo_category  = session('working_order'.'.wo_category')!=''?session('working_order'.'.wo_category'):'';
-        $department   = session('working_order'.'.department')!=''?session('working_order'.'.department'):'';
-        $location     = session('working_order'.'.location')!=''?session('working_order'.'.location'):'';
+        $wo_number    = session('working_order' . '.wo_number') != '' ? session('working_order' . '.wo_number') : '';
+        $spk_number   = session('working_order' . '.spk_number') != '' ? session('working_order' . '.spk_number') : '';
+        $wo_category  = session('working_order' . '.wo_category') != '' ? session('working_order' . '.wo_category') : '';
+        $department   = session('working_order' . '.department') != '' ? session('working_order' . '.department') : '';
+        $location     = session('working_order' . '.location') != '' ? session('working_order' . '.location') : '';
 
 
         $user = Auth::user()->id;
         $spongeheader = SpongeHeader::where('created_by', $user);
-        
-        if($wo_number != ''){
+
+        if ($wo_number != '') {
             $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
         }
 
-        if($spk_number != ''){
+        if ($spk_number != '') {
             $spongeheader = $spongeheader->where('spk_number', 'LIKE',  "%{$spk_number}%");
         }
 
-        if($wo_category != ''){
+        if ($wo_category != '') {
             $spongeheader = $spongeheader->where('wo_category', 'LIKE',  "%{$wo_category}%");
         }
 
-        if($department != ''){
+        if ($department != '') {
             $spongeheader = $spongeheader->where('department_id', 'LIKE',  "%{$department}%");
         }
 
-        if($location != ''){
+        if ($location != '') {
             // $spongeheader = $spongeheader->where('location_id', 'LIKE',  "%{$location}%");
         }
 
@@ -176,12 +175,17 @@ class WorkingOrderController extends Controller
             $user_id = Auth::user()->id;
             $roles = Role::where('user_id', $user_id)->where('active', 1)->distinct()->pluck('role')->toArray();
             $access_right = array('SUPERADMIN', 'USER');
+            $locations   = Location::where('active', 1)->get();
+            $departments = Department::where('active', 1)->get();
+
             if (count(array_intersect($roles, $access_right)) == 0) {
                 $access = false;
                 $data = [
                     'hidden_status' => '',
                     'return_msg' => 'Anda tidak punya hak akses untuk membuat laporan work order.',
                     'access' => $access,
+                    'locations' => $locations,
+                    'departments' => $departments,
                 ];
                 return view('forms.working_order.working_order_index', $data);
             } else {
@@ -193,6 +197,8 @@ class WorkingOrderController extends Controller
                     'hidden_status' => '',
                     'return_msg' => 'Data departemen tidak ditemukan. Pastikan Master Departemen sudah disetting.',
                     'access' => $access,
+                    'locations' => $locations,
+                    'departments' => $departments,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -203,6 +209,8 @@ class WorkingOrderController extends Controller
                     'hidden_status' => '',
                     'return_msg' => 'Kategori WO tidak ditemukan. Pastikan Master Pekerjaan sudah disetting.',
                     'access' => $access,
+                    'locations' => $locations,
+                    'departments' => $departments,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -213,6 +221,8 @@ class WorkingOrderController extends Controller
                     'hidden_status' => '',
                     'return_msg' => 'Data lokasi tidak ditemukan. Pastikan Master Lokasi sudah disetting.',
                     'access' => $access,
+                    'locations' => $locations,
+                    'departments' => $departments,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -223,6 +233,8 @@ class WorkingOrderController extends Controller
                     'hidden_status' => '',
                     'return_msg' => 'Data alat tidak ditemukan. Pastikan Master Alat sudah disetting.',
                     'access' => $access,
+                    'locations' => $locations,
+                    'departments' => $departments,
                 ];
 
                 return view('forms.working_order.working_order_index', $data);
@@ -243,6 +255,8 @@ class WorkingOrderController extends Controller
                 'hidden_status' => '',
                 'return_msg' => 'Service Error :' . $e->getMessage(),
                 'access' => true,
+                'locations' => $locations,
+                'departments' => $departments,
             ];
 
             return view('forms.working_order.working_order_index', $data);
@@ -530,9 +544,9 @@ class WorkingOrderController extends Controller
             DB::beginTransaction();
             $spongeHeader = new SpongeHeader([
                 'wo_number'       => $request->wo_number,
-                'wo_type'         => $request->wo_category,
+                'wo_category'         => $request->wo_category,
                 'job_category'    => $request->job_category ? $request->job_category : '',
-                'department'      => Department::find($request->department)->department,
+                'department_id'      => $request->department,
                 'effective_date'  => Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta'),
                 'status'          => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
                 'created_by'      => Auth::user()->id,
@@ -545,15 +559,15 @@ class WorkingOrderController extends Controller
             // $spongeDetails = [];
             // $spongeDetailHists = [];
             foreach ($request->details as $detail) {
-                if($request->wo_category == 'LAPORAN GANGGUAN'){
+                if ($request->wo_category == 'LAPORAN GANGGUAN') {
                     $closeAt = Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta');
                 } else {
-                    $closeAt = null; 
+                    $closeAt = null;
                 }
-                
+
                 $spongeDetail = new SpongeDetail([
                     'wo_number_id'          => $spongeHeader->id,
-                    'reporter_location'     => Location::find($detail['location'])->location,
+                    'location_id'     => $detail['location'],
                     'device_id'             => $detail['device'],
                     'disturbance_category'  => $detail['disturbance_category'],
                     'wo_description'        => $detail['description'],
@@ -573,7 +587,7 @@ class WorkingOrderController extends Controller
                 $spongeDetailHist = new SpongeDetailHist([
                     'sponge_detail_id'      => $spongeDetail->id,
                     'wo_number_id'          => $spongeHeader->id,
-                    'reporter_location'     => Location::find($detail['location'])->location,
+                    'location_id'     => $detail['location'],
                     'device_id'             => $detail['device'],
                     'disturbance_category'  => $detail['disturbance_category'],
                     'wo_description'        => $detail['description'],
@@ -655,7 +669,7 @@ class WorkingOrderController extends Controller
         foreach ($spongedetails as $detail) {
             //$device = Device::find($detail->device_id);
             $details[$index] = [
-                'location' => $detail->reporter_location,
+                'location' => Location::find($detail->location_id)->location,
                 'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
                 'description' => $detail->wo_description,
                 'image_path1' => $detail->wo_attachment1,
@@ -671,8 +685,8 @@ class WorkingOrderController extends Controller
         $data = [
             'spk_number' => $spongeheader->spk_number,
             'wo_number' => $spongeheader->wo_number,
-            'wo_category' => $spongeheader->wo_type,
-            'department' => $spongeheader->department,
+            'wo_category' => $spongeheader->wo_category,
+            'department' => $spongeheader->department_id,
             'job_category' => $job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'details' => $details,
