@@ -46,4 +46,9 @@ class SpongeHeader extends Model
     {
         return $this->belongsTo('App\User', 'approve_by');
     }
+
+    public function department()
+    {
+        return $this->belongsTo('App\Models\Department', 'department_id');
+    }
 }

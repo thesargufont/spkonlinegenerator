@@ -111,6 +111,9 @@ class HomeController extends Controller
             });
         
         $datatables = $datatables
+        ->addColumn('department', function ($item) {
+            return optional($item->department)->department;
+        })
         ->editColumn('job_category', function ($item) {
             if($item->job_category == 'null'){
                 return '-';
