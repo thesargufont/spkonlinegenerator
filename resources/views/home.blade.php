@@ -209,7 +209,7 @@
             },
             columns: [ 
                 { data : 'wo_number' ,       name :  'wo_number'        },
-                { data : 'wo_type' ,         name :  'wo_type'          },
+                { data : 'wo_category' ,     name :  'wo_category'      },
                 { data : 'spk_number' ,      name :  'spk_number'       },
                 { data : 'wp_number' ,       name :  'wp_number'        },
                 { data : 'job_category' ,    name :  'job_category'     },
