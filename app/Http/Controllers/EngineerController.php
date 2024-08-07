@@ -335,24 +335,30 @@ class EngineerController extends Controller
         $getData = [];
         $index = 0;
         foreach ($dataDetail as $detail) {
+            $device = Device::find($detail->device_id);
             $getData[$index] = [
                 'spk_number'     => $dataHeader->spk_number,
                 'wo_number'     => $dataHeader->wo_number,
                 'department'     => Department::find($dataHeader->department_id) ? Department::find($dataHeader->department_id)->department : '-',
                 'job_category'     => Job::find($dataHeader->job_category) ? Department::find($dataHeader->job_category)->job_category : '-',
                 'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d-m-Y'),
+                'day' => strtoupper(Carbon::parse($dataHeader->effective_date)->day),
                 'approve_at' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->approve_at)->format('d-m-Y'),
                 'start_at' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d-m-Y'),
                 'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d-m-Y'),
                 'location'       => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : '-',
-                'device'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->device_name : '-',
-                'brand'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->brand : '-',
-                'serial_number'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->serial_number : '-',
-                'activa_number'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->activa_number : '-',
+                'device'       => $device ? $device->device_name : '-',
+                'brand'       => $device ? $device->brand : '-',
+                'serial_number'       => $device ? $device->serial_number : '-',
+                'activa_number'       => $device ? $device->activa_number : '-',
+                'device_category'       => DeviceCategory::find($device->device_category_id) ? DeviceCategory::find($device->device_category_id)->device_category : '-',
                 'engineer'   => $detail->executorBy != '' ? optional($detail->executorBy)->name : '',
                 'supervisor' => $detail->supervisorBy != '' ? optional($detail->supervisorBy)->name : '',
                 'wo_description' => $detail->wo_description,
-                'description'    => $dataHeader->description,
+                'job_description'    => $detail->job_description,
+                'image_path1' => $detail->wo_attachment1,
+                'image_path2' => $detail->wo_attachment2,
+                'image_path3' => $detail->wo_attachment3,
             ];
             $index++;
         }

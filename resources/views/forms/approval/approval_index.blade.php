@@ -215,8 +215,8 @@
                     name: 'wo_number'
                 },
                 {
-                    data: 'wo_type',
-                    name: 'wo_type'
+                    data: 'wo_category',
+                    name: 'wo_category'
                 },
                 {
                     data: 'spk_number',
@@ -278,11 +278,10 @@
     function downloadItem(id) {
         {
             var url = "{{route('form-input.approval.download', '')}}" + "/" + id;
-            window.open(url,'_blank');
+            window.open(url, '_blank');
         }
     }
 
     // var uri = encodeURI("{{url('masters/department/export-excel')}}");
-        
 </script>
 @endsection

@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surat Perintah Kerja Intern</title>
+    <title>Berita Acara Pekerjaan</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 16px;
+            font-size: 12px;
         }
 
         .header {
@@ -16,7 +16,7 @@
             font-weight: bold;
             margin-bottom: 40px;
             font-family: Arial, sans-serif;
-            font-size: 20px;
+            font-size: 12px;
         }
 
         .logo {
@@ -39,6 +39,17 @@
             vertical-align: top;
         }
 
+        .content td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        .content th {
+            border: 1px solid black;
+            padding: 5px;
+            background-color: #f2f2f2;
+        }
+
         .signatures {
             width: 100%;
             margin-top: 30px;
@@ -52,6 +63,14 @@
         .footer {
             margin-top: 50px;
         }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .page-break-aft {
+            page-break-after: always;
+        }
     </style>
 </head>
 
@@ -59,144 +78,131 @@
 
 <body>
     <div class="header">
-        <table width="100%">
+        <table width="100%" style="border-bottom: 2px solid black;">
             <tr>
                 <td width="10%">
                     <link rel="shortcut icon" href="{{ asset('images/pln_logo.png') }}">
                 </td>
-                <td width="20%" style="text-align: left;">
+                <td width="65%" style="text-align: center;">
                     <div>PLN (Persero) UIP2B</div>
-                    <div>UIP2B JATENG & DIY</div>
+                    <div>UP2B JAWA TENGAH & DIY</div>
+                    <div>JL. JENDRAL SUDIRMAN KM. 23 UNGARAN</div>
+                    <div>SISTEM MANAJEMEN TERINTEGRASI</div>
                 </td>
-                <td width="70%" style="text-align: center;">
-                    <div>SURAT PERINTAH KERJA INTERN</div>
-                    <div>( SPKI )</div>
+                <td width="10%" style="text-align: left;">
+                    <div>No. Dokumen</div>
+                    <div>Berlaku Efektif</div>
+                    <div>Revisi</div>
+                    <div>Halaman</div>
+                </td>
+                <td width="15%" style="text-align: left;">
+                    <div>: 01/FR/JTD-FSO-TEL</div>
+                    <div>: {{$data['effective_date']}}</div>
+                    <div>: 00</div>
+                    <div>: 1/2</div>
+                </td>
+            </tr>
+        </table>
+        <table width="100%" style="margin-top : 20px; font-size:14px;">
+            <tr>
+                <td width="100%" style="text-align: center;">
+                    <div>BERITA ACARA PEKERJAAN</div>
+                </td>
+            </tr>
+        </table>
+        <table width="100%" style="margin-top : 20px;">
+            <tr>
+                <td width="100%" style="text-align: center;">
+                    <div>{{$data['location']}}</div>
                 </td>
             </tr>
         </table>
     </div>
 
-    <table class="content-table">
+    <table class="content-table" width="100%">
         <tr>
-            <td>NOMOR SPK</td>
-            <td>:</td>
-            <td>{{$data['spk_number']}}</td>
+            <td width="20%">NOMOR WP</td>
+            <td width="2%">:</td>
+            <td width="60%">{{$data['wo_number']}}</td>
         </tr>
         <tr>
-            <td>NOMOR WO</td>
-            <td>:</td>
-            <td>{{$data['wo_number']}}</td>
+            <td width="20%">NOMOR SPK</td>
+            <td width="2%">:</td>
+            <td width="60%">{{$data['spk_number']}}</td>
         </tr>
         <tr>
-            <td>DEPARTEMEN</td>
-            <td>:</td>
-            <td>{{$data['department']}}</td>
-        </tr>
-        <tr>
-            <td>KATEGORI PEKERJAAN</td>
-            <td>:</td>
-            <td>{{$data['job_category']}}</td>
-        </tr>
-        <tr>
-            <td>TANGGAL EFEKTIF</td>
-            <td>:</td>
-            <td>{{$data['effective_date']}}</td>
+            <td width="20%">KATEGORI PEKERJAAN</td>
+            <td width="2%">:</td>
+            <td width="60%">{{$data['job_category']}}</td>
             <td colspan="3"></td>
         </tr>
     </table>
 
-    <h4>DETAIL PEKERJAAN</h4>
-    <table class="content-table">
+    <div class="content">
+        <br><br>
+        <p>Pada hari ini <strong>{{$data['day']}}, {{$data['effective_date']}}4</strong> di <strong>{{$data['location']}}</strong>, telah dilakukan pekerjaan <strong>Perbaikan</strong> dengan detail sebagai berikut:</p>
+
+        <table>
+            <tr>
+                <th>Alat</th>
+                <th>Brand</th>
+                <th>Nomor Seri</th>
+                <th>Nomor Aktiva</th>
+                <th>Kategori Alat</th>
+                <th>Engineer</th>
+                <th>Supervisor</th>
+                <th>Deskripsi WO</th>
+                <th>Deskripsi Tugas</th>
+            </tr>
+            <tr>
+                <td>{{$data['device']}}</td>
+                <td>{{$data['brand']}}</td>
+                <td>{{$data['serial_number']}}</td>
+                <td>{{$data['activa_number']}}</td>
+                <td>{{$data['device_category']}}</td>
+                <td>{{$data['engineer']}}</td>
+                <td>{{$data['supervisor']}}</td>
+                <td>{{$data['wo_description']}}</td>
+                <td>{{$data['job_description']}}</td>
+            </tr>
+        </table>
+
+        <br>
+
+        <p>Pekerjaan <strong>Perbaikan</strong> sudah selesai, hasil pengujian fungsi sudah sesuai.</p>
+        <p>Demikian Berita Acara ini di buat untuk dapat digunakan sebaik baiknya.</p>
+    </div>
+
+    <table width="100%" style="margin-top : 30px;">
         <tr>
-            <td>1.</td>
-            <td>Tanggal Mulai</td>
-            <td>:</td>
-            <td>{{$data['start_at']}}</td>
-        </tr>
-        <tr>
-            <td>2.</td>
-            <td>Estimasi Selesai</td>
-            <td>:</td>
-            <td>{{$data['estimated_end']}}</td>
-        </tr>
-        <tr>
-            <td>3.</td>
-            <td>Lokasi</td>
-            <td>:</td>
-            <td>{{$data['location']}}</td>
-        </tr>
-        <tr>
-            <td>4.</td>
-            <td>Alat</td>
-            <td>:</td>
-            <td>{{$data['device']}}</td>
-        </tr>
-        <tr>
-            <td>5.</td>
-            <td>Brand</td>
-            <td>:</td>
-            <td>{{$data['brand']}}</td>
-        </tr>
-        <tr>
-            <td>6.</td>
-            <td>Nomor Seri</td>
-            <td>:</td>
-            <td>{{$data['serial_number']}}</td>
-        </tr>
-        <tr>
-            <td>7.</td>
-            <td>Nomor Aktiva</td>
-            <td>:</td>
-            <td>{{$data['activa_number']}}</td>
-        </tr>
-        <tr>
-            <td>8.</td>
-            <td>Engineer</td>
-            <td>:</td>
-            <td>{{$data['engineer']}}</td>
-        </tr>
-        <tr>
-            <td>9.</td>
-            <td>Supervisor</td>
-            <td>:</td>
-            <td>{{$data['supervisor']}}</td>
-        </tr>
-        <tr>
-            <td>10.</td>
-            <td>Deskripsi WO</td>
-            <td>:</td>
-            <td>{{$data['wo_description']}}</td>
-        </tr>
-        <tr>
-            <td>11.</td>
-            <td>Deskripsi Tugas</td>
-            <td>:</td>
-            <td>{{$data['description']}}</td>
+            <td width="100%" style="text-align: center;">
+                <strong>Mengetahui</strong>
+            </td>
         </tr>
     </table>
 
-    <table class="signatures">
+    <table class="signatures" width="100%">
         <tr>
-            <td>&nbsp;</td>
-            <td>Ungaran, {{$data['approve_at']}}</td>
-        </tr>
-        <tr>
-            <td>Yang menerima perintah</td>
-            <td>Mengetahui</td>
-        </tr>
-        <tr>
-            <td>
-                <br><br>
-                <span>Dokumen ini telah ditandatangani secara komputerisasi oleh <strong>{{$data['engineer']}}</strong> pada tanggal {{$data['approve_at']}}</span>
+            <td width="50%" style="text-align: center;">
+                <div>PT. PLN (Persero)</div>
+                <div>UP2B JAWA TENGAH & DIY</div>
             </td>
-            <td>
-                <br><br>
-                <span>Dokumen ini telah ditandatangani secara komputerisasi oleh <strong>{{$data['supervisor']}}</strong> pada tanggal {{$data['approve_at']}}</span>
+            <td width="50%" style="text-align: center;">
+                <div>PT. PLN (Persero)</div>
+                <div>ULTG SURAKARTA</div>
             </td>
         </tr>
         <tr>
-            <td><strong>ENGINEER</strong></td>
-            <td><strong>SUPERVISOR</strong></td>
+            <td width="50%" style="text-align: center; font-size:11px; font-style:italic;">
+                Dokumen ini telah ditandatangani secara komputerisasi oleh <strong>{{$data['engineer']}}</strong> pada tanggal {{$data['approve_at']}}
+            </td>
+            <td width="50%" style="text-align: center;">
+                <br><br>
+            </td>
+        </tr>
+        <tr>
+            <td width="50%" style="text-align: center;"><strong>ENGINEER</strong></td>
+            <td width="50%" style="text-align: center;"><strong>SUPERVISOR</strong></td>
         </tr>
     </table>
 
@@ -204,6 +210,68 @@
         <strong>Keterangan</strong><br>
         1. Lembar 1 (asli) untuk arsip
     </div>
+
+    <!-- BREAK PAGE -->
+    <div class="page-break"></div>
+    <!-- BREAK PAGE -->
+
+    <div class="header">
+        <table width="100%" style="border-bottom: 2px solid black;">
+            <tr>
+                <td width="10%">
+                    <link rel="shortcut icon" href="{{ asset('images/pln_logo.png') }}">
+                </td>
+                <td width="65%" style="text-align: center;">
+                    <div>PLN (Persero) UIP2B</div>
+                    <div>UP2B JAWA TENGAH & DIY</div>
+                    <div>JL. JENDRAL SUDIRMAN KM. 23 UNGARAN</div>
+                    <div>SISTEM MANAJEMEN TERINTEGRASI</div>
+                </td>
+                <td width="10%" style="text-align: left;">
+                    <div>No. Dokumen</div>
+                    <div>Berlaku Efektif</div>
+                    <div>Revisi</div>
+                    <div>Halaman</div>
+                </td>
+                <td width="15%" style="text-align: left;">
+                    <div>: 01/FR/JTD-FSO-TEL</div>
+                    <div>: {{$data['effective_date']}}</div>
+                    <div>: 00</div>
+                    <div>: 2/2</div>
+                </td>
+            </tr>
+        </table>
+        <table width="100%" style="margin-top : 20px; font-size:14px;">
+            <tr>
+                <td width="100%" style="text-align: center;">
+                    <div>BERITA ACARA PEKERJAAN</div>
+                </td>
+            </tr>
+        </table>
+        <table width="100%" style="margin-top : 20px;">
+            <tr>
+                <td width="100%" style="text-align: center;">
+                    <div>LAMPIRAN</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="content-table" width="100%">
+        <tr>
+            <td width="5%">&nbsp;</td>
+            <td width="30%"><img src="{{ Storage::url($data['image_path1']) }}" alt="..tidak ditemukan." style="max-width: 100%;"></td>
+            <td width="30%"><img src="{{ Storage::url($data['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;"></td>
+            <td width="30%"><img src="{{ Storage::url($data['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;"></td>
+            <td width="5%">&nbsp;</td>
+        </tr>
+        <tr>
+        </tr>
+    </table>
+
+    <table class="content-table" width="100%">
+
+    </table>
     @endforeach
 </body>
 

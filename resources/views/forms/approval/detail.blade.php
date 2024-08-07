@@ -32,7 +32,7 @@
                 @csrf
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Header</h3>
+                        <h3 class="panel-title">Data Header</h3>
                     </div>
                     <div class="panel-body">
                         {{-- NOMOR SPK --}}
@@ -99,7 +99,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseOne-{{ $index }}" aria-expanded="false" class="collapsed">
-                                    Detail Work Order #{{$index}}
+                                    Data Detail #{{$index}}
                                 </a>
                             </h4>
                         </div>
@@ -183,7 +183,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-2">TANGGAL MULAI</label>
                                     <div class="col-sm-6 input-group">
-                                        <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="detail[{{ $index }}][start_at]">
+                                        <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="detail[{{ $index }}][start_at]" value="{{ $detail['start_at'] }}">
                                         <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
                                     </div><!-- input-group -->
                                 </div>
@@ -191,7 +191,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-2">ESTIMASI SELESAI</label>
                                     <div class="col-sm-6 input-group">
-                                        <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="detail[{{ $index }}][estimated_end]">
+                                        <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="detail[{{ $index }}][estimated_end]" value="{{ $detail['estimated_end'] }}">
                                         <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
                                     </div><!-- input-group -->
                                 </div>
@@ -201,7 +201,7 @@
                                     <div class="col-sm-6">
                                         <select class="form-control" name="detail[{{ $index }}][engineer]">
                                             @foreach($engineers as $engineer)
-                                            <option value="{{$engineer['id']}}">{{$engineer['name']}} - {{$engineer['nik']}}</option>
+                                            <option value="{{$engineer['id']}}" @if ($engineer['id']==$detail['engineer'] ) selected @endif>{{$engineer['name']}} - {{$engineer['nik']}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -212,9 +212,27 @@
                                     <div class="col-sm-6">
                                         <select class="form-control" name="detail[{{ $index }}][supervisor]">
                                             @foreach($spvs as $spv)
-                                            <option value="{{$spv['id']}}">{{$spv['name']}} - {{$spv['nik']}}</option>
+                                            <option value="{{$spv['id']}}" @if ($spv['id']==$detail['supervisor'] ) selected @endif>{{$spv['name']}} - {{$spv['nik']}}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                </div>
+                                {{-- AID --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">ASSIGN K3</label>
+                                    <div class="col-sm-6">
+                                        <select class="form-control" name="detail[{{ $index }}][aid]">
+                                            @foreach($aids as $aid)
+                                            <option value="{{$aid['id']}}" @if ($aid['id']==$detail['aid'] ) selected @endif>{{$aid['name']}} - {{$aid['nik']}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                {{-- DESKRIPSI PENUGASAN --}}
+                                <div class="form-group">
+                                    <label class="col-sm-2">DESKRIPSI PENUGASAN</label>
+                                    <div class="col-sm-6">
+                                        <input name="detail[{{ $index }}][job_description]" id="detail[{{ $index }}][job_description]" type="text" class="form-control" value="{{ $detail['job_description'] }}">
                                     </div>
                                 </div>
                             </div>
@@ -265,6 +283,8 @@
                 formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
                 formData.append('detail[' + i + '][engineer]', $('select[name="detail[' + i + '][engineer]"]').val());
                 formData.append('detail[' + i + '][supervisor]', $('select[name="detail[' + i + '][supervisor]"]').val());
+                formData.append('detail[' + i + '][aid]', $('select[name="detail[' + i + '][aid]"]').val());
+                formData.append('detail[' + i + '][job_description]', $('input[name="detail[' + i + '][job_description]"]').val());
             }
 
             console.log(formData);

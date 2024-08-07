@@ -63,18 +63,14 @@ class ApprovalController extends Controller
             }
             return $txt;
         })
-            // ->editColumn('job_category', function ($item) {
-            //     $job_category = Job::where('id', $item->job_category)->first();
-            //     if ($job_category) {
-            //         if ($job_category->$job_category != '' || $job_category->$job_category != null) {
-            //             return $job_category->job_category;
-            //         } else {
-            //             return '-';
-            //         }
-            //     } else {
-            //         return '-';
-            //     }
-            // })
+            ->addColumn('department', function ($item) {
+                $cek = Department::find($item->department_id);
+                if ($cek) {
+                    return $cek->department;
+                } else {
+                    return 'ID department tidak ditemukan';
+                }
+            })
             ->editColumn('created_by', function ($item) {
                 $cek = User::find($item->created_by);
                 if ($cek) {
@@ -232,11 +228,12 @@ class ApprovalController extends Controller
             $spongeHeader->status = $request->action;
             $spongeHeader->save();
 
-
             foreach ($request->detail as $detail) {
                 $spongeDetail = SpongeDetail::find($detail['id']);
                 $spongeDetail->job_executor = $detail['engineer'];
                 $spongeDetail->job_supervisor = $detail['supervisor'];
+                $spongeDetail->job_aid = $detail['aid'];
+                $spongeDetail->job_description = $detail['job_description'];
                 $spongeDetail->start_at = Carbon::createFromFormat('d/m/Y', $detail['start_at']);
                 $spongeDetail->estimated_end = Carbon::createFromFormat('d/m/Y', $detail['estimated_end']);
                 $spongeDetail->save();
@@ -251,6 +248,10 @@ class ApprovalController extends Controller
                     'wo_attachment1'          => $spongeDetail->wo_attachment1,
                     'wo_attachment2'          => $spongeDetail->wo_attachment2,
                     'wo_attachment3'          => $spongeDetail->wo_attachment3,
+                    'job_executor'          => $spongeDetail->job_executor,
+                    'job_supervisor'          => $spongeDetail->job_supervisor,
+                    'job_aid'          => $spongeDetail->job_aid,
+                    'job_description'          => $spongeDetail->job_description,
                     'start_at'                => $spongeDetail->start_at,
                     'estimated_end'           => $spongeDetail->estimated_end,
                     'action'                  => 'UPDATE',
@@ -339,6 +340,8 @@ class ApprovalController extends Controller
                 $spongeDetail = SpongeDetail::find($detail['id']);
                 $spongeDetail->job_executor = null;
                 $spongeDetail->job_supervisor = null;
+                $spongeDetail->job_aid = null;
+                $spongeDetail->job_description = '';
                 $spongeDetail->start_at = null;
                 $spongeDetail->estimated_end = null;
                 $spongeDetail->save();
@@ -389,12 +392,25 @@ class ApprovalController extends Controller
             }
         }
 
+        $get_aids = Role::where('active', 1)->pluck('user_id')->toArray();
+        $aids = [];
+        foreach ($get_aids as $id) {
+            $aid = User::where('id', $id)->where('active', 1)->first();
+            if ($aid) {
+                $aids[] = [
+                    'id' => $aid->id,
+                    'name' => $aid->name,
+                    'nik' => $aid->nik,
+                ];
+            }
+        }
+
         $index = 1;
         foreach ($spongedetails as $detail) {
             $device = Device::find($detail->device_id);
             $details[$index] = [
                 'id' => $detail->id,
-                'location' => Location::find($detail->location_id)->location,
+                'location' => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : 'ID lokasi tidak ditemukan',
                 'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
                 'description' => $detail->wo_description,
                 'image_path1' => $detail->wo_attachment1,
@@ -402,7 +418,13 @@ class ApprovalController extends Controller
                 'image_path3' => $detail->wo_attachment3,
                 'device' => $device->device_name,
                 'device_model' => $device->brand,
-                'device_code' => $device->eq_id,
+                'device_code' => $device->activa_number,
+                'start_at' => $detail->start_at ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y') : null,
+                'estimated_end' => $detail->estimated_end ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y') : null,
+                'engineer' => $detail->job_executor,
+                'supervisor' => $detail->job_supervisor,
+                'aid' => $detail->job_aid,
+                'job_description' => $detail->job_description,
             ];
             $index++;
         }
@@ -415,7 +437,7 @@ class ApprovalController extends Controller
         $month =  $now->month;
 
         //get user department
-        $dept_code = substr($spongeheader->department, 0, 3);
+        $dept_code = substr(Department::find($spongeheader->department_id)->department, 0, 3);
 
         //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
         //get number
@@ -427,7 +449,11 @@ class ApprovalController extends Controller
         $number++;
 
         //generate wo number
-        $spk_number = str_pad($number, 5, '0', STR_PAD_LEFT) . '/' . 'SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' . $year;
+        if ($spongeheader->spk_number == '' || $spongeheader->spk_number == null) {
+            $spk_number = str_pad($number, 5, '0', STR_PAD_LEFT) . '/' . 'SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' . $year;
+        } else {
+            $spk_number = $spongeheader->spk_number;
+        }
         /*WO NUMBER complete*/
 
         $data = [
@@ -441,6 +467,7 @@ class ApprovalController extends Controller
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'engineers' => $engineers,
             'spvs' => $spvs,
+            'aids' => $aids,
             'details' => $details,
             'length' => $count,
         ];
@@ -451,18 +478,33 @@ class ApprovalController extends Controller
     public function generatePDF($id)
     {
         $dataHeader = SpongeHeader::where('id', $id)->first();
-        $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->first();
+        $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->get();
 
-        $getData[] = [
-            'spk_number'     => $dataHeader->spk_number,
-            'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d-m-Y'),
-            'location'       => $dataDetail->location_id,
-            'description'    => $dataHeader->description,
-            'approve_by'     => $dataHeader->approveBy != '' ? optional($dataHeader->approveBy)->name : '',
-            'job_executor'   => $dataDetail->executorBy != '' ? optional($dataDetail->executorBy)->name : '',
-            'job_supervisor' => $dataDetail->supervisorBy != '' ? optional($dataDetail->supervisorBy)->name : '',
-            'wo_description' => $dataDetail->wo_description,
-        ];
+        $getData = [];
+        $index = 0;
+        foreach ($dataDetail as $detail) {
+            $getData[$index] = [
+                'spk_number'     => $dataHeader->spk_number,
+                'wo_number'     => $dataHeader->wo_number,
+                'department'     => Department::find($dataHeader->department_id) ? Department::find($dataHeader->department_id)->department : '-',
+                'job_category'     => Job::find($dataHeader->job_category) ? Department::find($dataHeader->job_category)->job_category : '-',
+                'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d-m-Y'),
+                'approve_at' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->approve_at)->format('d-m-Y'),
+                'start_at' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d-m-Y'),
+                'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d-m-Y'),
+                'location'       => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : '-',
+                'device'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->device_name : '-',
+                'brand'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->brand : '-',
+                'serial_number'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->serial_number : '-',
+                'activa_number'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->activa_number : '-',
+                'engineer'   => $detail->executorBy != '' ? optional($detail->executorBy)->name : '',
+                'supervisor' => $detail->supervisorBy != '' ? optional($detail->supervisorBy)->name : '',
+                'wo_description' => $detail->wo_description,
+                'job_description'    => $detail->job_description,
+            ];
+            $index++;
+        }
+
 
         $pdf = PDF::loadView('forms.approval.pdf.print', [
             'data' => $getData
