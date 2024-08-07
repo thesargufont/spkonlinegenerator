@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Detail Working Order</h4>
+<h4 class="pull-left page-title">Detail Approval</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Detail Working Order</li>
+    <li class="active">Detail Approval</li>
 </ol>
 <div class="clearfix"></div>
 @endsection

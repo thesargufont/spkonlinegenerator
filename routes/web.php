@@ -88,6 +88,7 @@ Route::get('form-input/engineer/index', [EngineerController::class, 'index'])->n
 Route::post('form-input/engineer/dashboard-data', [EngineerController::class, 'data'])->name('form-input.engineer.dashboard-data')->middleware('auth');
 Route::get('form-input/engineer/detail/{id}', [EngineerController::class, 'detail'])->name('form-input.engineer.detail')->middleware('auth');
 Route::post('form-input/engineer/submit', [EngineerController::class, 'submit'])->name('form-input.engineer.submit')->middleware('auth');
+Route::get('form-input/engineer/downloadpdf/{id}', [EngineerController::class, 'generatePDF'])->name('form-input.engineer.downloadpdf')->middleware('auth');
 
 
 // THESAR
