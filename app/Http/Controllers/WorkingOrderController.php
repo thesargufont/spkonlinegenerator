@@ -675,7 +675,7 @@ class WorkingOrderController extends Controller
         foreach ($spongedetails as $detail) {
             //$device = Device::find($detail->device_id);
             $details[$index] = [
-                'location' => Location::find($detail->location_id)->location,
+                'location' => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : '',
                 'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
                 'description' => $detail->wo_description,
                 'image_path1' => $detail->wo_attachment1,

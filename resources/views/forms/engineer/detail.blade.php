@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Detail Working Order</h4>
+<h4 class="pull-left page-title">DETAIL {{$wo_category}}</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Detail Working Order</li>
+    <li class="active">DETAIL {{$wo_category}}</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -16,7 +16,10 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button type="button" name="back" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
+                @if($status != 'DONE')
                 <button type="button" name="back" id="approveBtn" class="btn btn-info"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Submit'))}}</button>
+                @endif
+                <button type="button" name="back" id="pdfBtn" class="btn btn-info">{{ucwords(__('Download PDF'))}}</button>
             </div>
         </div>
     </div>
@@ -27,7 +30,7 @@
                 @csrf
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Header</h3>
+                        <h3 class="panel-title">DATA HEADER</h3>
                     </div>
                     <div class="panel-body">
                         {{-- NOMOR SPK --}}
@@ -41,7 +44,7 @@
                         <div class="form-group">
                             <div><input name="action" id='action' type="hidden" class="form-control"></div>
                             <div><input name="count" id='count' type="hidden" class="form-control" value="{{$length}}"></div>
-                            <div><input name="header_id" id='coheader_idunt' type="hidden" class="form-control" value="{{$id}}"></div>
+                            <div><input name="header_id" id='header_id' type="hidden" class="form-control" value="{{$id}}"></div>
                             <div>&nbsp;</div>
                         </div>
 
@@ -94,7 +97,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseOne-{{ $index }}" aria-expanded="false" class="collapsed">
-                                    Detail Work Order #{{$index}}
+                                    DATA DETAIL #{{$index}}
                                 </a>
                             </h4>
                         </div>
@@ -208,7 +211,7 @@
                                     <div class="col-sm-6">
                                         <select class="form-control" name="detail[{{ $index }}][status_engineer]">
                                             @foreach($status_detail as $status_detail)
-                                            <option value="{{$status_detail}}" @if ($status_detail=='ONGOING' ) selected @endif>{{$status_detail}}</option>
+                                            <option value="{{$status_detail}}" @if ($status_detail==$detail['engineer_status'] ) selected @endif>{{$status_detail}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -224,14 +227,22 @@
                                 <div class="form-group">
                                     <label class="col-sm-2">NOMOR WP</label>
                                     <div class="col-sm-6">
-                                        <input name="detail[{{ $index }}][wp_number]" id="detail[{{ $index }}][wp_number]" type="text" class="form-control" value="{{ $detail['description'] }}">
+                                        <input name="detail[{{ $index }}][wp_number]" id="detail[{{ $index }}][wp_number]" type="text" class="form-control" value="">
                                     </div>
                                 </div>
                                 {{-- LAMPIRAN FOTO --}}
                                 <div class="form-group">
                                     <label class="col-sm-2">LAMPIRAN FOTO</label>
                                     <div class="col-sm-6">
+                                        @if($detail['job_attachment1'] == null || $detail['job_attachment1'] == '')
                                         <input type="file" name="detail[{{ $index }}][photo1]" id="detail[{{ $index }}][photo1]">
+                                        <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $index }}][photo1]" onclick="clearFileInput($index, 1)" style="display: none;">Clear</button>
+                                        @else
+                                        <img src="{{ Storage::url($detail['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;">
+                                        <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $index }}][photo1]" onclick="clearFileInput($index, 1)" style="display: none;">Clear</button>
+                                        @endif
+                                    </div>
+                                    <div class="col-sm-1">
                                     </div>
                                 </div>
                             </div>
@@ -264,6 +275,11 @@
 
         $(document).on('click', '#backBtn', function() {
             window.location.href = "{{ route('form-input.engineer.index') }}";
+        });
+
+        $(document).on('click', '#pdfBtn', function() {
+            var url = "{{route('form-input.engineer.downloadpdf', '')}}" + "/" + $("input[name=header_id]").val();
+            window.open(url, '_blank');
         });
 
         $(document).on('click', '#approveBtn', function() {
@@ -335,6 +351,13 @@
         } else {
             clearButton.style.display = 'none';
         }
+    }
+
+    function clearFileInput(detailIndex, photoIndex) {
+        var fileInput = document.getElementById('detail[' + $index + '][photo1]');
+        var clearButton = document.getElementById('clear_detail[' + $index + '][photo1]');
+        fileInput.value = '';
+        clearButton.style.display = 'none';
     }
 </script>
 @endsection

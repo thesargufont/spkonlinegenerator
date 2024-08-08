@@ -125,8 +125,8 @@
                     name: 'wo_number'
                 },
                 {
-                    data: 'wo_type',
-                    name: 'wo_type'
+                    data: 'wo_category',
+                    name: 'wo_category'
                 },
                 {
                     data: 'spk_number',
