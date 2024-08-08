@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\BasecampController;
@@ -34,7 +35,8 @@ use App\Http\Controllers\DeviceCategoryController;
 Route::get('/', [LoginController::class, 'login'])->name('login');
 Route::post('actionlogin', [LoginController::class, 'actionlogin'])->name('actionlogin');
 Route::post('actionlogout', [LoginController::class, 'actionlogout'])->name('actionlogout');
-Route::post('profile-user', [ProfileController::class, 'index'])->name('profile-user');
+Route::get('profile-user', [ProfileController::class, 'index'])->name('profile-user');
+Route::post('profile-user/add-new-signature', [ProfileController::class, 'newSignature'])->name('profile-user.add-new-signature');
 
 Route::get('home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 Route::post('dashboard/dashboard-data', [HomeController::class, 'data'])->name('dashboard.dashboard-data')->middleware('auth');

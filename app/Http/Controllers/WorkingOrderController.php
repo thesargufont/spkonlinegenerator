@@ -110,6 +110,9 @@ class WorkingOrderController extends Controller
 
             return $txt;
         })
+            ->addColumn('department', function ($item) {
+                return optional($item->department)->department;
+            })
             ->editColumn('job_category', function ($item) {
                 $job_category = Job::where('id', $item->job_category)->first();
                 if ($job_category) {
@@ -203,7 +206,10 @@ class WorkingOrderController extends Controller
 
                 return view('forms.working_order.working_order_index', $data);
             }
-            $wo_category_arr = Job::select('wo_category')->distinct()->get()->toArray();
+
+            // $wo_category_arr = Job::select('wo_category')->distinct()->get()->toArray();
+            // FOR TAHAP 1 (ONLY)
+            $wo_category_arr = Job::select('wo_category')->where('wo_category', 'PEKERJAAN')->distinct()->get()->toArray();
             if (empty($wo_category_arr)) {
                 $data = [
                     'hidden_status' => '',
