@@ -211,7 +211,7 @@ class WorkingOrderController extends Controller
 
                 return view('forms.working_order.working_order_index', $data);
             }
-            $wo_category_arr = Job::select('wo_category')->where('wo_category', '!=', 'LAPORAN GANGGUAN')->distinct()->get()->toArray();
+            $wo_category_arr = Job::select('wo_category')->distinct()->get()->toArray();
             if (empty($wo_category_arr)) {
                 $data = [
                     'hidden_status' => '',
