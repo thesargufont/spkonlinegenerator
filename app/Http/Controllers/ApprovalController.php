@@ -226,6 +226,7 @@ class ApprovalController extends Controller
             $spongeHeader->approve_by = Auth::user()->id;
             $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->status = $request->action;
+            $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->save();
 
             foreach ($request->detail as $detail) {
@@ -234,8 +235,10 @@ class ApprovalController extends Controller
                 $spongeDetail->job_supervisor = $detail['supervisor'];
                 $spongeDetail->job_aid = $detail['aid'];
                 $spongeDetail->job_description = $detail['job_description'];
-                $spongeDetail->start_at = Carbon::createFromFormat('d/m/Y', $detail['start_at']);
-                $spongeDetail->estimated_end = Carbon::createFromFormat('d/m/Y', $detail['estimated_end']);
+                $spongeDetail->executor_progress = 'PENDING';
+                $spongeDetail->start_at = Carbon::createFromFormat('d/m/Y', $detail['start_at'])->timezone('Asia/Jakarta');
+                $spongeDetail->estimated_end = Carbon::createFromFormat('d/m/Y', $detail['estimated_end'])->timezone('Asia/Jakarta');
+                $spongeDetail->updated_at = Carbon::now()->timezone('Asia/Jakarta');
                 $spongeDetail->save();
 
                 $spongeDetailHist = new SpongeDetailHist([
@@ -252,6 +255,7 @@ class ApprovalController extends Controller
                     'job_supervisor'          => $spongeDetail->job_supervisor,
                     'job_aid'          => $spongeDetail->job_aid,
                     'job_description'          => $spongeDetail->job_description,
+                    'executor_progress'          => $spongeDetail->executor_progress,
                     'start_at'                => $spongeDetail->start_at,
                     'estimated_end'           => $spongeDetail->estimated_end,
                     'action'                  => 'UPDATE',
@@ -292,6 +296,9 @@ class ApprovalController extends Controller
         try {
             DB::beginTransaction();
             $spongeHeader->status = $request->action;
+            $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
+            $spongeHeader->approve_by =  Auth::user()->id;
+            $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->save();
 
             DB::commit();
@@ -331,21 +338,12 @@ class ApprovalController extends Controller
         //TRANSACTION
         try {
             DB::beginTransaction();
-            $spongeHeader->spk_number = '';
-            $spongeHeader->status = 'NOT APPROVE';
+            $spongeHeader->status = $request->action;
+            $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
+            $spongeHeader->approve_by =  Auth::user()->id;
+            $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->save();
 
-
-            foreach ($request->detail as $detail) {
-                $spongeDetail = SpongeDetail::find($detail['id']);
-                $spongeDetail->job_executor = null;
-                $spongeDetail->job_supervisor = null;
-                $spongeDetail->job_aid = null;
-                $spongeDetail->job_description = '';
-                $spongeDetail->start_at = null;
-                $spongeDetail->estimated_end = null;
-                $spongeDetail->save();
-            }
 
             DB::commit();
             return response()->json([
@@ -392,7 +390,7 @@ class ApprovalController extends Controller
             }
         }
 
-        $get_aids = Role::where('active', 1)->pluck('user_id')->toArray();
+        $get_aids = User::where('department_id', $spongeheader->department_id)->where('active', 1)->pluck('id')->toArray();
         $aids = [];
         foreach ($get_aids as $id) {
             $aid = User::where('id', $id)->where('active', 1)->first();
@@ -405,9 +403,32 @@ class ApprovalController extends Controller
             }
         }
 
+        // $aids = User::where('department_id', $spongeheader->department_id)->where('active', 1)->pluck('id', 'name', 'nik')->toArray();
+
         $index = 1;
         foreach ($spongedetails as $detail) {
             $device = Device::find($detail->device_id);
+            $engineer = '';
+            if ($detail->job_executor) {
+                $user = User::find($detail->job_executor);
+                if ($user) {
+                    $engineer = $user->name;
+                }
+            }
+            $supervisor = '';
+            if ($detail->job_supervisor) {
+                $user = User::find($detail->job_supervisor);
+                if ($user) {
+                    $supervisor = $user->name;
+                }
+            }
+            $aid = '';
+            if ($detail->job_aid) {
+                $user = User::find($detail->job_aid);
+                if ($user) {
+                    $aid = $user->name;
+                }
+            }
             $details[$index] = [
                 'id' => $detail->id,
                 'location' => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : 'ID lokasi tidak ditemukan',
@@ -421,9 +442,9 @@ class ApprovalController extends Controller
                 'device_code' => $device->activa_number,
                 'start_at' => $detail->start_at ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y') : null,
                 'estimated_end' => $detail->estimated_end ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y') : null,
-                'engineer' => $detail->job_executor,
-                'supervisor' => $detail->job_supervisor,
-                'aid' => $detail->job_aid,
+                'engineer' => $engineer,
+                'supervisor' => $supervisor,
+                'aid' => $aid,
                 'job_description' => $detail->job_description,
             ];
             $index++;
@@ -456,6 +477,8 @@ class ApprovalController extends Controller
         }
         /*WO NUMBER complete*/
 
+
+
         $data = [
             'spk_number' => $spk_number,
             'id' => $spongeheader->id,
@@ -482,6 +505,11 @@ class ApprovalController extends Controller
 
         $getData = [];
         $index = 0;
+        $path = public_path('images/pln_logo.png');
+
+        // Convert the image to base64
+        $imageData = base64_encode(file_get_contents($path));
+        $src = 'data: ' . mime_content_type($path) . ';base64,' . $imageData;
         foreach ($dataDetail as $detail) {
             $getData[$index] = [
                 'spk_number'     => $dataHeader->spk_number,
@@ -501,6 +529,7 @@ class ApprovalController extends Controller
                 'supervisor' => $detail->supervisorBy != '' ? optional($detail->supervisorBy)->name : '',
                 'wo_description' => $detail->wo_description,
                 'job_description'    => $detail->job_description,
+                'src' => $src,
             ];
             $index++;
         }

@@ -81,7 +81,7 @@
         <table width="100%" style="border-bottom: 2px solid black;">
             <tr>
                 <td width="10%">
-                    <link rel="shortcut icon" href="{{ asset('images/pln_logo.png') }}">
+                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/pln_logo.png'))) }}" alt="shortcut icon" width="125%" style="filter: grayscale(100%);">
                 </td>
                 <td width="65%" style="text-align: center;">
                     <div>PLN (Persero) UIP2B</div>
@@ -123,7 +123,7 @@
         <tr>
             <td width="20%">NOMOR WP</td>
             <td width="2%">:</td>
-            <td width="60%">{{$data['wo_number']}}</td>
+            <td width="60%">{{$data['wp_number']}}</td>
         </tr>
         <tr>
             <td width="20%">NOMOR SPK</td>
@@ -260,7 +260,7 @@
     <table class="content-table" width="100%">
         <tr>
             <td width="5%">&nbsp;</td>
-            <td width="30%"><img src="{{ Storage::url($data['image_path1']) }}" alt="..tidak ditemukan." style="max-width: 100%;"></td>
+            <td width="30%"><img src="{{ $data['image_path1'] }}" alt="..tidak ditemukan." style="max-width: 100%;"></td>
             <td width="30%"><img src="{{ Storage::url($data['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;"></td>
             <td width="30%"><img src="{{ Storage::url($data['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;"></td>
             <td width="5%">&nbsp;</td>
@@ -272,6 +272,10 @@
     <table class="content-table" width="100%">
 
     </table>
+
+    <!-- BREAK PAGE -->
+    <div class="page-break"></div>
+    <!-- BREAK PAGE -->
     @endforeach
 </body>
 

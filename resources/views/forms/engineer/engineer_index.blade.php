@@ -181,6 +181,7 @@
     function showItem(id) {
         {
             var url = "{{route('form-input.engineer.detail', '')}}" + "/" + id;
+            // console.log(url);
             window.location.href = url;
         }
     }

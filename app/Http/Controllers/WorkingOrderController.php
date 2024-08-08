@@ -106,10 +106,18 @@ class WorkingOrderController extends Controller
 
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem($item[id]);\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            // $txt .= "<a href=\"#\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
 
             return $txt;
         })
+            ->addColumn('department', function ($item) {
+                $cek = Department::find($item->department_id);
+                if ($cek) {
+                    return $cek->department;
+                } else {
+                    return 'ID department tidak ditemukan';
+                }
+            })
             ->editColumn('job_category', function ($item) {
                 $job_category = Job::where('id', $item->job_category)->first();
                 if ($job_category) {
@@ -203,7 +211,7 @@ class WorkingOrderController extends Controller
 
                 return view('forms.working_order.working_order_index', $data);
             }
-            $wo_category_arr = Job::select('wo_category')->distinct()->get()->toArray();
+            $wo_category_arr = Job::select('wo_category')->where('wo_category', '!=', 'LAPORAN GANGGUAN')->distinct()->get()->toArray();
             if (empty($wo_category_arr)) {
                 $data = [
                     'hidden_status' => '',
@@ -467,7 +475,7 @@ class WorkingOrderController extends Controller
                     if ($device_cek->active != 1) {
                         return response()->json([
                             'errors' => true,
-                            "message" => '<div class="alert alert-danger">Alat ' . $device_cek->eq_id . ' sudah tidak aktif. Mohon cek kembali</div>'
+                            "message" => '<div class="alert alert-danger">Alat ' . $device_cek->activa_number . ' sudah tidak aktif. Mohon cek kembali</div>'
                         ]);
                     }
                 }
@@ -497,10 +505,10 @@ class WorkingOrderController extends Controller
                         "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
                     ]);
                 }
-                if (filesize($detail['photo1']) > 512000) {
+                if (filesize($detail['photo1']) > 5120000) {
                     return response()->json([
                         'errors' => true,
-                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 5MB. Mohon cek kembali.</div>'
                     ]);
                 }
                 $newFilename1 = str_replace('/', '-', $request->wo_number) . '-photo1' . '.' . $detail['photo1']->getClientOriginalExtension();
@@ -513,10 +521,10 @@ class WorkingOrderController extends Controller
                         "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
                     ]);
                 }
-                if (filesize($detail['photo2']) > 512000) {
+                if (filesize($detail['photo2']) > 5120000) {
                     return response()->json([
                         'errors' => true,
-                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 5MB. Mohon cek kembali.</div>'
                     ]);
                 }
                 $newFilename2 = str_replace('/', '-', $request->wo_number) . '-photo2' . '.' . $detail['photo2']->getClientOriginalExtension();
@@ -528,10 +536,10 @@ class WorkingOrderController extends Controller
                         "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
                     ]);
                 }
-                if (filesize($detail['photo3']) > 512000) {
+                if (filesize($detail['photo3']) > 5120000) {
                     return response()->json([
                         'errors' => true,
-                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 5MB. Mohon cek kembali.</div>'
                     ]);
                 }
                 $newFilename3 = str_replace('/', '-', $request->wo_number) . '-photo3' . '.' . $detail['photo3']->getClientOriginalExtension();
@@ -544,9 +552,9 @@ class WorkingOrderController extends Controller
             DB::beginTransaction();
             $spongeHeader = new SpongeHeader([
                 'wo_number'       => $request->wo_number,
-                'wo_category'         => $request->wo_category,
+                'wo_category'     => $request->wo_category,
                 'job_category'    => $request->job_category ? $request->job_category : '',
-                'department_id'      => $request->department,
+                'department_id'   => $request->department,
                 'effective_date'  => Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta'),
                 'status'          => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
                 'created_by'      => Auth::user()->id,
@@ -677,7 +685,7 @@ class WorkingOrderController extends Controller
                 'image_path3' => $detail->wo_attachment3,
                 'device' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->device_name : '-',
                 'device_model' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->brand : '-',
-                'device_code' => Device::find($detail->device_id) ?  Device::find($detail->device_id)->eq_id : '-',
+                'device_code' => Device::find($detail->device_id) ?  Device::find($detail->device_id)->activa_number : '-',
             ];
             $index++;
         }
@@ -686,7 +694,7 @@ class WorkingOrderController extends Controller
             'spk_number' => $spongeheader->spk_number,
             'wo_number' => $spongeheader->wo_number,
             'wo_category' => $spongeheader->wo_category,
-            'department' => $spongeheader->department_id,
+            'department' => Department::find($spongeheader->department_id) ? Department::find($spongeheader->department_id)->department : 'ID department tidak ditemukan : ' . $spongeheader->department_id,
             'job_category' => $job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'details' => $details,
