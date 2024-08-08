@@ -295,6 +295,26 @@
                     </div>
                 </div>
             </div>
+            <!-- modal for artemis confirmation dialog -->
+            <div class="modal fade" id="divArtConfirmation" tabindex="-1" role="dialog" aria-labelledby="divArtConfirmationTitle" aria-hidden="true">
+                <div id="divArtConfirmationModal" class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title" id="artConfirmationTitle">Artemis</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="{{ucwords(__('close'))}}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="artConfirmationBody" class="modal-body">
+                            {{ucfirst(__('Are you sure to do this action?'))}}
+                        </div>
+                        <div class="modal-footer">
+                            <button id="artConfirmationBtnOk" type="button" class="btn btn-secondary">{{ucwords(__('OK'))}}</button>
+                            <button id="artConfirmationBtnCancel" type="button" class="btn btn-secondary" data-dismiss="modal">{{ucwords(__('cancel'))}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
@@ -341,9 +361,30 @@
         }).show();
     }
 
+    function artConfirmationDo(title, text, okCallback, modalWidth = 600, okText = 'OK}', cancelText = 'CANCEL}', cancelCallback = null) {
+        $('#artConfirmationTitle').text(title);
+        $('#artConfirmationBody').html(text);
+        $('#artConfirmationBtnOk').html(okText);
+        $('#artConfirmationBtnCancel').html(cancelText);
+        $('#artConfirmationBtnOk').off('click');
+        $('#artConfirmationBtnOk').click(okCallback);
+        $('#artConfirmationBtnCancel').off('click');
+        if (cancelCallback != null) {
+            $('#artConfirmationBtnCancel').click(cancelCallback);
+        }
+        $('#artMessageDialogBtnOk').focus();
+        $('#divArtConfirmationModal').attr('style', 'width: ' + modalWidth + 'px !important');
+        $('#divArtConfirmation').modal().show();
+    }
+
     function artLoadingDialogClose() {
         $('#divArtLoadingDialog').modal('hide');
     }
+
+    function artConfirmationClose() {
+        $('#divArtConfirmation').modal('hide');
+    }
+
 
     function artAddModalStack(event) {
         // keep track of the number of open modals

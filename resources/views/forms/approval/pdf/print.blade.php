@@ -52,6 +52,10 @@
         .footer {
             margin-top: 50px;
         }
+
+        .page-break {
+            page-break-before: always;
+        }
     </style>
 </head>
 
@@ -204,6 +208,10 @@
         <strong>Keterangan</strong><br>
         1. Lembar 1 (asli) untuk arsip
     </div>
+
+    <!-- BREAK PAGE -->
+    <div class="page-break"></div>
+    <!-- BREAK PAGE -->
     @endforeach
 </body>
 
