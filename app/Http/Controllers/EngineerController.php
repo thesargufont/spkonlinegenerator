@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
 
+use Barryvdh\DomPDF\Facade as PDF;
+
 class EngineerController extends Controller
 {
     public function index()
@@ -90,6 +92,14 @@ class EngineerController extends Controller
                     }
                 } else {
                     return '-';
+                }
+            })
+            ->addColumn('department', function ($item) {
+                $cek = Department::find($item->department_id);
+                if ($cek) {
+                    return $cek->department;
+                } else {
+                    return 'ID department tidak ditemukan';
                 }
             })
             ->editColumn('spk_number', function ($item) {
@@ -195,7 +205,7 @@ class EngineerController extends Controller
                 $spongeDetailHist = new SpongeDetailHist([
                     'sponge_detail_id'     => $spongeDetail->id,
                     'wo_number_id'         => $spongeDetail->wo_number_id,
-                    'reporter_location'    => $spongeDetail->reporter_location,
+                    'location_id'    => $spongeDetail->location_id,
                     'device_id'            => $spongeDetail->device_id,
                     'disturbance_category' => $spongeDetail->disturbance_category,
                     'wo_description'       => $spongeDetail->wo_description,
@@ -254,7 +264,7 @@ class EngineerController extends Controller
             $device = Device::find($detail->device_id);
             $details[$index] = [
                 'id' => $detail->id,
-                'location' => $detail->reporter_location,
+                'location' => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : 'id lokasi tidak ditemukan',
                 'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
                 'description' => $detail->wo_description,
                 'image_path1' => $detail->wo_attachment1,
@@ -262,13 +272,14 @@ class EngineerController extends Controller
                 'image_path3' => $detail->wo_attachment3,
                 'device' => $device->device_name,
                 'device_model' => $device->brand,
-                'device_code' => $device->eq_id,
-                'supervisor' => $detail->job_supervisor,
-                'engineer' => $detail->job_executor,
+                'device_code' => $device->activa_number,
+                'supervisor' => User::find($detail->job_supervisor) ? User::find($detail->job_supervisor)->name : 'ID user tidak ditemukan : ' . $detail->job_supervisor,
+                'engineer' => User::find($detail->job_executor) ? User::find($detail->job_executor)->name : 'ID user tidak ditemukan : ' . $detail->job_executor,
                 'engineer_status' => $detail->executor_progress != '' ? $detail->executor_progress : 'ONGOING',
                 'executor_desc' => $detail->executor_description,
                 'start_effective' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y'),
                 'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y'),
+                'job_attachment1' => $detail->job_attachment1,
             ];
             $index++;
         }
@@ -282,7 +293,7 @@ class EngineerController extends Controller
         $month =  $now->month;
 
         //get user department
-        $dept_code = substr($spongeheader->department, 0, 3);
+        $dept_code = substr(Department::find($spongeheader->department_id)->department, 0, 3);
 
         //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
         //get number
@@ -304,8 +315,8 @@ class EngineerController extends Controller
             'id' => $spongeheader->id,
             'status' => $spongeheader->status,
             'wo_number' => $spongeheader->wo_number,
-            'wo_category' => $spongeheader->wo_type,
-            'department' => $spongeheader->department,
+            'wo_category' => $spongeheader->wo_category,
+            'department' => Department::find($spongeheader->department_id) ? Department::find($spongeheader->department_id)->department : 'id department tidak ditemukan',
             'job_category' => $spongeheader->job_category,
             'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
             'details' => $details,
@@ -314,5 +325,55 @@ class EngineerController extends Controller
         ];
 
         return view('forms.engineer.detail', $data);
+    }
+
+    public function generatePDF($id)
+    {
+        $dataHeader = SpongeHeader::where('id', $id)->first();
+        $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->get();
+
+        $getData = [];
+        $index = 0;
+        foreach ($dataDetail as $detail) {
+            $device = Device::find($detail->device_id);
+            $getData[$index] = [
+                'spk_number'     => $dataHeader->spk_number,
+                'wo_number'     => $dataHeader->wo_number,
+                'department'     => Department::find($dataHeader->department_id) ? Department::find($dataHeader->department_id)->department : '-',
+                'job_category'     => Job::find($dataHeader->job_category) ? Department::find($dataHeader->job_category)->job_category : '-',
+                'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d-m-Y'),
+                'day' => strtoupper(Carbon::parse($dataHeader->effective_date)->day),
+                'approve_at' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->approve_at)->format('d-m-Y'),
+                'start_at' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d-m-Y'),
+                'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d-m-Y'),
+                'location'       => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : '-',
+                'device'       => $device ? $device->device_name : '-',
+                'brand'       => $device ? $device->brand : '-',
+                'serial_number'       => $device ? $device->serial_number : '-',
+                'activa_number'       => $device ? $device->activa_number : '-',
+                'device_category'       => DeviceCategory::find($device->device_category_id) ? DeviceCategory::find($device->device_category_id)->device_category : '-',
+                'engineer'   => $detail->executorBy != '' ? optional($detail->executorBy)->name : '',
+                'supervisor' => $detail->supervisorBy != '' ? optional($detail->supervisorBy)->name : '',
+                'wo_description' => $detail->wo_description,
+                'job_description'    => $detail->job_description,
+                'image_path1' => $detail->wo_attachment1,
+                'image_path2' => $detail->wo_attachment2,
+                'image_path3' => $detail->wo_attachment3,
+            ];
+            $index++;
+        }
+
+
+        $pdf = PDF::loadView('forms.engineer.pdf.print', [
+            'data' => $getData
+        ])->setOptions(['dpi' => 150]);
+
+        $pdf = $pdf->setPaper('a4', 'potrait');
+        $documentNumber = str_replace('/', '', $getData[0]['spk_number']);
+
+        $today = Carbon::now()->format('Y/m');
+        Storage::put('dms/stok/' . $today . '/' . $documentNumber . '.pdf', $pdf->output());
+
+        return $pdf->download($documentNumber . '.pdf');
     }
 }
