@@ -11,6 +11,7 @@ class SpongeDetail extends Model
         'id',
         'wo_number_id',
         'cr_number',
+        'wp_number',
         'location_id',
         'device_id',
         'disturbance_category',

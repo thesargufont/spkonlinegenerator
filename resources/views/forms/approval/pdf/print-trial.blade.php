@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 24px;
+            font-size: 16px;
         }
 
         .outline {
@@ -20,11 +20,10 @@
             font-weight: bold;
             /*margin-bottom: 40px;*/
             font-family: Arial, sans-serif;
-            font-size: 24px;
+            font-size: 20px;
             border: 2px solid black;
-            padding: 15px;
+            padding: 50px;
         }
-
         .bodyBorder {
             border: 2px solid black;
             padding: 50px;
@@ -38,7 +37,7 @@
         }
 
         .header img {
-            width: 100px;
+            width: 50px;
         }
 
         table {
@@ -76,14 +75,12 @@
         }
 
         .alignment-cell {
-            text-align: center;
-            /* Aligns text to center */
+            text-align: center; /* Aligns text to center */
         }
     </style>
 </head>
 
 @foreach($data as $data)
-
 <body>
     <div class="header">
         <table width="100%">
@@ -91,11 +88,11 @@
                 <td width="10%">
                     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/pln_logo.png'))) }}" alt="shortcut icon" width="125%" style="filter: grayscale(100%);">
                 </td>
-                <td width="35%" style="text-align: left; padding-left:20px">
+                <td width="25%" style="text-align: left;">
                     <div>PLN (Persero) UIP2B</div>
-                    <div>UP2B JATENG & DIY</div>
+                    <div>UIP2B JATENG & DIY</div>
                 </td>
-                <td width="65%" style="text-align: center; font-size: 28px;">
+                <td width="70%" style="text-align: center;">
                     <div>SURAT PERINTAH KERJA INTERN</div>
                     <div>( SPKI )</div>
                 </td>
@@ -106,11 +103,11 @@
     <div class="bodyBorder">
         <table class="content-table">
             <tr>
-                <td class="fontBold">NOMOR </td>
+                <td class="fontBold">NOMOR SPK</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['spk_number']}}</td>
             </tr>
-            <!-- <tr>
+            <tr>
                 <td class="fontBold">NOMOR WO</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['wo_number']}}</td>
@@ -130,46 +127,30 @@
                 <td style="width: 10px">:</td>
                 <td>{{$data['effective_date']}}</td>
                 <td colspan="3"></td>
-            </tr> -->
-        </table>
-
-        <div><br><br></div>
-        <table class="content-table">
-            <tr>
-                <td class="fontBold">PEKERJAAN</td>
             </tr>
         </table>
 
+        <h4>DETAIL PEKERJAAN</h4>
         <table class="content-table">
             <tr>
-                <td>&nbsp;</td>
                 <td style="width: 25px">1.</td>
                 <td style="width: 330px">Tanggal Mulai</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['start_at']}}</td>
             </tr>
             <tr>
-                <td>&nbsp;</td>
                 <td>2.</td>
                 <td>Estimasi Selesai</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['estimated_end']}}</td>
             </tr>
             <tr>
-                <td>&nbsp;</td>
                 <td>3.</td>
-                <td>Nama Pekerjaan</td>
-                <td style="width: 10px">:</td>
-                <td>{{$data['job_description']}}</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>4.</td>
                 <td>Lokasi</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['location']}}</td>
             </tr>
-            <!-- <tr>
+            <tr>
                 <td>4.</td>
                 <td>Alat</td>
                 <td style="width: 10px">:</td>
@@ -192,51 +173,32 @@
                 <td>Nomor Aktiva</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['activa_number']}}</td>
-            </tr> -->
+            </tr>
             <tr>
-                <td>&nbsp;</td>
-                <td>5.</td>
-                <td>Pelaksana Pekerjaan</td>
+                <td>8.</td>
+                <td>Engineer</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['engineer']}}</td>
             </tr>
             <tr>
-                <td>&nbsp;</td>
-                <td>6.</td>
-                <td>Pengawas Pekerjaan</td>
+                <td>9.</td>
+                <td>Supervisor</td>
                 <td style="width: 10px">:</td>
                 <td>{{$data['supervisor']}}</td>
             </tr>
             <tr>
-                <td>&nbsp;</td>
-                <td>7.</td>
-                <td>Pengawas K3</td>
+                <td>10.</td>
+                <td>Deskripsi WO</td>
                 <td style="width: 10px">:</td>
-                <td>{{$data['aid']}}</td>
+                <td>{{$data['wo_description']}}</td>
             </tr>
             <tr>
-                <td>&nbsp;</td>
-                <td>8.</td>
-                <td>Keterangan</td>
+                <td>11.</td>
+                <td>Deskripsi Tugas</td>
                 <td style="width: 10px">:</td>
-                <td></td>
+                <td>{{$data['job_description']}}</td>
             </tr>
-
         </table>
-
-        <div>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-        </div>
 
         <table class="signatures">
             <tr>
@@ -248,53 +210,18 @@
                 <td class="fontBold">Mengetahui</td>
             </tr>
             <tr>
-                <td style="text-align: center;">
-                    @if($data['executor_signature_path'] != '')
-                    @php
-                    $imagePath = storage_path($data['executor_signature_path'] ?? '');
-                    @endphp
-                    @if (file_exists($imagePath))
-                    @php
-                    $imageData = base64_encode(file_get_contents($imagePath));
-                    @endphp
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <img src="data:image/png;base64,{{ $imageData }}" alt="..tidak ditemukan." style="max-width: 100%; display: block; margin: 0 auto;">
-                    </div>
-                    @else
-                    <img src="" alt="..tidak ditemukan." style="max-width: 100%;">
-                    @endif
-                    @else
+                <td>
                     <br><br>
                     <span>Dokumen ini telah ditandatangani secara komputerisasi oleh <strong>{{$data['engineer']}}</strong> pada tanggal {{$data['approve_at']}}</span>
-                    @endif
-                    <!--                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/pln_logo.png'))) }}" alt="tidak ditemukan..." width="125%" style="filter: grayscale(100%);">-->
                 </td>
-                <td style="text-align: center;">
-                    @if($data['supervisor_signature_path'] != '')
-                    @php
-                    $imagePath = storage_path($data['supervisor_signature_path'] ?? '');
-                    @endphp
-                    @if (file_exists($imagePath))
-                    @php
-                    $imageData = base64_encode(file_get_contents($imagePath));
-                    @endphp
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <img src="data:image/png;base64,{{ $imageData }}" alt="..tidak ditemukan." style="max-width: 100%; display: block; margin: 0 auto;">
-                    </div>
-                    @else
-                    <img src="" alt="..tidak ditemukan." style="max-width: 100%;">
-                    @endif
-                    @else
+                <td>
                     <br><br>
                     <span>Dokumen ini telah ditandatangani secara komputerisasi oleh <strong>{{$data['supervisor']}}</strong> pada tanggal {{$data['approve_at']}}</span>
-                    @endif
-                    <!--                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/pln_logo.png'))) }}" alt="tidak ditemukan" width="125%" style="filter: grayscale(100%);">-->
-
                 </td>
             </tr>
             <tr>
-                <td><strong>{{$data['engineer']}}</strong></td>
-                <td><strong>{{$data['supervisor']}}</strong></td>
+                <td><strong>ENGINEER</strong></td>
+                <td><strong>SUPERVISOR</strong></td>
             </tr>
         </table>
 
@@ -311,3 +238,4 @@
 </body>
 
 </html>
+

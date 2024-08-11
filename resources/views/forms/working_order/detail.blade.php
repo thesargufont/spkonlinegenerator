@@ -96,80 +96,202 @@
                         </div>
                         <div id="collapseOne-{{ $index }}" class="panel-collapse collapse">
                             <div class="panel-body">
-                                {{-- LOKASI --}}
-                                <div class="form-group">
-                                    <label class="col-md-2">LOKASI</label>
-                                    <div class="col-md-6">
-                                        <input name="detail_location_{{ $index }}" id="detail_location_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['location'] }}">
+                            <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</label>
                                     </div>
                                 </div>
 
-                                {{-- ALAT --}}
-                                <div class="form-group">
-                                    <label class="col-md-2">ALAT</label>
-                                    <div class="col-md-6">
-                                        <input name="detail_device_{{ $index }}" id="detail_device_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device'] }}">
+                                <div class="col-md-12"><br></div>
+
+                                <div class="col-md-6">
+                                    {{-- LOKASI --}}
+                                    <div class="form-group">
+                                        <label class="col-md-3">LOKASI</label>
+                                        <div class="col-md-7">
+                                            <input name="detail_location_{{ $index }}" id="detail_location_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['location'] }}">
+                                        </div>
+                                    </div>
+
+                                    {{-- KATEGORI GANGGUAN --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">KATEGORI GANGGUAN</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail_disturbance_category_{{ $index }}" id="detail_disturbance_category_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['disturbance_category'] }}">
+                                        </div>
+                                    </div>
+
+                                    {{-- DESKRIPSI PELAPORAN --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">DESKRIPSI PELAPORAN</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail_description_{{ $index }}" id="detail_description_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['description'] }}">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    {{-- ALAT --}}
+                                    <div class="form-group">
+                                        <label class="col-md-3">ALAT</label>
+                                        <div class="col-md-7">
+                                            <input name="detail_device_{{ $index }}" id="detail_device_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device'] }}">
+                                        </div>
+                                    </div>
+
+                                    {{-- MODEL ALAT --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">MODEL ALAT</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail_device_model_{{ $index }}" id="detail_device_model_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_model'] }}">
+                                        </div>
+                                    </div>
+                                    {{-- KODE ALAT --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">KODE ALAT</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail_device_code_{{ $index }}" id="detail_device_code_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_code'] }}">
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="col-md-12">
+                                    {{-- UPLOAD --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-1">UPLOAD #1</label>
+                                        <div class="col-sm-3">
+                                            <img src="{{ Storage::url($detail['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
+                                        </div>
+                                        <label class="col-sm-1">UPLOAD #2</label>
+                                        <div class="col-sm-3">
+                                            <img src="{{ Storage::url($detail['image_path2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
+                                        </div>
+                                        <label class="col-sm-1">UPLOAD #3</label>
+                                        <div class="col-sm-3">
+                                            <img src="{{ Storage::url($detail['image_path3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
+                                        </div>
                                     </div>
                                 </div>
 
-                                {{-- MODEL ALAT --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">MODEL ALAT</label>
-                                    <div class="col-sm-6">
-                                        <input name="detail_device_model_{{ $index }}" id="detail_device_model_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_model'] }}">
+                                <div class="col-md-12">
+                                    <hr style="border-top: 3px solid #bbb">
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</label>
                                     </div>
                                 </div>
 
-                                {{-- KODE ALAT --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">KODE ALAT</label>
-                                    <div class="col-sm-6">
-                                        <input name="detail_device_code_{{ $index }}" id="detail_device_code_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_code'] }}">
+                                <div class="col-md-12"><br></div>
+
+                                <div class="col-md-6">
+                                    {{-- TANGGAL MULAI --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">TANGGAL MULAI</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail[start_at]" id="detail[start_at]" type="text" class="form-control" readonly="readonly" value="{{ $detail['start_effective'] }}">
+                                        </div><!-- input-group -->
+                                    </div>
+                                    {{-- ESTIMASI SELESAI --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">ESTIMASI SELESAI</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail[estimated_end]" id="detail[estimated_end]" type="text" class="form-control" readonly="readonly" value="{{ $detail['estimated_end'] }}">
+                                        </div><!-- input-group -->
+                                    </div>
+                                    {{-- ENGINEER --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">ASSIGN ENGINEER</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail[engineer]" id="detail[engineer]" type="text" class="form-control" readonly="readonly" value="{{ $detail['engineer'] }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    {{-- SUPERVISOR --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">ASSIGN SUPERVISOR</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail[supervisor]" id="detail[supervisor]" type="text" class="form-control" readonly="readonly" value="{{ $detail['supervisor'] }}">
+                                        </div>
+                                    </div>
+                                    {{-- K3 --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">ASSIGN K3</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail[aid]" id="detail[aid]" type="text" class="form-control" readonly="readonly" value="{{ $detail['aid'] }}">
+                                        </div>
+                                    </div>
+                                    {{-- DESKRIPSI PENUGASAN --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-3">DESKRIPSI PENUGASAN</label>
+                                        <div class="col-sm-7">
+                                            <input name="detail[desc_job]" id="detail[desc_job]" type="text" class="form-control" value="{{ $detail['description'] }}" disabled>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {{-- KATEGORI GANGGUAN --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">KATEGORI GANGGUAN</label>
-                                    <div class="col-sm-6">
-                                        <input name="detail_disturbance_category_{{ $index }}" id="detail_disturbance_category_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['disturbance_category'] }}">
+                                <div class="col-md-12">
+                                    <hr style="border-top: 3px solid #bbb">
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</label>
                                     </div>
                                 </div>
 
-                                {{-- DESKRIPSI PELAPORAN --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">DESKRIPSI PELAPORAN</label>
-                                    <div class="col-sm-6">
-                                        <input name="detail_description_{{ $index }}" id="detail_description_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['description'] }}">
+                                <div class="col-md-12"><br></div>
+
+
+                                <div class="col-md-12">
+                                    {{-- STATUS ENGINEER --}}
+                                    <div class="form-group">
+                                        <label class="col-sm-1">STATUS ENGINEER</label>
+                                        <div class="col-sm-3">
+
+                                            <input name="detail[status_engineer]" id="detail[status_engineer]" type="text" class="form-control" value="{{ $detail['engineer_status'] }}" disabled>
+
+                                        </div>
+                                        <label class="col-sm-1">DESKRIPSI ENGINEER</label>
+                                        <div class="col-sm-3">
+                                            <input name="detail[desc_engineer]" id="detail[desc_engineer]" type="text" class="form-control" value="{{ $detail['executor_desc'] }}" disabled>
+                                        </div>
+                                        <label class="col-sm-1" style="color: red;">NOMOR WP*</label>
+                                        <div class="col-sm-3">
+                                            <input name="detail[wp_number]" id="detail[wp_number" type="text" class="form-control" value="{{ $detail['wp_number'] }}" disabled>
+                                        </div>
                                     </div>
                                 </div>
-                                {{-- UPLOAD #1 --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">UPLOAD #1</label>
-                                    <div class="col-sm-6">
-                                        <img src="{{ Storage::url($detail['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;">
+                                {{-- LAMPIRAN FOTO # --}}
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-sm-1">LAMPIRAN #1</label>
+                                        <div class="col-sm-3">
+                                            <img src="{{ Storage::url($detail['job_attachment1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
+
+                                        </div>
+                                        <label class="col-sm-1">LAMPIRAN #2</label>
+                                        <div class="col-sm-3">
+                                            <img src="{{ Storage::url($detail['job_attachment2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
+
+                                        </div>
+                                        <label class="col-sm-1">LAMPIRAN #3</label>
+                                        <div class="col-sm-3">
+                                            <img src="{{ Storage::url($detail['job_attachment3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
+
+                                        </div>
+
                                     </div>
                                 </div>
-                                {{-- UPLOAD #2 --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">UPLOAD #2</label>
-                                    <div class="col-sm-6">
-                                        <img src="{{ Storage::url($detail['image_path2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;">
-                                    </div>
-                                </div>
-                                {{-- UPLOAD #3 --}}
-                                <div class="form-group">
-                                    <label class="col-sm-2">UPLOAD #3</label>
-                                    <div class="col-sm-6">
-                                        <img src="{{ Storage::url($detail['image_path3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 100%;">
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </div>
                     @endforeach
+
                 </div>
-                <!-- </div> -->
 
             </form>
 

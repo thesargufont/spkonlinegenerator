@@ -79,11 +79,11 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Data Bagian</h3>
+                    <h3 class="panel-title">Data Lokasi</h3>
                 </div>
                 <div class="panel-body">
                     <span id="form_result"></span>
-                    <table  id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table  id="main-table" class="table table-striped table-bordered " cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Action</th>

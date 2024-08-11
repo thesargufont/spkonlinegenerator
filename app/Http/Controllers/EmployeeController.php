@@ -25,22 +25,21 @@ class EmployeeController extends Controller
 
     public function getData($request, $isExcel = '')
     {
-        if($isExcel == "")
-        {
+        if ($isExcel == "") {
             session([
-                    'employee'.'.employee_name' => $request->has('employee_name')?  $request->input('employee_name') : '',
-                    'employee'.'.employee_nik' => $request->has('employee_nik')?  $request->input('employee_nik') : '',
-                    'employee'.'.department' => $request->has('department')?  $request->input('department') : '',
-                    'employee'.'.gender' => $request->has('gender')?  $request->input('gender') : '',
-                    'employee'.'.status' => $request->has('status')?  $request->input('status'): '', 
+                'employee' . '.employee_name' => $request->has('employee_name') ?  $request->input('employee_name') : '',
+                'employee' . '.employee_nik' => $request->has('employee_nik') ?  $request->input('employee_nik') : '',
+                'employee' . '.department' => $request->has('department') ?  $request->input('department') : '',
+                'employee' . '.gender' => $request->has('gender') ?  $request->input('gender') : '',
+                'employee' . '.status' => $request->has('status') ?  $request->input('status') : '',
             ]);
-        } 
+        }
 
-        $employee_name  = session('employee'.'.employee_name')!=''?session('employee'.'.employee_name'):'';
-        $employee_nik   = session('employee'.'.employee_nik')!=''?session('employee'.'.employee_nik'):'';
-        $department     = session('employee'.'.department')!=''?session('employee'.'.department'):'';
-        $gender         = session('employee'.'.gender')!=''?session('employee'.'.gender'):'';
-        $status         = session('employee'.'.status')!=''?session('employee'.'.status'):'';
+        $employee_name  = session('employee' . '.employee_name') != '' ? session('employee' . '.employee_name') : '';
+        $employee_nik   = session('employee' . '.employee_nik') != '' ? session('employee' . '.employee_nik') : '';
+        $department     = session('employee' . '.department') != '' ? session('employee' . '.department') : '';
+        $gender         = session('employee' . '.gender') != '' ? session('employee' . '.gender') : '';
+        $status         = session('employee' . '.status') != '' ? session('employee' . '.status') : '';
 
         $employee_name = strtoupper($employee_name);
         $employee_nik = strtoupper($employee_nik);
@@ -81,14 +80,14 @@ class EmployeeController extends Controller
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
             // $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            if($item->active == 1){
+            if ($item->active == 1) {
                 $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
             }
 
             return $txt;
         })
             ->addColumn('active', function ($item) {
-                if($item->active == 1){
+                if ($item->active == 1) {
                     return 'AKTIF';
                 } else {
                     return 'TIDAK AKTIF';
@@ -102,7 +101,7 @@ class EmployeeController extends Controller
                 return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y');
             })
             ->editColumn('end_effective', function ($item) {
-                if($item->end_effective == null){
+                if ($item->end_effective == null) {
                     return '-';
                 } else {
                     return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
@@ -163,8 +162,8 @@ class EmployeeController extends Controller
         }
 
         $checkDuplicateData = User::where('email', $email)
-                                  ->where('active', 1)
-                                  ->first();
+            ->where('active', 1)
+            ->first();
 
         if ($checkDuplicateData) {
             return response()->json([
@@ -216,7 +215,7 @@ class EmployeeController extends Controller
 
         try {
             DB::beginTransaction();
-            if($user){
+            if ($user) {
                 $user->active      = 0;
                 $user->updated_by  = Auth::user()->id;
                 $user->updated_at  = Carbon::now();
@@ -241,9 +240,35 @@ class EmployeeController extends Controller
             ]);
         }
     }
-    
+
     public function detailData($id)
     {
-        dd($id);
+        $employee = User::where('id', $id)->first();
+        if ($employee) {
+            if ($employee->active == 1) {
+                $active = 'AkTIF';
+            } else {
+                $active = 'TIDAK AkTIF';
+            }
+            return view('masters.employee.form_detail', [
+                'nama'             => $employee->name,
+                'nik' => $employee->nik,
+                'department'        => Department::find($employee->department_id) ? Department::find($employee->department_id)->department : '-',
+                'gender'             => $employee->gender,
+                'email'             => $employee->email,
+                'phone_number'              => $employee->phone_number,
+                'signature'               => $employee->signature_path,
+            ]);
+        } else {
+            return view('masters.employee.form_detail', [
+                'nama'             => '',
+                'nik' => '',
+                'department'        => '',
+                'gender'             => '',
+                'email'             => '',
+                'phone_number'              => '',
+                'signature'               => '',
+            ]);
+        }
     }
 }

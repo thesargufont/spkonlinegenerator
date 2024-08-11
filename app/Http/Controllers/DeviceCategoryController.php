@@ -30,36 +30,35 @@ class DeviceCategoryController extends Controller
         ]);
     }
 
-    public function getData($request,$isExcel='')
+    public function getData($request, $isExcel = '')
     {
-        
-        if($isExcel == "")
-        {
-            session([
-                    'device_category'.'.device_category' => $request->has('device_category')?  $request->input('device_category') : '',
-                    'device_category'.'.disturbance_category' => $request->has('disturbance_category')?  $request->input('disturbance_category'): '', 
-                    'device_category'.'.status' => $request->has('status')?  $request->input('status'): '', 
-            ]);
-        } 
 
-        $device_category       = session('device_category'.'.device_category')!=''?session('device_category'.'.device_category'):'';
-        $disturbance_category  = session('device_category'.'.disturbance_category')!=''?session('device_category'.'.disturbance_category'):'';
-        $status                = session('device_category'.'.status')!=''?session('device_category'.'.status'):'';
+        if ($isExcel == "") {
+            session([
+                'device_category' . '.device_category' => $request->has('device_category') ?  $request->input('device_category') : '',
+                'device_category' . '.disturbance_category' => $request->has('disturbance_category') ?  $request->input('disturbance_category') : '',
+                'device_category' . '.status' => $request->has('status') ?  $request->input('status') : '',
+            ]);
+        }
+
+        $device_category       = session('device_category' . '.device_category') != '' ? session('device_category' . '.device_category') : '';
+        $disturbance_category  = session('device_category' . '.disturbance_category') != '' ? session('device_category' . '.disturbance_category') : '';
+        $status                = session('device_category' . '.status') != '' ? session('device_category' . '.status') : '';
 
         $device_category       = strtoupper($device_category);
         $disturbance_category  = strtoupper($disturbance_category);
         $status                = strtoupper($status);
 
         $deviceCategoryDatas = DeviceCategory::where('active', $status);
-        
-        if($device_category != ''){
+
+        if ($device_category != '') {
             $deviceCategoryDatas = $deviceCategoryDatas->where('device_category', $device_category);
         }
 
-        if($disturbance_category != ''){
+        if ($disturbance_category != '') {
             $deviceCategoryDatas = $deviceCategoryDatas->where('disturbance_category', 'LIKE',  "%{$disturbance_category}%");
         }
-        
+
         return $deviceCategoryDatas;
     }
 
@@ -68,47 +67,47 @@ class DeviceCategoryController extends Controller
         $datas = $this->getData($request);
 
         $datatables = DataTables::of($datas)
-            ->filter(function($instance) use ($request) {
+            ->filter(function ($instance) use ($request) {
                 return true;
             });
-        
-        $datatables = $datatables->addColumn('action', function($item) use ($request){
+
+        $datatables = $datatables->addColumn('action', function ($item) use ($request) {
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            // $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
             $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
 
             return $txt;
         })
-        ->addColumn('active', function ($item) {
-            if($item->active == 1){
-                return 'AKTIF';
-            } else {
-                return 'TIDAK AKTIF';
-            }
-        })
-        ->editColumn('start_effective', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
-        })
-        ->editColumn('end_effective', function ($item) {
-            if($item->end_effective == null){
-                return '-';
-            } else {
-                return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
-            }
-        })
-        ->addColumn('created_by', function ($item) {
-            return optional($item->createdBy)->name;
-        })
-        ->editColumn('created_at', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
-        })
-        ->addColumn('updated_by', function ($item) {
-            return optional($item->updatedBy)->name;
-        })
-        ->editColumn('updated_at', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
-        });
+            ->addColumn('active', function ($item) {
+                if ($item->active == 1) {
+                    return 'AKTIF';
+                } else {
+                    return 'TIDAK AKTIF';
+                }
+            })
+            ->editColumn('start_effective', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
+            })
+            ->editColumn('end_effective', function ($item) {
+                if ($item->end_effective == null) {
+                    return '-';
+                } else {
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
+                }
+            })
+            ->addColumn('created_by', function ($item) {
+                return optional($item->createdBy)->name;
+            })
+            ->editColumn('created_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
+            })
+            ->addColumn('updated_by', function ($item) {
+                return optional($item->updatedBy)->name;
+            })
+            ->editColumn('updated_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
+            });
 
         return $datatables->make(TRUE);
     }
@@ -124,33 +123,36 @@ class DeviceCategoryController extends Controller
         $device_category  = strtoupper($request->device_category);
         $disturbance_category = strtoupper($request->disturbance_category);
 
-        if($device_category == ''){
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Kategori alat wajib terisi, harap periksa kembali formulir pengisian data</div>'
-                    ]);    
+        if ($device_category == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Kategori alat wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
         }
 
-        if($disturbance_category == ''){
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Kategori gangguan wajib terisi, harap periksa kembali formulir pengisian data</div>'
-                    ]);    
+        if ($disturbance_category == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Kategori gangguan wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
         }
 
         $checkDuplicateData = DeviceCategory::where('device_category', $device_category)
-                                 ->where('disturbance_category', $disturbance_category)
-                                 ->where('active', 1)
-                                 ->first();
-                                             
-        if($checkDuplicateData){
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Telah ditemukan data kategori alat '.$device_category.' , kategori gangguan '.$disturbance_category.' yang masih aktif</div>'
-                    ]);    
+            ->where('disturbance_category', $disturbance_category)
+            ->where('active', 1)
+            ->first();
+
+        if ($checkDuplicateData) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Telah ditemukan data kategori alat ' . $device_category . ' , kategori gangguan ' . $disturbance_category . ' yang masih aktif</div>'
+            ]);
         }
 
         try {
             // CREATE DATA 
             DB::beginTransaction();
-            
+
             $insertDeviceCategory = new DeviceCategory([
                 'device_category'      => $device_category,
                 'disturbance_category' => $disturbance_category,
@@ -178,14 +180,16 @@ class DeviceCategoryController extends Controller
             $insertDeviceCategoryHist->save();
 
             DB::commit();
-            return response()->json(['success' => true, 
-                            "message"=> '<div class="alert alert-success">Data berhasil disimpan</div>'
-                    ]);   
-        } catch (Exception $e){
+            return response()->json([
+                'success' => true,
+                "message" => '<div class="alert alert-success">Data berhasil disimpan</div>'
+            ]);
+        } catch (Exception $e) {
             DB::rollback();
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Telah terjadi kesalahan sistem, data gagal diproses</div>'
-                    ]);       
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Telah terjadi kesalahan sistem, data gagal diproses</div>'
+            ]);
         }
     }
 
@@ -195,7 +199,7 @@ class DeviceCategoryController extends Controller
 
         try {
             DB::beginTransaction();
-            if($deviceCategory){
+            if ($deviceCategory) {
                 $deviceCategory->active         = 0;
                 $deviceCategory->end_effective  = Carbon::now();
                 $deviceCategory->updated_by     = Auth::user()->id;
@@ -239,8 +243,8 @@ class DeviceCategoryController extends Controller
     {
         $deviceCategory = DeviceCategory::where('id', $id)->first();
 
-        if($deviceCategory){
-            if($deviceCategory->active == 1){
+        if ($deviceCategory) {
+            if ($deviceCategory->active == 1) {
                 $active = 'AkTIF';
             } else {
                 $active = 'TIDAK AkTIF';
