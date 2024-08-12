@@ -152,7 +152,7 @@ class HomeController extends Controller
         } else {
             $master = false;
         }
-
+        dd($notificationAvailable, $master);
         if($notificationAvailable != 0){
             return response()->json([
                         'success' => true,
