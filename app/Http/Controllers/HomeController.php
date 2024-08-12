@@ -157,13 +157,13 @@ class HomeController extends Controller
             return response()->json([
                         'success' => true,
                         'master' => $master,
-                        "message"=> '<div class="alert alert-danger">Notifications not found</div>'
+                        "message"=> '<div class="alert alert-danger">You have new notifications</div>'
                     ]); 
         } else {
             return response()->json([
                         'errors' => true, 
-                        'master' => false,
-                        "message"=> '<div class="alert alert-danger">You have new notifications</div>'
+                        'master' => $master,
+                        "message"=> '<div class="alert alert-danger">Notifications not found</div>'
                     ]); 
         }
     }
