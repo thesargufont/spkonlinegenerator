@@ -408,20 +408,6 @@
                     $('#master_nav_editable').hide();
                 }
             },
-            error: function(data) {
-                console.log(data);
-                html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                $('#form_result').html(html);
-                if (data.responseJSON.message) {
-                    var target = data.responseJSON.errors;
-                    for (var k in target) {
-                        if (!Array.isArray(target[k]['0'])) {
-                            var msg = target[k]['0'];
-                            artCreateFlashMsg(msg, "danger", true);
-                        }
-                    }
-                }
-            }
         });
     }
 
