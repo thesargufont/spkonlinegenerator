@@ -162,7 +162,7 @@ class HomeController extends Controller
         } else {
             return response()->json([
                         'errors' => true, 
-                        $master = false,
+                        'master' => false,
                         "message"=> '<div class="alert alert-danger">You have new notifications</div>'
                     ]); 
         }
