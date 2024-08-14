@@ -73,7 +73,21 @@
                         </div>
                         <br>
 
-                        {{-- LOKASI --}}
+                        {{-- STATUS WO --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">STATUS WORK ORDER</label>
+                            <div class="col-md-6">
+                                <select title="DEPARTEMEN" id="wo_status" class="form-control">
+                                    <option value="" selected>SEMUA STATUS</option>
+                                    @foreach ($wo_status as $item)
+                                        <option value={{ $item->reff1 }}>{{ $item->reff1 }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+
+                        <!-- {{-- LOKASI --}}
                         <div class="row mb-2">
                             <label class="col-md-2">LOKASI</label>
                             <div class="col-md-6">
@@ -84,7 +98,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> -->
                         <br>
                         <br>
                         <br>
@@ -106,7 +120,7 @@
                 </div>
                 <div class="panel-body">
                     <span id="form_result"></span>
-                    <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table id="main-table" class="table table-striped table-bordered " cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Action</th>
@@ -171,7 +185,7 @@
                     d.spk_number = $('#spk_number').val();
                     d.wo_category = $('#wo_category').val();
                     d.department = $('#department').val();
-                    d.location = $('#location').val();
+                    d.wo_status = $('#wo_status').val();
                 }
             },
             columns: [

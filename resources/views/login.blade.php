@@ -21,7 +21,7 @@
     
     <div class="container"><br>
         <div class="col-md-4 col-md-offset-4">
-            <h2 class="text-center"><b></b><br>Development Server</h3>
+            <h2 class="text-center"><b></b><br>Selamat Datang Kembali</h2>
             <hr>
             @if(session('error'))
             <div class="alert alert-danger">

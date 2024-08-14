@@ -14,12 +14,14 @@ use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Department;
 use App\Models\SpongeDetail;
 use App\Models\SpongeHeader;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\DeviceCategory;
 use App\Models\SpongeDetailHist;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Concerns\ToArray;
 use Yajra\DataTables\Facades\DataTables;
 
 class ApprovalController extends Controller
@@ -38,8 +40,39 @@ class ApprovalController extends Controller
 
     public function getData($request, $isExcel = '')
     {
+        if ($isExcel == "") {
+            session([
+                'working_order' . '.wo_number' => $request->has('wo_number') ?  $request->input('wo_number') : '',
+            ]);
+        }
+
+        $wo_number    = session('working_order' . '.wo_number') != '' ? session('working_order' . '.wo_number') : '';
+
         $user = Auth::user()->id;
-        $spongeheader = SpongeHeader::where('status', '!=', 'DONE')->where('wo_number', 'like', '%' . $request->wo_number . '%');
+        $spongeheader_ongoing = SpongeHeader::where('created_by', $user)->where('status','=','ONGOING')->orderBy('created_at','desc')
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ;
+        $spongeheader_done = SpongeHeader::where('created_by', $user)->where('status','=','DONE')->orderBy('created_at','desc')
+                            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                            ;
+        $spongeheader_closed = SpongeHeader::where('created_by', $user)->where('status','=','CLOSED')->orderBy('created_at','desc')
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ;
+        $spongeheader_cancel = SpongeHeader::where('created_by', $user)->where('status','=','CANCEL')->orderBy('created_at','desc')
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ;
+        $spongeheader = SpongeHeader::where('created_by', $user)->where('status','NOT APPROVE')
+                        ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                        ->orderBy('created_at','desc')
+                        ->union($spongeheader_ongoing)
+                        ->union($spongeheader_done)
+                        ->union($spongeheader_closed)
+                        ->union($spongeheader_cancel)
+                        ;
+
+        // if ($wo_number != '') {
+        //     $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
+        // }
 
         return $spongeheader;
     }
@@ -267,6 +300,72 @@ class ApprovalController extends Controller
                 $spongeDetailHist->save();
             }
 
+            //notif input
+            $recipientIds = User::where('id', $spongeHeader->created_by)
+                // ->where('department_id', $request->department)
+                ->pluck('id')
+                ->toArray();
+
+            $description = 'No working order ' . $spongeHeader->wo_number . '. telah disetujui oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+            $url = route('form-input.working-order.detail', ['id' => $spongeHeader->id]);
+            $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+            if (!$createNotif['success']) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                ]);
+            }
+
+            //notif SPVs
+            $getRoleApprove = Role::whereIn('role', ['SPV', 'SUPERADMIN'])
+                ->where('authority', 'APPROVE')
+                ->pluck('user_id')
+                ->toArray();
+
+            $recipientIds = User::whereIn('id', $getRoleApprove)
+                ->where('department_id', $request->department)
+                ->where('id','!=',Auth::user()->id)
+                ->pluck('id')
+                ->toArray();
+
+            $description = 'No working order ' . $spongeHeader->wo_number . '. telah disetujui oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+            $url = route('form-input.approval.detail', ['id' => $spongeHeader->id]);
+            $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+            if (!$createNotif['success']) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                ]);
+            }
+
+            foreach ($request->detail as $detail) {
+                //notif engineer
+                $recipientIds = User::where('id', $detail['engineer'])
+                    // ->where('department_id', $request->department)
+                    ->pluck('id')
+                    ->toArray();
+
+                $engineer = User::find($detail['engineer']) ? User::find($detail['engineer'])->name : 'ID engineer ' . $detail['engineer'];
+
+                $description = 'Anda telah ditunjuk sebagai pelaksana pekerjaan untuk working order ' . $spongeHeader->wo_number . '. telah disetujui oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+                $url = route('form-input.engineer.detail', ['id' => $spongeHeader->id]);
+                $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+                if (!$createNotif['success']) {
+                    DB::rollback();
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                    ]);
+                }
+            }
+
+
+
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -300,6 +399,48 @@ class ApprovalController extends Controller
             $spongeHeader->approve_by =  Auth::user()->id;
             $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->save();
+
+             //notif input
+             $recipientIds = User::where('id', $spongeHeader->created_by)
+             // ->where('department_id', $request->department)
+             ->pluck('id')
+             ->toArray();
+
+            $description = 'No working order ' . $spongeHeader->wo_number . '. tidak disetujui oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+            $url = route('form-input.working-order.detail', ['id' => $spongeHeader->id]);
+            $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+            if (!$createNotif['success']) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                ]);
+            }
+
+            //notif SPVs
+            $getRoleApprove = Role::whereIn('role', ['SPV', 'SUPERADMIN'])
+                ->where('authority', 'APPROVE')
+                ->pluck('user_id')
+                ->toArray();
+
+            $recipientIds = User::whereIn('id', $getRoleApprove)
+                ->where('department_id', $request->department)
+                ->where('id','!=',Auth::user()->id)
+                ->pluck('id')
+                ->toArray();
+
+            $description = 'No working order ' . $spongeHeader->wo_number . '. tidak disetujui oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+            $url = route('form-input.approval.detail', ['id' => $spongeHeader->id]);
+            $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+            if (!$createNotif['success']) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                ]);
+            }
 
             DB::commit();
             return response()->json([
@@ -341,8 +482,111 @@ class ApprovalController extends Controller
             $spongeHeader->status = $request->action;
             $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->approve_by =  Auth::user()->id;
+            $spongeHeader->updated_by =  Auth::user()->id;
             $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->save();
+
+            $spongeDetailCek = SpongeDetail::where('wo_number_id', $spongeHeader->id)->pluck('id')->toArray();
+            if (!empty($spongeDetailCek)) {
+                $spongeDetail = SpongeDetail::where('wo_number_id', $spongeHeader->id)->get();
+                foreach ($spongeDetail as $detail) {
+                    $detail->canceled_at = Carbon::now()->timezone('Asia/Jakarta');
+                    $detail->updated_by =  Auth::user()->id;
+                    $detail->updated_at = Carbon::now()->timezone('Asia/Jakarta');
+                    $detail->save();
+                }
+
+                $spongeDetailHist = new SpongeDetailHist([
+                    'sponge_detail_id'        => $detail->id,
+                    'wo_number_id'            => $detail->wo_number_id,
+                    'location_id'       => $detail->location_id,
+                    'device_id'               => $detail->device_id,
+                    'disturbance_category'    => $detail->disturbance_category,
+                    'wo_description'          => $detail->wo_description,
+                    'wo_attachment1'          => $detail->wo_attachment1,
+                    'wo_attachment2'          => $detail->wo_attachment2,
+                    'wo_attachment3'          => $detail->wo_attachment3,
+                    'job_executor'          => $detail->job_executor,
+                    'job_supervisor'          => $detail->job_supervisor,
+                    'job_aid'          => $detail->job_aid,
+                    'job_description'          => $detail->job_description,
+                    'executor_progress'          => $detail->executor_progress,
+                    'start_at'                => $detail->start_at,
+                    'estimated_end'           => $detail->estimated_end,
+                    'canceled_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                    'action'                  => 'UPDATE',
+                    'created_by'              => Auth::user()->id,
+                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                    'updated_by'              => Auth::user()->id,
+                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
+                ]);
+                $spongeDetailHist->save();
+            }
+
+            //notif input
+            $recipientIds = User::where('id', $spongeHeader->created_by)
+                // ->where('department_id', $request->department)
+                ->pluck('id')
+                ->toArray();
+
+            $description = 'No working order ' . $spongeHeader->wo_number . '. telah dibatalkan oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+            $url = route('form-input.working-order.detail', ['id' => $spongeHeader->id]);
+            $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+            if (!$createNotif['success']) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                ]);
+            }
+
+            //notif SPVs
+            $getRoleApprove = Role::whereIn('role', ['SPV', 'SUPERADMIN'])
+                ->where('authority', 'APPROVE')
+                ->pluck('user_id')
+                ->toArray();
+
+            $recipientIds = User::whereIn('id', $getRoleApprove)
+                ->where('department_id', $request->department)
+                ->where('id','!=',Auth::user()->id)
+                ->pluck('id')
+                ->toArray();
+
+            $description = 'No working order ' . $spongeHeader->wo_number . '. telah dibatalkan oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+            $url = route('form-input.approval.detail', ['id' => $spongeHeader->id]);
+            $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+            if (!$createNotif['success']) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                ]);
+            }
+
+            $spongeDetail = SpongeDetail::where('wo_number_id', $spongeHeader->id)->get();
+            foreach ($spongeDetail as $detail) {
+                //notif engineer
+                $recipientIds = User::where('id', $detail->job_executor)
+                    // ->where('department_id', $request->department)
+                    ->pluck('id')
+                    ->toArray();
+
+                $engineer = User::find($detail->job_executor) ? User::find($detail->job_executor)->name : 'ID engineer ' . $detail->job_executor;
+
+                $description = 'No working order ' . $spongeHeader->wo_number . '. telah dibatalkan oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+                $url = route('form-input.engineer.detail', ['id' => $spongeHeader->id]);
+                $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+                if (!$createNotif['success']) {
+                    DB::rollback();
+                    return response()->json([
+                        'errors' => true,
+                        "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                    ]);
+                }
+            }
 
 
             DB::commit();
@@ -364,33 +608,65 @@ class ApprovalController extends Controller
         $spongeheader = SpongeHeader::find($id);
         $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
 
-        $get_engineers = Role::where('role', 'ENGINEER')->where('active', 1)->pluck('user_id')->toArray();
+        // $get_engineers = Role::where('role', 'ENGINEER')->where('active', 1)->pluck('user_id')->toArray();
+        // $engineers = [];
+        // foreach ($get_engineers as $id) {
+        //     $engineer = User::where('id', $id)->where('active', 1)->first();
+        //     if ($engineer) {
+        //         $engineers[] = [
+        //             'id' => $engineer->id,
+        //             'name' => $engineer->name,
+        //             'nik' => $engineer->nik,
+        //         ];
+        //     }
+        // }
+
+        // $get_spvs = Role::where('role', 'SPV')->where('active', 1)->pluck('user_id')->toArray();
+        // $spvs = [];
+        // foreach ($get_spvs as $id) {
+        //     $spv = User::where('id', $id)->where('active', 1)->first();
+        //     if ($spv) {
+        //         $spvs[] = [
+        //             'id' => $spv->id,
+        //             'name' => $spv->name,
+        //             'nik' => $spv->nik,
+        //         ];
+        //     }
+        // }
+
+        $get_engineers = User::select('users.*')
+            ->leftJoin('roles', 'users.id', '=', 'roles.user_id')
+            ->where('users.active', 1)
+            ->where('roles.role', 'ENGINEER')
+            ->orderBy('users.name')
+            ->get();
         $engineers = [];
-        foreach ($get_engineers as $id) {
-            $engineer = User::where('id', $id)->where('active', 1)->first();
-            if ($engineer) {
-                $engineers[] = [
-                    'id' => $engineer->id,
-                    'name' => $engineer->name,
-                    'nik' => $engineer->nik,
-                ];
-            }
+        foreach ($get_engineers as $engineer) {
+            $engineers[] = [
+                'id' => $engineer->id,
+                'name' => $engineer->name,
+                'nik' => $engineer->nik,
+            ];
         }
 
-        $get_spvs = Role::where('role', 'SPV')->where('active', 1)->pluck('user_id')->toArray();
+        $get_spvs = User::select('users.*')
+            ->leftJoin('roles', 'users.id', '=', 'roles.user_id')
+            ->where('users.active', 1)
+            ->where('roles.role', 'SPV')
+            ->orderBy('users.name')
+            ->get();
         $spvs = [];
-        foreach ($get_spvs as $id) {
-            $spv = User::where('id', $id)->where('active', 1)->first();
-            if ($spv) {
-                $spvs[] = [
-                    'id' => $spv->id,
-                    'name' => $spv->name,
-                    'nik' => $spv->nik,
-                ];
-            }
+        foreach ($get_spvs as $spv) {
+            $spvs[] = [
+                'id' => $spv->id,
+                'name' => $spv->name,
+                'nik' => $spv->nik,
+            ];
         }
 
-        $get_aids = User::where('department_id', $spongeheader->department_id)->where('active', 1)->pluck('id')->toArray();
+
+
+        $get_aids = User::where('department_id', $spongeheader->department_id)->where('active', 1)->orderBy('name')->pluck('id')->toArray();
         $aids = [];
         foreach ($get_aids as $id) {
             $aid = User::where('id', $id)->where('active', 1)->first();
@@ -446,6 +722,12 @@ class ApprovalController extends Controller
                 'supervisor' => $supervisor,
                 'aid' => $aid,
                 'job_description' => $detail->job_description,
+                'job_attachment1' => $detail->job_attachment1,
+                'job_attachment2' => $detail->job_attachment2,
+                'job_attachment3' => $detail->job_attachment3,
+                'wp_number' => $detail->wp_number,
+                'engineer_status' => $detail->executor_progress,
+                'executor_desc' => $detail->executor_desc,
             ];
             $index++;
         }
@@ -511,15 +793,22 @@ class ApprovalController extends Controller
         $imageData = base64_encode(file_get_contents($path));
         $src = 'data: ' . mime_content_type($path) . ';base64,' . $imageData;
         foreach ($dataDetail as $detail) {
+
+            $executorSignaturePath   = optional($detail->executorBy)->signature_path;
+            $supervisorSignaturePath = optional($detail->supervisorBy)->signature_path;
+
+            $pathExecutor = $executorSignaturePath !== 'public/' ? 'app/' . $executorSignaturePath : '';
+            $pathSupervisor = $supervisorSignaturePath !== 'public/' ? 'app/' . $supervisorSignaturePath : '';
+
             $getData[$index] = [
                 'spk_number'     => $dataHeader->spk_number,
                 'wo_number'     => $dataHeader->wo_number,
                 'department'     => Department::find($dataHeader->department_id) ? Department::find($dataHeader->department_id)->department : '-',
-                'job_category'     => Job::find($dataHeader->job_category) ? Department::find($dataHeader->job_category)->job_category : '-',
-                'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d-m-Y'),
+                'job_category'     => $dataHeader->job_category,
+                'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d/m/Y'),
                 'approve_at' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->approve_at)->format('d-m-Y'),
-                'start_at' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d-m-Y'),
-                'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d-m-Y'),
+                'start_at' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y'),
+                'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y'),
                 'location'       => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : '-',
                 'device'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->device_name : '-',
                 'brand'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->brand : '-',
@@ -527,9 +816,12 @@ class ApprovalController extends Controller
                 'activa_number'       => Device::find($detail->device_id) ? Device::find($detail->device_id)->activa_number : '-',
                 'engineer'   => $detail->executorBy != '' ? optional($detail->executorBy)->name : '',
                 'supervisor' => $detail->supervisorBy != '' ? optional($detail->supervisorBy)->name : '',
+                'aid' => User::find($detail->job_aid) ? User::find($detail->job_aid)->name : '',
                 'wo_description' => $detail->wo_description,
                 'job_description'    => $detail->job_description,
                 'src' => $src,
+                'executor_signature_path' => $pathExecutor,
+                'supervisor_signature_path' => $pathSupervisor,
             ];
             $index++;
         }

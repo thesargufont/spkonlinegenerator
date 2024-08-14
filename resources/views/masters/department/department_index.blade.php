@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Data Bagian</h4>
+<h4 class="pull-left page-title">Data Departemen</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Data Bagian</li>
+    <li class="active">Data Departemen</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -64,11 +64,11 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Data Bagian</h3>
+                    <h3 class="panel-title">Data Departemen</h3>
                 </div>
                 <div class="panel-body">
                     <span id="form_result"></span>
-                    <table  id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table  id="main-table" class="table table-striped table-bordered " cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Action</th>

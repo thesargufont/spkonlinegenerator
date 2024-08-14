@@ -33,9 +33,9 @@
                         </div>
                         <br>
 
-                        <div class="row mb-2">
+                        <!-- <div class="row mb-2">
                             {{-- <label class="col-md-2">more filter still under development.</label> --}}
-                        </div>
+                        </div> -->
 
                         <!-- {{-- TIPE WORK ORDER --}}
                         <div class="row mb-2">
@@ -140,7 +140,7 @@
                     <h3 class="panel-title">Data Approval</h3>
                 </div>
                 <div class="panel-body">
-                    <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table id="main-table" class="table table-striped table-bordered " cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Action</th>

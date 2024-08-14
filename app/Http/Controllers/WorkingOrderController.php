@@ -2,24 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\User;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Job;
-use App\Models\Device;
-use App\Models\DeviceCategory;
-use App\Models\Location;
 use App\Models\Role;
-use App\Models\SpongeHeader;
+use App\Models\Device;
+use App\Models\Location;
+use App\Models\Department;
+use App\Models\Notification;
 use App\Models\SpongeDetail;
-use App\Models\SpongeDetailHist;
+use App\Models\SpongeHeader;
 use Illuminate\Http\Request;
+use App\Models\DeviceCategory;
+use App\Models\GeneralCode;
+use App\Models\SpongeDetailHist;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Yajra\DataTables\Facades\DataTables;
 
 class WorkingOrderController extends Controller
 {
@@ -37,6 +39,7 @@ class WorkingOrderController extends Controller
 
         $locations        = Location::where('active', 1)->get();
         $departments      = Department::where('active', 1)->get();
+        $wo_status        = GeneralCode::where('section','SPONGE')->where('label','STATUS_HEADER')->where('end_effective',null)->get();
 
         return view('forms.working_order.working_order_index', [
             'hidden_status' => 'hidden',
@@ -44,6 +47,7 @@ class WorkingOrderController extends Controller
             'access' => $access,
             'locations' => $locations,
             'departments' => $departments,
+            'wo_status' => $wo_status,
         ]);
     }
 
@@ -55,7 +59,8 @@ class WorkingOrderController extends Controller
                 'working_order' . '.spk_number' => $request->has('spk_number') ?  $request->input('spk_number') : '',
                 'working_order' . '.wo_category' => $request->has('wo_category') ?  $request->input('wo_category') : '',
                 'working_order' . '.department' => $request->has('department') ?  $request->input('department') : '',
-                'working_order' . '.location' => $request->has('location') ?  $request->input('location') : '',
+                'working_order' . '.wo_status' => $request->has('wo_status') ?  $request->input('wo_status') : '',
+                // 'working_order' . '.location' => $request->has('location') ?  $request->input('location') : '',
             ]);
         }
 
@@ -63,31 +68,76 @@ class WorkingOrderController extends Controller
         $spk_number   = session('working_order' . '.spk_number') != '' ? session('working_order' . '.spk_number') : '';
         $wo_category  = session('working_order' . '.wo_category') != '' ? session('working_order' . '.wo_category') : '';
         $department   = session('working_order' . '.department') != '' ? session('working_order' . '.department') : '';
-        $location     = session('working_order' . '.location') != '' ? session('working_order' . '.location') : '';
+        $wo_status   = session('working_order' . '.wo_status') != '' ? session('working_order' . '.wo_status') : '';
+        // $location     = session('working_order' . '.location') != '' ? session('working_order' . '.location') : '';
 
+        // dd($wo_status);
 
         $user = Auth::user()->id;
-        $spongeheader = SpongeHeader::where('created_by', $user);
+        $spongeheader_ongoing = SpongeHeader::where('created_by', $user)->where('status','=','ONGOING')->orderBy('created_at','desc')
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                                ->where('department_id', 'LIKE',  "%{$department}%")
+                                ->where('status', 'LIKE',  "%{$wo_status}%")
+                                ;
+        $spongeheader_done = SpongeHeader::where('created_by', $user)->where('status','=','DONE')->orderBy('created_at','desc')
+                            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                            ->where('department_id', 'LIKE',  "%{$department}%")
+                            ->where('status', 'LIKE',  "%{$wo_status}%")
+                            ;
+        $spongeheader_closed = SpongeHeader::where('created_by', $user)->where('status','=','CLOSED')->orderBy('created_at','desc')
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                                ->where('department_id', 'LIKE',  "%{$department}%")
+                                ->where('status', 'LIKE',  "%{$wo_status}%")
+                                ;
+        $spongeheader_cancel = SpongeHeader::where('created_by', $user)->where('status','=','CANCEL')->orderBy('created_at','desc')
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                                ->where('department_id', 'LIKE',  "%{$department}%")
+                                ->where('status', 'LIKE',  "%{$wo_status}%")
+                                ;
+        $spongeheader = SpongeHeader::where('created_by', $user)->where('status','NOT APPROVE')
+                        ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                        ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                        ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                        ->where('department_id', 'LIKE',  "%{$department}%")
+                        ->where('status', 'LIKE',  "%{$wo_status}%")
+                        ->orderBy('created_at','desc')
+                        ->union($spongeheader_ongoing)
+                        ->union($spongeheader_done)
+                        ->union($spongeheader_closed)
+                        ->union($spongeheader_cancel)
+                        ;
 
-        if ($wo_number != '') {
-            $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
-        }
+        // if ($wo_number != '') {
+        //     $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
+        // }
 
-        if ($spk_number != '') {
-            $spongeheader = $spongeheader->where('spk_number', 'LIKE',  "%{$spk_number}%");
-        }
+        // if ($spk_number != '') {
+        //     $spongeheader = $spongeheader->where('spk_number', 'LIKE',  "%{$spk_number}%");
+        // }
 
-        if ($wo_category != '') {
-            $spongeheader = $spongeheader->where('wo_category', 'LIKE',  "%{$wo_category}%");
-        }
+        // if ($wo_category != '') {
+        //     $spongeheader = $spongeheader->where('wo_category', 'LIKE',  "%{$wo_category}%");
+        // }
 
-        if ($department != '') {
-            $spongeheader = $spongeheader->where('department_id', 'LIKE',  "%{$department}%");
-        }
+        // if ($department != '') {
+        //     $spongeheader = $spongeheader->where('department_id', 'LIKE',  "%{$department}%");
+        // }
 
-        if ($location != '') {
-            // $spongeheader = $spongeheader->where('location_id', 'LIKE',  "%{$location}%");
-        }
+        // if ($wo_status != '') {
+        //     $spongeheader = $spongeheader->where('status', 'LIKE',  "%{$wo_status}%");
+        // }
+
+        // if ($location != '') {
+        //     $spongeheader = $spongeheader->where('location_id', 'LIKE',  "%{$location}%");
+        // }
 
         return $spongeheader;
     }
@@ -211,7 +261,7 @@ class WorkingOrderController extends Controller
 
                 return view('forms.working_order.working_order_index', $data);
             }
-            $wo_category_arr = Job::select('wo_category')->distinct()->get()->toArray();
+            $wo_category_arr = Job::select('wo_category')->where('wo_category', '!=', 'LAPORAN GANGGUAN')->distinct()->get()->toArray();
             if (empty($wo_category_arr)) {
                 $data = [
                     'hidden_status' => '',
@@ -436,6 +486,7 @@ class WorkingOrderController extends Controller
                 "message" => '<div class="alert alert-danger">Detail belum diinputkan. Mohon cek kembali</div>'
             ]);
         }
+
         foreach ($request->details as $detail) {
             if ($detail['location'] == '' || $detail['location'] == null) {
                 return response()->json([
@@ -493,9 +544,9 @@ class WorkingOrderController extends Controller
                 ]);
             }
 
-            $newFilename1 = '';
-            $newFilename2 = '';
-            $newFilename3 = '';
+            // $newFilename1 = '';
+            // $newFilename2 = '';
+            // $newFilename3 = '';
 
             if (array_key_exists('photo1', $detail)) {
                 // dd(strval($detail['photo1']->getClientOriginalExtension()));
@@ -511,7 +562,7 @@ class WorkingOrderController extends Controller
                         "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 5MB. Mohon cek kembali.</div>'
                     ]);
                 }
-                $newFilename1 = str_replace('/', '-', $request->wo_number) . '-photo1' . '.' . $detail['photo1']->getClientOriginalExtension();
+                // $newFilename1 = str_replace('/', '-', $request->wo_number) . '-photo1_det' . $number . '.' . $detail['photo1']->getClientOriginalExtension();
                 // Storage::putFileAs('local', $detail['photo1'], $newFilename1);
             }
             if (array_key_exists('photo2', $detail)) {
@@ -527,7 +578,7 @@ class WorkingOrderController extends Controller
                         "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 5MB. Mohon cek kembali.</div>'
                     ]);
                 }
-                $newFilename2 = str_replace('/', '-', $request->wo_number) . '-photo2' . '.' . $detail['photo2']->getClientOriginalExtension();
+                // $newFilename2 = str_replace('/', '-', $request->wo_number) . '-photo2_det' . $number . '.' . $detail['photo2']->getClientOriginalExtension();
             }
             if (array_key_exists('photo3', $detail)) {
                 if (strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpeg') {
@@ -542,8 +593,9 @@ class WorkingOrderController extends Controller
                         "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 5MB. Mohon cek kembali.</div>'
                     ]);
                 }
-                $newFilename3 = str_replace('/', '-', $request->wo_number) . '-photo3' . '.' . $detail['photo3']->getClientOriginalExtension();
+                // $newFilename3 = str_replace('/', '-', $request->wo_number) . '-photo3_det' . $number . '.' . $detail['photo3']->getClientOriginalExtension();
             }
+            // $number++;
         }
 
 
@@ -566,6 +618,7 @@ class WorkingOrderController extends Controller
 
             // $spongeDetails = [];
             // $spongeDetailHists = [];
+            $number = 1;
             foreach ($request->details as $detail) {
                 if ($request->wo_category == 'LAPORAN GANGGUAN') {
                     $closeAt = Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta');
@@ -573,9 +626,26 @@ class WorkingOrderController extends Controller
                     $closeAt = null;
                 }
 
+                $newFilename1 = '';
+                $newFilename2 = '';
+                $newFilename3 = '';
+
+                if (array_key_exists('photo1', $detail)) {
+                    $newFilename1 = str_replace('/', '-', $request->wo_number) . '-photo1_det' . $number . '.' . $detail['photo1']->getClientOriginalExtension();
+                    // Storage::putFileAs('public', $detail['photo1'], $newFilename1);
+                }
+                if (array_key_exists('photo2', $detail)) {
+                    $newFilename2 = str_replace('/', '-', $request->wo_number) . '-photo2_det' . $number . '.' . $detail['photo2']->getClientOriginalExtension();
+                    // Storage::putFileAs('public', $detail['photo2'], $newFilename2);
+                }
+                if (array_key_exists('photo3', $detail)) {
+                    $newFilename3 = str_replace('/', '-', $request->wo_number) . '-photo3_det' . $number . '.' . $detail['photo3']->getClientOriginalExtension();
+                    // Storage::putFileAs('public', $detail['photo3'], $newFilename3);
+                }
+
                 $spongeDetail = new SpongeDetail([
                     'wo_number_id'          => $spongeHeader->id,
-                    'location_id'     => $detail['location'],
+                    'location_id'           => $detail['location'],
                     'device_id'             => $detail['device'],
                     'disturbance_category'  => $detail['disturbance_category'],
                     'wo_description'        => $detail['description'],
@@ -595,7 +665,7 @@ class WorkingOrderController extends Controller
                 $spongeDetailHist = new SpongeDetailHist([
                     'sponge_detail_id'      => $spongeDetail->id,
                     'wo_number_id'          => $spongeHeader->id,
-                    'location_id'     => $detail['location'],
+                    'location_id'           => $detail['location'],
                     'device_id'             => $detail['device'],
                     'disturbance_category'  => $detail['disturbance_category'],
                     'wo_description'        => $detail['description'],
@@ -612,19 +682,54 @@ class WorkingOrderController extends Controller
                     'updated_at'            => Carbon::now()->timezone('Asia/Jakarta'),
                 ]);
                 $spongeDetailHist->save();
+
+                if (array_key_exists('photo1', $detail)) {
+                    // $newFilename1 = str_replace('/', '-', $request->wo_number) . '-photo1_det' . $number . '.' . $detail['photo1']->getClientOriginalExtension();
+                    Storage::putFileAs('public', $detail['photo1'], $newFilename1);
+                }
+                if (array_key_exists('photo2', $detail)) {
+                    // $newFilename2 = str_replace('/', '-', $request->wo_number) . '-photo2_det' . $number . '.' . $detail['photo2']->getClientOriginalExtension();
+                    Storage::putFileAs('public', $detail['photo2'], $newFilename2);
+                }
+                if (array_key_exists('photo3', $detail)) {
+                    // $newFilename3 = str_replace('/', '-', $request->wo_number) . '-photo3_det' . $number . '.' . $detail['photo3']->getClientOriginalExtension();
+                    Storage::putFileAs('public', $detail['photo3'], $newFilename3);
+                }
+                $number++;
             }
 
+            $getRoleApprove = Role::whereIn('role', ['SPV', 'SUPERADMIN'])
+                ->where('authority', 'APPROVE')
+                ->pluck('user_id')
+                ->toArray();
+
+            $recipientIds = User::whereIn('id', $getRoleApprove)
+                ->where('department_id', $request->department)
+                ->pluck('id')
+                ->toArray();
+
+            $description = 'Permintaan persetujuan untuk working order ' . $request->wo_number . '. Dibuat oleh ' . Auth::user()->name . ', pada  ' . Carbon::now()->timezone('Asia/Jakarta');
+            $url = route('form-input.approval.detail', ['id' => $spongeHeader->id]);
+            $createNotif = Notification::createNotification($recipientIds, $description, $url);
+
+            if (!$createNotif['success']) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan, Notification error</div>'
+                ]);
+            }
             DB::commit();
 
-            if (array_key_exists('photo1', $detail)) {
-                Storage::putFileAs('public', $detail['photo1'], $newFilename1);
-            }
-            if (array_key_exists('photo2', $detail)) {
-                Storage::putFileAs('public', $detail['photo2'], $newFilename2);
-            }
-            if (array_key_exists('photo3', $detail)) {
-                Storage::putFileAs('public', $detail['photo3'], $newFilename3);
-            }
+            // if (array_key_exists('photo1', $detail)) {
+
+            // }
+            // if (array_key_exists('photo2', $detail)) {
+
+            // }
+            // if (array_key_exists('photo3', $detail)) {
+
+            // }
             return response()->json([
                 'success' => true,
                 "message" => '<div class="alert alert-success">' . $spongeHeader->wo_number . ' berhasil disimpan</div>'
@@ -676,6 +781,27 @@ class WorkingOrderController extends Controller
         $index = 1;
         foreach ($spongedetails as $detail) {
             //$device = Device::find($detail->device_id);
+            $engineer = '';
+            if ($detail->job_executor) {
+                $user = User::find($detail->job_executor);
+                if ($user) {
+                    $engineer = $user->name;
+                }
+            }
+            $supervisor = '';
+            if ($detail->job_supervisor) {
+                $user = User::find($detail->job_supervisor);
+                if ($user) {
+                    $supervisor = $user->name;
+                }
+            }
+            $aid = '';
+            if ($detail->job_aid) {
+                $user = User::find($detail->job_aid);
+                if ($user) {
+                    $aid = $user->name;
+                }
+            }
             $details[$index] = [
                 'location' => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : '',
                 'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
@@ -686,6 +812,18 @@ class WorkingOrderController extends Controller
                 'device' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->device_name : '-',
                 'device_model' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->brand : '-',
                 'device_code' => Device::find($detail->device_id) ?  Device::find($detail->device_id)->activa_number : '-',
+                'start_effective' => $detail->start_at ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y') : null,
+                'estimated_end' => $detail->estimated_end ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y') : null,
+                'engineer' => $engineer,
+                'supervisor' => $supervisor,
+                'aid' => $aid,
+                'job_description' => $detail->job_description,
+                'job_attachment1' => $detail->job_attachment1,
+                'job_attachment2' => $detail->job_attachment2,
+                'job_attachment3' => $detail->job_attachment3,
+                'wp_number' => $detail->wp_number,
+                'engineer_status' => $detail->executor_progress,
+                'executor_desc' => $detail->executor_desc,
             ];
             $index++;
         }

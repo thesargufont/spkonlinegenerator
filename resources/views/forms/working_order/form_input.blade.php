@@ -285,39 +285,45 @@
             console.log(detailIndex);
             console.log(formData);
 
+
+
             // AJAX request
-            $.ajax({
-                url: "{{ route('form-input.working-order.create-new') }}",
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                dataType: "json",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(data) {
-                    if (data.errors) {
-                        $('#form_result').html(data.message);
-                        setTimeout(function() {
-                            $('#form_result').html('');
-                        }, 5000);
+            artLoadingDialogDo("Proses menyimpan..", function() {
+                $.ajax({
+                    url: "{{ route('form-input.working-order.create-new') }}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    dataType: "json",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        artLoadingDialogClose();
+                        if (data.errors) {
+                            $('#form_result').html(data.message);
+                            setTimeout(function() {
+                                $('#form_result').html('');
+                            }, 5000);
+                        }
+                        if (data.success) {
+                            $('#form_result').html(data.message);
+                            //Optionally, redirect to another page after success
+                            setTimeout(function() {
+                                window.location.href = "{{ route('form-input.working-order.index') }}";
+                            }, 1500);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        artLoadingDialogClose();
+                        console.log('Error Status:', status);
+                        console.log('Error:', error);
+                        console.log('Response:', xhr.responseText);
+                        var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                        $('#form_result').html(html);
                     }
-                    if (data.success) {
-                        $('#form_result').html(data.message);
-                        //Optionally, redirect to another page after success
-                        setTimeout(function() {
-                            window.location.href = "{{ route('form-input.working-order.index') }}";
-                        }, 1500);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log('Error Status:', status);
-                    console.log('Error:', error);
-                    console.log('Response:', xhr.responseText);
-                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                    $('#form_result').html(html);
-                }
+                });
             });
             return false; // Prevent default form submission
         });

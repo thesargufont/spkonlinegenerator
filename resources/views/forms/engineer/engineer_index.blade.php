@@ -50,7 +50,7 @@
                     <h3 class="panel-title">List Work Order</h3>
                 </div>
                 <div class="panel-body">
-                    <table id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table id="main-table" class="table table-striped table-bordered " cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Action</th>
@@ -183,6 +183,13 @@
             var url = "{{route('form-input.engineer.detail', '')}}" + "/" + id;
             // console.log(url);
             window.location.href = url;
+        }
+    }
+
+    function downloadItem(id) {
+        {
+            var url = "{{route('form-input.engineer.download', '')}}" + "/" + id;
+            window.open(url, '_blank');
         }
     }
 </script>

@@ -8,81 +8,74 @@
     </ol>
     <div class="clearfix"></div>
 @endsection
-
-<link rel="stylesheet" href="{{ asset ('plugins/morris/morris.css') }}">
-
 @section('content')
-
 <div class="container" style="overflow:scroll; height:100%;">
     <div class="row">
-        <form method="POST" id="search-form" class="form" role="form">
-            <div class="col-sm-12">
-                {{-- <div class="panel-body"> --}}
-                    <div class="row">
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="panel panel-primary text-center">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Total Laporan</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <h3 class=""><b><p class="text-muted"><b></b></p>{{ $totalReport }}</b></h3>
-                                    <p class="text-muted"><b></b>Laporan periode 2024</p>
-                                </div>
+        <div class="col-sm-12">
+            <form method="POST" id="search-form" class="form" role="form">
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="panel panel-primary text-center">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">Total Laporan</h4>
                             </div>
-                        </div>
-            
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="panel panel-primary text-center">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Total Gangguan</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <h3 class=""><b>{{ $totalReportProblem }}</b></h3>
-                                    <p class="text-muted"><b>{{ $problemPercentage }}%</b> Total laporan</p>
-                                </div>
-                            </div>
-                        </div>
-            
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="panel panel-primary text-center">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Total Pekerjaan</h4>
-                                </div>
-                                <div class="panel-body">
-                                    <h3 class=""><b>{{ $totalReportJob }}</b></h3>
-                                    <p class="text-muted"><b>{{ $jobPercentage }}%</b> Total laporan</p>
-                                </div>
+                            <div class="panel-body">
+                                <h3 class=""><b><p class="text-muted"><b></b></p>{{ $totalReport }}</b></h3>
+                                <p class="text-muted"><b></b>Laporan periode 2024</p>
                             </div>
                         </div>
                     </div>
-            
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="panel panel-border panel-primary">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Gangguan</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <canvas id="myChart" style="height: 300px"></canvas>
-                                </div>
+        
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="panel panel-primary text-center">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">Total Gangguan</h4>
                             </div>
-                        </div> 
-                        
-                        <div class="col-lg-6">
-                            <div class="panel panel-border panel-primary">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Pekerjaan</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <canvas id="myChart1" style="height: 300px"></canvas>
-                                </div>
+                            <div class="panel-body">
+                                <h3 class=""><b>{{ $totalReportProblem }}</b></h3>
+                                <p class="text-muted"><b>{{ $problemPercentage }}%</b> Total laporan</p>
                             </div>
-                        </div> 
+                        </div>
+                    </div>
+        
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="panel panel-primary text-center">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">Total Pekerjaan</h4>
+                            </div>
+                            <div class="panel-body">
+                                <h3 class=""><b>{{ $totalReportJob }}</b></h3>
+                                <p class="text-muted"><b>{{ $jobPercentage }}%</b> Total laporan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="panel panel-border panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Gangguan</h3>
+                            </div>
+                            <div class="panel-body">
+                                <canvas id="myChart" style="height: 300px"></canvas>
+                            </div>
+                        </div>
                     </div> 
-                {{-- </div> --}}
-    
-            </div>
-        </form>
+                    
+                    <div class="col-lg-6">
+                        <div class="panel panel-border panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Pekerjaan</h3>
+                            </div>
+                            <div class="panel-body">
+                                <canvas id="myChart1" style="height: 300px"></canvas>
+                            </div>
+                        </div>
+                    </div> 
+                </div> 
+            </form>
+        </div>
     </div>
 
     <div class="row">
@@ -117,8 +110,8 @@
     </div> 
 </div>
 
+<link rel="stylesheet" href="{{ asset ('plugins/morris/morris.css') }}">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-
 <script>
     $(document).ready(function () {
         $('#total_laporan').val('asdasd');

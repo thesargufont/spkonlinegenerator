@@ -68,7 +68,7 @@
                 </div>
                 <div class="panel-body">
                     <span id="form_result"></span>
-                    <table  id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <table  id="main-table" class="table table-striped table-bordered " cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>Action</th>

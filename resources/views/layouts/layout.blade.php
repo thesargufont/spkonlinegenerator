@@ -59,49 +59,9 @@
 
                         <ul class="nav navbar-nav navbar-right pull-right">
                             <li class="dropdown hidden-xs">
-                                <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
-                                    <i class="fa fa-bell"></i> <span class="badge badge-xs badge-danger">3</span>
+                                <a href="{{ route('notifications') }}" class="waves-effect waves-light">
+                                    <i class="fa fa-bell"></i><span class="badge badge-xs badge-danger" id="span_notif"></span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-lg">
-                                    <li class="text-center notifi-title">Notification <span class="badge badge-xs badge-success">3</span></li>
-                                    <li class="list-group">
-                                        <!-- list item-->
-                                        <a href="javascript:void(0);" class="list-group-item">
-                                            <div class="media">
-                                                <div class="media-heading">Your order is placed</div>
-                                                <p class="m-0">
-                                                    <small>Dummy text of the printing and typesetting industry.</small>
-                                                </p>
-                                            </div>
-                                        </a>
-                                        <!-- list item-->
-                                        <a href="javascript:void(0);" class="list-group-item">
-                                            <div class="media">
-                                                <div class="media-body clearfix">
-                                                    <div class="media-heading">New Message received</div>
-                                                    <p class="m-0">
-                                                        <small>You have 87 unread messages</small>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <!-- list item-->
-                                        <a href="javascript:void(0);" class="list-group-item">
-                                            <div class="media">
-                                                <div class="media-body clearfix">
-                                                    <div class="media-heading">Your item is shipped.</div>
-                                                    <p class="m-0">
-                                                        <small>It is a long established fact that a reader will</small>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <!-- last list item -->
-                                        <a href="javascript:void(0);" class="list-group-item">
-                                            <small class="text-primary">See all notifications</small>
-                                        </a>
-                                    </li>
-                                </ul>
                             </li>
                             <li class="hidden-xs">
                                 <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="fa fa-crosshairs"></i></a>
@@ -192,10 +152,14 @@
                         </li> -->
 
                         <li>
-                            <a href="calendar.html" class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span class="badge badge-primary pull-right">NEW</span></span></a>
+                            <a class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span class="badge badge-primary pull-right">NEW</span></span></a>
                         </li>
 
-                        <li class="has_sub">
+                        <li id="master_nav_non_editable" class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
+                                    Data </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                        </li>
+                        <li id="master_nav_editable" class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
                                     Data </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
                             <ul class="list-unstyled">
@@ -205,7 +169,8 @@
                                 <li><a href="{{ route('masters/department/index') }}">Data Departemen</a></li>
                                 <li><a href="{{ route('masters/job/index') }}">Data Pekerjaan</a></li>
                                 <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
-                                <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a></li>
+                                <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a>
+                                </li>
                                 {{-- <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a>
                         </li> --}}
                     </ul>
@@ -295,8 +260,14 @@
                     </div>
                 </div>
             </div>
+
             <!-- modal for artemis confirmation dialog -->
             <div class="modal fade" id="divArtConfirmation" tabindex="-1" role="dialog" aria-labelledby="divArtConfirmationTitle" aria-hidden="true">
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
                 <div id="divArtConfirmationModal" class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-warning">
@@ -329,6 +300,66 @@
         animation: loadingspinner .7s linear infinite;
     }
 
+
+    .modal-container { 
+        display: none; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0, 0, 0, 0.5); 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 1; 
+    } 
+
+    .modal-content { 
+        background-color: #fff; 
+        border-radius: 8px; 
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+        max-width: 400px; 
+        width: 100%; 
+        padding: 20px; 
+        text-align: center; 
+    } 
+
+    button { 
+        border: none; 
+    } 
+
+    h2 { 
+        color: #515151; 
+    } 
+
+    .confirmation-message { 
+        margin-bottom: 20px; 
+    } 
+
+    .button-container { 
+        display: flex; 
+        justify-content: space-around; 
+    } 
+
+    .button { 
+        padding: 10px 20px; 
+        font-size: 16px; 
+        text-align: center; 
+        text-decoration: none; 
+        border-radius: 5px; 
+        cursor: pointer; 
+    } 
+
+    .cancel-button { 
+        background-color: #ccc; 
+        color: #535353; 
+    } 
+
+    .delete-button { 
+        background-color: #e74c3c; 
+        color: #fff; 
+    } 
+
     @keyframes loadingspinner {
         0% {
             transform: rotate(0deg)
@@ -339,9 +370,47 @@
         }
     }
 </style>
+
+
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+    $(document).ready(function() {
+        getNotif();
+    });
+
+    var notif = true;
+
+    function getNotif() {
+        $.ajax({
+            url: "{!! route('layout/get-notif') !!}",
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{!!csrf_token()!!}'
+            },
+            dataType: "json",
+            data: {
+                'notif': notif,
+            },
+            success: function(data) {
+                if (data.errors) {
+                    $('#span_notif').html('');
+                }
+                if (data.success) {
+                    $('#span_notif').html('new');
+                }
+
+                if (data.master) {
+                    $('#master_nav_non_editable').hide();
+                    $('#master_nav_editable').show();
+                } else {
+                    $('#master_nav_non_editable').show();
+                    $('#master_nav_editable').hide();
+                }
+            },
+        });
+    }
+
     function artLoadingDialogDo(text, onShownCallback = null, onHiddenCallback = null, modalWidth = 500) {
         $('#artLoadingDialogText').html(text);
         if (onShownCallback != null) {
@@ -381,10 +450,26 @@
         $('#divArtLoadingDialog').modal('hide');
     }
 
+    function artConfirmationDo(title, text, okCallback,modalWidth=600, okText='{{ucwords(__('form.ok'))}}', cancelText='{{ucwords(__('form.cancel'))}}', cancelCallback=null) {
+        $('#artConfirmationTitle').text(title);
+        $('#artConfirmationBody').html(text);
+        $('#artConfirmationBtnOk').html(okText);
+        $('#artConfirmationBtnCancel').html(cancelText);
+        $('#artConfirmationBtnOk').off('click');
+        $('#artConfirmationBtnOk').click(okCallback);
+        $('#artConfirmationBtnCancel').off('click');
+        if(cancelCallback!=null)
+        {
+            $('#artConfirmationBtnCancel').click(cancelCallback);
+        }
+        $('#artMessageDialogBtnOk').focus();
+        $('#divArtConfirmationModal').attr('style', 'width: '+modalWidth+'px !important');
+        $('#divArtConfirmation').modal().show();
+    }
+
     function artConfirmationClose() {
         $('#divArtConfirmation').modal('hide');
     }
-
 
     function artAddModalStack(event) {
         // keep track of the number of open modals

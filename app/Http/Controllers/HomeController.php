@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
   
 use Carbon\Carbon;
 use App\Models\Department;
+use App\Models\Notification;
 use App\Models\SpongeHeader;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
   
 class HomeController extends Controller
@@ -138,5 +140,31 @@ class HomeController extends Controller
         });
         
         return $datatables->make(TRUE);
+    }
+
+    public function getNotif(Request $request){
+        $notificationAvailable = Notification::where('user_id', Auth::user()->id)
+                                           ->where('read', 0)
+                                           ->count();
+        
+        if(Auth::user()->name == 'SUPERADMIN'){
+            $master = true;
+        } else {
+            $master = false;
+        }
+        
+        if($notificationAvailable != 0){
+            return response()->json([
+                        'success' => true,
+                        'master' => $master,
+                        "message"=> '<div class="alert alert-danger">You have new notifications</div>'
+                    ]); 
+        } else {
+            return response()->json([
+                        'errors' => true, 
+                        'master' => $master,
+                        "message"=> '<div class="alert alert-danger">Notifications not found</div>'
+                    ]); 
+        }
     }
 }

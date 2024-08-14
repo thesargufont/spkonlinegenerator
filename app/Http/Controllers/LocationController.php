@@ -1,7 +1,7 @@
 <?php
-  
+
 namespace App\Http\Controllers;
-  
+
 use App\User;
 use Exception;
 use Carbon\Carbon;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
-  
+
 class LocationController extends Controller
 {
     public function index()
@@ -26,36 +26,35 @@ class LocationController extends Controller
         ]);
     }
 
-    public function getData($request,$isExcel='')
+    public function getData($request, $isExcel = '')
     {
-        
-        if($isExcel == "")
-        {
-            session([
-                    'department'.'.location_name' => $request->has('location_name')?  $request->input('location_name') : '',
-                    'department'.'.basecamp' => $request->has('basecamp')?  $request->input('basecamp'): '', 
-                    'department'.'.status' => $request->has('status')?  $request->input('status'): '', 
-            ]);
-        } 
 
-        $location_name  = session('department'.'.location_name')!=''?session('department'.'.location_name'):'';
-        $basecamp       = session('department'.'.basecamp')!=''?session('department'.'.basecamp'):'';
-        $status         = session('department'.'.status')!=''?session('department'.'.status'):'';
+        if ($isExcel == "") {
+            session([
+                'department' . '.location_name' => $request->has('location_name') ?  $request->input('location_name') : '',
+                'department' . '.basecamp' => $request->has('basecamp') ?  $request->input('basecamp') : '',
+                'department' . '.status' => $request->has('status') ?  $request->input('status') : '',
+            ]);
+        }
+
+        $location_name  = session('department' . '.location_name') != '' ? session('department' . '.location_name') : '';
+        $basecamp       = session('department' . '.basecamp') != '' ? session('department' . '.basecamp') : '';
+        $status         = session('department' . '.status') != '' ? session('department' . '.status') : '';
 
         $location_name  = strtoupper($location_name);
         $basecamp       = strtoupper($basecamp);
         $status         = strtoupper($status);
 
         $locationDatas = Location::where('active', $status);
-        
-        if($basecamp != ''){
+
+        if ($basecamp != '') {
             $locationDatas = $locationDatas->where('basecamp_id', $basecamp);
         }
 
-        if($location_name != ''){
+        if ($location_name != '') {
             $locationDatas = $locationDatas->where('location', $location_name);
         }
-        
+
         return $locationDatas;
     }
 
@@ -64,50 +63,50 @@ class LocationController extends Controller
         $datas = $this->getData($request);
 
         $datatables = DataTables::of($datas)
-            ->filter(function($instance) use ($request) {
+            ->filter(function ($instance) use ($request) {
                 return true;
             });
-        
-        $datatables = $datatables->addColumn('action', function($item) use ($request){
+
+        $datatables = $datatables->addColumn('action', function ($item) use ($request) {
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            // $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
             $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
 
             return $txt;
         })
-        ->addColumn('active', function ($item) {
-            if($item->active == 1){
-                return 'AKTIF';
-            } else {
-                return 'TIDAK AKTIF';
-            }
-        })
-        ->addColumn('basecamp', function ($item) {
-            return optional($item->basecamp)->basecamp;    
-        })
-        ->editColumn('start_effective', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
-        })
-        ->editColumn('end_effective', function ($item) {
-            if($item->end_effective == null){
-                return '-';
-            } else {
-                return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
-            }
-        })
-        ->addColumn('created_by', function ($item) {
-            return optional($item->createdBy)->name;
-        })
-        ->editColumn('created_at', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
-        })
-        ->addColumn('updated_by', function ($item) {
-            return optional($item->updatedBy)->name;
-        })
-        ->editColumn('updated_at', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
-        });
+            ->addColumn('active', function ($item) {
+                if ($item->active == 1) {
+                    return 'AKTIF';
+                } else {
+                    return 'TIDAK AKTIF';
+                }
+            })
+            ->addColumn('basecamp', function ($item) {
+                return optional($item->basecamp)->basecamp;
+            })
+            ->editColumn('start_effective', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
+            })
+            ->editColumn('end_effective', function ($item) {
+                if ($item->end_effective == null) {
+                    return '-';
+                } else {
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
+                }
+            })
+            ->addColumn('created_by', function ($item) {
+                return optional($item->createdBy)->name;
+            })
+            ->editColumn('created_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
+            })
+            ->addColumn('updated_by', function ($item) {
+                return optional($item->updatedBy)->name;
+            })
+            ->editColumn('updated_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
+            });
 
         return $datatables->make(TRUE);
     }
@@ -129,40 +128,44 @@ class LocationController extends Controller
         $basecamp       = strtoupper($request->basecamp);
         $addresss       = strtoupper($request->addresss);
 
-        if($locationtName == ''){
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Nama lokasi wajib terisi, harap periksa kembali formulir pengisian data</div>'
-                    ]);    
-        }
-        
-        if($description == ''){
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Deskripsi wajib terisi, harap periksa kembali formulir pengisian data</div>'
-                    ]);    
+        if ($locationtName == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Nama lokasi wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
         }
 
-        if($basecamp == ''){
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Basecamp wajib terisi, harap periksa kembali formulir pengisian data</div>'
-                    ]);    
+        if ($description == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Deskripsi wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        if ($basecamp == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Basecamp wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
         }
 
         $checkDuplicateData = Location::where('location', $locationtName)
-                                        ->where('active', 1)
-                                        ->first();
-                                             
-        if($checkDuplicateData){
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Telah ditemukan data lokasi '.$locationtName.' yang masih aktif</div>'
-                    ]);    
+            ->where('active', 1)
+            ->first();
+
+        if ($checkDuplicateData) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Telah ditemukan data lokasi ' . $locationtName . ' yang masih aktif</div>'
+            ]);
         }
 
         try {
             // CREATE DATA 
             DB::beginTransaction();
-            
+
             $insertLocation = new Location([
-                'location'                => $locationtName, 
+                'location'                => $locationtName,
                 'location_description'    => $description,
                 'location_type'           => $locationType,
                 'basecamp_id'             => $basecamp,
@@ -206,14 +209,16 @@ class LocationController extends Controller
             $insertLocationHist->save();
 
             DB::commit();
-            return response()->json(['success' => true, 
-                            "message"=> '<div class="alert alert-success">Data lokasi disimpan</div>'
-                    ]);   
-        } catch (Exception $e){
+            return response()->json([
+                'success' => true,
+                "message" => '<div class="alert alert-success">Data lokasi disimpan</div>'
+            ]);
+        } catch (Exception $e) {
             DB::rollback();
-            return response()->json(['errors' => true, 
-                            "message"=> '<div class="alert alert-danger">Telah terjadi kesalahan sistem, data gagal diproses</div>'
-                    ]);       
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Telah terjadi kesalahan sistem, data gagal diproses</div>'
+            ]);
         }
     }
 
@@ -226,10 +231,10 @@ class LocationController extends Controller
     public function deleteData(Request $request)
     {
         $location = Location::where('id', $request->id)->first();
-        
+
         try {
             DB::beginTransaction();
-            if($location){
+            if ($location) {
                 $location->active         = 0;
                 $location->end_effective  = Carbon::now();
                 $location->updated_by     = Auth::user()->id;
@@ -281,8 +286,8 @@ class LocationController extends Controller
     public function detailData($id)
     {
         $location = Location::where('id', $id)->first();
-        if($location){
-            if($location->active == 1){
+        if ($location) {
+            if ($location->active == 1) {
                 $active = 'AkTIF';
             } else {
                 $active = 'TIDAK AkTIF';
