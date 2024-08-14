@@ -269,8 +269,6 @@ class EngineerController extends Controller
         try {
             DB::beginTransaction();
 
-            $cek_status = 'DONE';
-            $status_done = true;
             foreach ($request->detail as $detail) {
                 /*cr NUMBER Preparation*/
                 //get month year
@@ -534,8 +532,6 @@ class EngineerController extends Controller
     {
         $dataHeader = SpongeHeader::where('id', $id)->first();
         $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->where('executor_progress', 'DONE')->get();
-
-        // dd($dataHeader, $dataDetail);
 
         // dd($dataHeader, $dataDetail);
 

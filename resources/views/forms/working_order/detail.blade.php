@@ -100,6 +100,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</label>
                                     </div>
+                                </div>
 
                                 <div class="col-md-12"><br></div>
 
@@ -171,6 +172,7 @@
                                             <img src="{{ Storage::url($detail['image_path3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
                                         </div>
                                     </div>
+                                </div>
 
                                 <div class="col-md-12">
                                     <hr style="border-top: 3px solid #bbb">
@@ -180,6 +182,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</label>
                                     </div>
+                                </div>
 
                                 <div class="col-md-12"><br></div>
 
@@ -229,14 +232,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    {{-- ALAT --}}
-                                    <div class="form-group">
-                                        <label class="col-md-3">ALAT</label>
-                                        <div class="col-md-7">
-                                            <input name="detail_device_{{ $index }}" id="detail_device_{{ $index }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device'] }}">
-                                        </div>
-                                    </div>
 
                                 <div class="col-md-12">
                                     <hr style="border-top: 3px solid #bbb">
@@ -245,6 +240,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</label>
                                     </div>
+                                </div>
 
                                 <div class="col-md-12"><br></div>
 
@@ -297,10 +293,10 @@
 
                 </div>
 
-        </form>
+            </form>
 
-    </div> <!-- col -->
-</div>
+        </div> <!-- col -->
+    </div>
 </div>
 
 <!-- Plugins js -->

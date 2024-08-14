@@ -408,6 +408,20 @@
                     $('#master_nav_editable').hide();
                 }
             },
+            error: function(data) {
+                console.log(data);
+                html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                $('#form_result').html(html);
+                if (data.responseJSON.message) {
+                    var target = data.responseJSON.errors;
+                    for (var k in target) {
+                        if (!Array.isArray(target[k]['0'])) {
+                            var msg = target[k]['0'];
+                            artCreateFlashMsg(msg, "danger", true);
+                        }
+                    }
+                }
+            }
         });
     }
 
@@ -428,22 +442,6 @@
             backdrop: 'static',
             keyboard: false
         }).show();
-    }
-
-    function artConfirmationDo(title, text, okCallback, modalWidth = 600, okText = 'OK}', cancelText = 'CANCEL}', cancelCallback = null) {
-        $('#artConfirmationTitle').text(title);
-        $('#artConfirmationBody').html(text);
-        $('#artConfirmationBtnOk').html(okText);
-        $('#artConfirmationBtnCancel').html(cancelText);
-        $('#artConfirmationBtnOk').off('click');
-        $('#artConfirmationBtnOk').click(okCallback);
-        $('#artConfirmationBtnCancel').off('click');
-        if (cancelCallback != null) {
-            $('#artConfirmationBtnCancel').click(cancelCallback);
-        }
-        $('#artMessageDialogBtnOk').focus();
-        $('#divArtConfirmationModal').attr('style', 'width: ' + modalWidth + 'px !important');
-        $('#divArtConfirmation').modal().show();
     }
 
     function artLoadingDialogClose() {

@@ -204,11 +204,6 @@
                                     <div class="form-group">
                                         <label class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</label>
                                     </div>
-                                    @else
-                                    <div class="col-sm-6">
-                                        <input name="detail[{{ $index }}][engineer]" id="detail[{{ $index }}][engineer]" type="text" class="form-control" readonly="readonly" value="{{ $detail['engineer'] }}">
-                                    </div>
-                                    @endif
                                 </div>
 
                                 <div class="col-md-12"><br></div>
@@ -249,11 +244,6 @@
                                         </div>
                                         @endif
                                     </div>
-                                    @else
-                                    <div class="col-sm-6">
-                                        <input name="detail[{{ $index }}][supervisor]" id="detail[{{ $index }}][supervisor]" type="text" class="form-control" readonly="readonly" value="{{ $detail['supervisor'] }}">
-                                    </div>
-                                    @endif
                                 </div>
                                 <div class="col-md-6">
                                     {{-- SUPERVISOR --}}
@@ -300,11 +290,6 @@
                                             <input name="detail[{{ $index }}][job_description]" id="detail[{{ $index }}][job_description]" type="text" class="form-control" value="{{ $detail['job_description'] }}" @if($status !='NOT APPROVE' ) disabled @endif>
                                         </div>
                                     </div>
-                                    @else
-                                    <div class="col-sm-6">
-                                        <input name="detail[{{ $index }}][aid]" id="detail[{{ $index }}][aid]" type="text" class="form-control" readonly="readonly" value="{{ $detail['aid'] }}">
-                                    </div>
-                                    @endif
                                 </div>
 
                                 <div class="col-md-12">
