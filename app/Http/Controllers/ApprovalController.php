@@ -48,27 +48,51 @@ class ApprovalController extends Controller
 
         $wo_number    = session('working_order' . '.wo_number') != '' ? session('working_order' . '.wo_number') : '';
 
-        $user = Auth::user()->id;
-        $spongeheader_ongoing = SpongeHeader::where('created_by', $user)->where('status','=','ONGOING')->orderBy('created_at','desc')
+        $user_login = Auth::user()->id;
+        $users = Role::whereIn('role',['SPV','SUPERADMIN'])->pluck('id')->toArray();
+        if (in_array($user_login, $users)){
+            $spongeheader_ongoing = SpongeHeader::where('status','=','ONGOING')->orderBy('created_at','desc')
+                                    ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                    ;
+            $spongeheader_done = SpongeHeader::where('status','=','DONE')->orderBy('created_at','desc')
                                 ->where('wo_number', 'LIKE',  "%{$wo_number}%")
                                 ;
-        $spongeheader_done = SpongeHeader::where('created_by', $user)->where('status','=','DONE')->orderBy('created_at','desc')
+            $spongeheader_closed = SpongeHeader::where('status','=','CLOSED')->orderBy('created_at','desc')
+                                    ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                    ;
+            $spongeheader_cancel = SpongeHeader::where('status','=','CANCEL')->orderBy('created_at','desc')
+                                    ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                    ;
+            $spongeheader = SpongeHeader::where('status','NOT APPROVE')
                             ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                            ->orderBy('created_at','desc')
+                            ->union($spongeheader_ongoing)
+                            ->union($spongeheader_done)
+                            ->union($spongeheader_closed)
+                            ->union($spongeheader_cancel)
                             ;
-        $spongeheader_closed = SpongeHeader::where('created_by', $user)->where('status','=','CLOSED')->orderBy('created_at','desc')
+        } else{
+            $spongeheader_ongoing = SpongeHeader::whereIn('created_by', $user_login)->where('status','=','ONGOING')->orderBy('created_at','desc')
+                                    ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                    ;
+            $spongeheader_done = SpongeHeader::whereIn('created_by', $user_login)->where('status','=','DONE')->orderBy('created_at','desc')
                                 ->where('wo_number', 'LIKE',  "%{$wo_number}%")
                                 ;
-        $spongeheader_cancel = SpongeHeader::where('created_by', $user)->where('status','=','CANCEL')->orderBy('created_at','desc')
-                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-                                ;
-        $spongeheader = SpongeHeader::where('created_by', $user)->where('status','NOT APPROVE')
-                        ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-                        ->orderBy('created_at','desc')
-                        ->union($spongeheader_ongoing)
-                        ->union($spongeheader_done)
-                        ->union($spongeheader_closed)
-                        ->union($spongeheader_cancel)
-                        ;
+            $spongeheader_closed = SpongeHeader::whereIn('created_by', $user_login)->where('status','=','CLOSED')->orderBy('created_at','desc')
+                                    ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                    ;
+            $spongeheader_cancel = SpongeHeader::whereIn('created_by', $user_login)->where('status','=','CANCEL')->orderBy('created_at','desc')
+                                    ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                    ;
+            $spongeheader = SpongeHeader::whereIn('created_by', $user_login)->where('status','NOT APPROVE')
+                            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                            ->orderBy('created_at','desc')
+                            ->union($spongeheader_ongoing)
+                            ->union($spongeheader_done)
+                            ->union($spongeheader_closed)
+                            ->union($spongeheader_cancel)
+                            ;
+        }
 
         // if ($wo_number != '') {
         //     $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
@@ -792,7 +816,6 @@ class ApprovalController extends Controller
         // Convert the image to base64
         $imageData = base64_encode(file_get_contents($path));
         $src = 'data: ' . mime_content_type($path) . ';base64,' . $imageData;
-
         foreach ($dataDetail as $detail) {
 
             $executorSignaturePath   = optional($detail->executorBy)->signature_path;
