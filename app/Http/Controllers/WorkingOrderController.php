@@ -261,7 +261,8 @@ class WorkingOrderController extends Controller
 
                 return view('forms.working_order.working_order_index', $data);
             }
-            $wo_category_arr = Job::select('wo_category')->where('wo_category', '!=', 'LAPORAN GANGGUAN')->distinct()->get()->toArray();
+            // $wo_category_arr = Job::select('wo_category')->where('wo_category', '!=', 'LAPORAN GANGGUAN')->distinct()->get()->toArray();
+            $wo_category_arr = Job::select('wo_category')->distinct()->get()->toArray();
             if (empty($wo_category_arr)) {
                 $data = [
                     'hidden_status' => '',
@@ -478,6 +479,11 @@ class WorkingOrderController extends Controller
                 ]);
             }
         }
+        if($request->job_category == 'null'){
+            $job_category = null;
+        }else{
+            $job_category = $request->job_category;
+        }
 
         //DETAIL VALIDATION
         if (!isset($request->details)) {
@@ -605,10 +611,11 @@ class WorkingOrderController extends Controller
             $spongeHeader = new SpongeHeader([
                 'wo_number'       => $request->wo_number,
                 'wo_category'     => $request->wo_category,
-                'job_category'    => $request->job_category ? $request->job_category : '',
+                'job_category'    => $job_category ? $job_category : '',
                 'department_id'   => $request->department,
                 'effective_date'  => Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta'),
-                'status'          => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
+                // 'status'          => $request->wo_category == 'LAPORAN GANGGUAN' ? 'DONE' : 'NOT APPROVE',
+                'status'          => 'NOT APPROVE',
                 'created_by'      => Auth::user()->id,
                 'created_at'      => Carbon::now()->timezone('Asia/Jakarta'),
                 'updated_by'      => Auth::user()->id,
@@ -620,12 +627,13 @@ class WorkingOrderController extends Controller
             // $spongeDetailHists = [];
             $number = 1;
             foreach ($request->details as $detail) {
-                if ($request->wo_category == 'LAPORAN GANGGUAN') {
-                    $closeAt = Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta');
-                } else {
-                    $closeAt = null;
-                }
-
+                // if ($request->wo_category == 'LAPORAN GANGGUAN') {
+                //     $closeAt = Carbon::createFromFormat('d/m/Y', $request->effective_date)->timezone('Asia/Jakarta');
+                // } else {
+                //     $closeAt = null;
+                // }
+                $closeAt = null;
+                
                 $newFilename1 = '';
                 $newFilename2 = '';
                 $newFilename3 = '';

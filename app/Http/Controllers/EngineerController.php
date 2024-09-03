@@ -481,6 +481,7 @@ class EngineerController extends Controller
         if($spongeheader->status == 'CANCEL' || $spongeheader->status == 'CLOSED'){
             $status = 'DONE';
         }
+        //dd($status);
 
         $count = count($details);
         //dd($details);
@@ -678,10 +679,15 @@ class EngineerController extends Controller
             }
 
             $executorSignaturePath   = optional($detail->executorBy)->signature_path;
-            if ($executorSignaturePath != '') {
+            // dd($executorSignaturePath);
+            if ($executorSignaturePath != '' || $executorSignaturePath != null) {
                 $pathExecutor = $executorSignaturePath !== 'public/' ? 'app/' . $executorSignaturePath : '';
                 $sigPath = storage_path($pathExecutor ?? '');
-                $templateProcessor->setImageValue('executor_sig', array('path' => $sigPath, 'width' => 200, 'ratio' => true));
+                try {
+                    $templateProcessor->setImageValue('executor_sig', array('path' => $sigPath, 'width' => 200, 'ratio' => true));
+                } catch (\Throwable $th) {
+                    $templateProcessor->setValue('executor_sig', 'Dokumen ini telah ditandatangani secara komputerisasi oleh ' . $data['engineer'] . ' pada tanggal ' . $data['updated_at']);
+                }
             } else {
                 $templateProcessor->setValue('executor_sig', 'Dokumen ini telah ditandatangani secara komputerisasi oleh ' . $data['engineer'] . ' pada tanggal ' . $data['updated_at']);
             }
