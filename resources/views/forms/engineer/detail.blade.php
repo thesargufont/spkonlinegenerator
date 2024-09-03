@@ -265,8 +265,8 @@
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <select class="form-control" name="detail[{{ $detail['index'] }}][status_engineer]">
-                                                @foreach($status_detail as $status)
-                                                <option value="{{$status}}" @if ($status=="ONGOING" ) selected @endif>{{$status}}</option>
+                                                @foreach($status_detail as $status_det)
+                                                <option value="{{$status_det}}" @if ($status_det== $status ) selected @endif>{{$status_det}}</option>
                                                 @endforeach
                                             </select>
                                             @else
@@ -296,27 +296,30 @@
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo1]" id="detail[{{ $detail['index'] }}][photo1]">
+                                            @else
+                                            <img src="{{ Storage::url($detail['job_attachment1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo1]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
-                                            <img src="{{ Storage::url($detail['job_attachment1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo1]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                         </div>
                                         <label class="col-sm-1">LAMPIRAN #2</label>
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo2]" id="detail[{{ $detail['index'] }}][photo2]">
+                                            @else
+                                            <img src="{{ Storage::url($detail['job_attachment2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo2]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
-                                            <img src="{{ Storage::url($detail['job_attachment2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo2]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                         </div>
                                         <label class="col-sm-1">LAMPIRAN #3</label>
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo3]" id="detail[{{ $detail['index'] }}][photo3]">
+                                            @else
+                                            <img src="{{ Storage::url($detail['job_attachment3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo3]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
-                                            <img src="{{ Storage::url($detail['job_attachment3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo3]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                         </div>
 
