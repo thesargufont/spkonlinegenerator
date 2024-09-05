@@ -306,6 +306,10 @@
     function showItem(id) {
         location.replace('{{ url('masters/device/detail-data') }}/' + id);
     }
+
+    function editItem(id) {
+        location.replace('{{ url('masters/device/edit-data') }}/' + id);
+    }
 </script>
 @endsection
 

@@ -33,7 +33,7 @@
                         <div class="col-md-6">
                             {{-- NOMOR WORK ORDER --}}
                             <div class="form-group">
-                                <label class="col-sm-3">NOMOR WORK ORDER</label>
+                                <label class="col-sm-3" for="wo_number">NOMOR WORK ORDER</label>
                                 <div class="col-sm-7">
                                     <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly">
                                 </div>
@@ -41,7 +41,7 @@
 
                             {{-- KATEGORI WORK ORDER --}}
                             <div class="form-group">
-                                <label class="col-sm-3">KATEGORI WORK ORDER</label>
+                                <label class="col-sm-3" for="wo_category">KATEGORI WORK ORDER</label>
                                 <div class="col-sm-7">
                                     <select class="form-control" name="wo_category" id="wo_category" onchange="getjobcategory()">
                                         <option value="" selected disabled hidden>PILIH SATU</option>
@@ -54,7 +54,7 @@
 
                             {{-- DEPARTEMEN --}}
                             <div class="form-group">
-                                <label class="col-sm-3">DEPARTEMEN</label>
+                                <label class="col-sm-3" for="department">DEPARTEMEN</label>
                                 <div class="col-sm-7">
                                     <select class="form-control" name="department" onchange="getwonumber()">
                                         @foreach($department as $department)
@@ -67,7 +67,7 @@
                         <div class="col-md-6">
                             {{-- KATEGORI PEKERJAAN --}}
                             <div class="form-group">
-                                <label class="col-sm-3">KATEGORI PEKERJAAN</label>
+                                <label class="col-sm-3" for="job_category">KATEGORI PEKERJAAN</label>
                                 <div class="col-sm-7">
                                     <select class="form-control" name="job_category" id="job_category">
                                     </select>
@@ -76,9 +76,9 @@
 
                             {{-- TANGGAL EFEKTIF --}}
                             <div class="form-group">
-                                <label class="col-sm-3">TANGGAL EFEKTIF</label>
+                                <label class="col-sm-3" for="effective_date">TANGGAL EFEKTIF</label>
                                 <div class="col-sm-7 input-group">
-                                    <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" name="effective_date" value="{{$effective_date}}">
+                                    <input type="text" class="form-control datepicker" placeholder="mm/dd/yyyy" id="effective_date" name="effective_date" value="{{$effective_date}}">
                                     <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>
                                 </div><!-- input-group -->
                             </div>
@@ -133,7 +133,7 @@
                     <div>
                         <div class="col-md-12">
                             <div>
-                                <label>LOKASI</label>
+                                <label for="">LOKASI</label>
                             </div>
                             <div>
                                 <select class="form-control wo-select" name="details[${detailIndex}][location]" id="details${detailIndex}location" onchange="getdevicemodel(${detailIndex})">
@@ -151,7 +151,7 @@
                     <div>
                         <div class="col-md-12">
                             <div>
-                                <label>KATEGORI GANGGUAN</label>
+                                <label for="details${detailIndex}disturbance_category">KATEGORI GANGGUAN</label>
                             </div>
                             <div>
                                 <select class="form-control disturbance_category" name="details[${detailIndex}][disturbance_category]" id="details${detailIndex}disturbance_category">
@@ -164,7 +164,7 @@
                     <div>
                         <div class="col-md-5">
                             <div>
-                                <label>ALAT</label>
+                                <label for="details${detailIndex}device">ALAT</label>
                             </div>
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][device]" id="details${detailIndex}device" onchange="getdevicemodel(${detailIndex})">
@@ -177,7 +177,7 @@
                         </div>
                         <div class="col-md-7">
                             <div>
-                                <label>MODEL ALAT</label>
+                                <label for="details${detailIndex}device_model">MODEL ALAT</label>
                             </div>
                             <div>
                                 <select class="form-control" name="details[${detailIndex}][device_model]" id="details${detailIndex}device_model" onchange="getdevicecode(${detailIndex})" disabled>
@@ -189,15 +189,15 @@
                         <p>&nbsp;</p>
                     </div>
                     <div>
-                        <label>DESKRIPSI</label>
+                        <label for="details[${detailIndex}][description]">DESKRIPSI</label>
                     </div>
                     <div>
-                        <textarea class="form-control" rows="4" name="details[${detailIndex}][description]"></textarea>
+                        <textarea class="form-control" rows="4" name="details[${detailIndex}][description]" id="details[${detailIndex}][description]"></textarea>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div>
-                        <label>KODE ALAT</label>
+                        <label for="details${detailIndex}device_code">KODE ALAT</label>
                     </div>
                     <div>
                         <input name="details[${detailIndex}][device_code]" id='details${detailIndex}device_code' type="text" class="form-control" readonly="readonly">
@@ -206,7 +206,7 @@
                         <p>&nbsp;</p>
                     </div>
                     <div>
-                        <label>LAMPIRAN FOTO</label>
+                        <label for="photo1_${detailIndex}">LAMPIRAN FOTO</label>
                     </div>
                     <div>
                         <div class="col-sm-10">
@@ -500,7 +500,9 @@
             success: function(data) {
                 if (data.success == true) {
                     console.log(data);
-                    document.getElementById(device_code_id).value = data.devices.activa_number;
+                    if(data.devices != null){
+                        document.getElementById(device_code_id).value = data.devices.activa_number;
+                    }
                     if ($('#wo_category').val() == 'LAPORAN GANGGUAN') {
                         getDisturbanceCategory(d);
                     }
