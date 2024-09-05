@@ -115,7 +115,7 @@ class DeviceController extends Controller
         $datatables = $datatables->addColumn('action', function ($item) use ($request) {
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem('$item[id]');\" title=\"" . ucfirst(__('view')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-eye fa-fw fa-xs\"></i></a>";
-            // $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
+            $txt .= "<a href=\"#\" onclick=\"editItem($item[id]);\" title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
             $txt .= "<a href=\"#\" onclick=\"deleteItem($item[id]);\" title=\"" . ucfirst(__('delete')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-trash fa-fw fa-xs\"></i></a>";
 
             return $txt;
@@ -300,7 +300,7 @@ class DeviceController extends Controller
                 "message" => '<div class="alert alert-success">Data peralatan berhasil disimpan</div>'
             ]);
         } catch (Exception $e) {
-            dd($e);
+            // dd($e);
             DB::rollback();
             return response()->json([
                 'errors' => true,
@@ -404,6 +404,189 @@ class DeviceController extends Controller
                 'created_at'           => '',
                 'updated_by'           => '',
                 'updated_at'           => '',
+            ]);
+        }
+    }
+
+    public function editData($id)
+    {
+        $device = Device::where('id', $id)->first();
+        if ($device) {
+            if ($device->active == 1) {
+                $active = 'AkTIF';
+            } else {
+                $active = 'TIDAK AkTIF';
+            }
+            return view('masters.device.form_edit', [
+                'id'               => $id,
+                'device'               => $device->device_name,
+                'device_description'   => $device->device_description != '' ? $device->device_description : '-',
+                'brand'                => $device->brand,
+                'location'             => optional($device->location)->location,
+                'department'           => optional($device->department)->department,
+                'device_category'      => optional($device->deviceCategory)->device_category,
+                'serial_number'        => $device->serial_number,
+                'activa_number'        => $device->activa_number,
+                'active'               => $active,
+                'start_effective'      => $device->start_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $device->start_effective)->format('d/m/Y H:i:s') : '-',
+                'end_effective'        => $device->end_effective != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $device->end_effective)->format('d/m/Y H:i:s') : '-',
+                'created_by'           => optional($device->createdBy)->name,
+                'created_at'           => $device->created_at != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $device->created_at)->format('d/m/Y H:i:s') : '-',
+                'updated_by'           => optional($device->updatedBy)->name,
+                'updated_at'           => $device->updated_at != '' ? Carbon::createFromFormat('Y-m-d H:i:s', $device->updated_at)->format('d/m/Y H:i:s') : '-',
+            ]);
+        } else {
+            return view('masters.device.form_edit', [
+                'id'               => $id,
+                'device'               => '',
+                'device_description'   => '',
+                'brand'                => '',
+                'location'             => '',
+                'department'           => '',
+                'device_category'      => '',
+                'serial_number'        => '',
+                'activa_number'        => '',
+                'active'               => '',
+                'start_effective'      => '',
+                'end_effective'        => '',
+                'created_by'           => '',
+                'created_at'           => '',
+                'updated_by'           => '',
+                'updated_at'           => '',
+            ]);
+        }
+    }
+
+    public function updateData(Request $request)
+    {
+        $device_name     = strtoupper($request->device_name);
+        $description     = strtoupper($request->description);
+        $brand           = strtoupper($request->brand);
+        $location        = strtoupper($request->location);
+        $department      = strtoupper($request->department);
+        $device_category = strtoupper($request->device_category);
+        $serial_number   = strtoupper($request->serial_number);
+        $activa_number   = strtoupper($request->activa_number);
+        $id   = $request->id;
+        // dd($request);
+
+        if ($device_name == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Nama peralatan wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        if ($brand == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Brand wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        if ($location == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Lokasi wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        if ($department == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Departemen wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        if ($device_category == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Kategori peralatan wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        if ($serial_number == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Nomor seri peralatan wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        if ($activa_number == '') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">EQ ID peralatan wajib terisi, harap periksa kembali formulir pengisian data</div>'
+            ]);
+        }
+
+        $checkDuplicateData = Device::where('device_name', $device_name)
+            ->where('brand', $brand)
+            ->where('location_id', $location)
+            ->where('department_id', $department)
+            ->where('device_category_id', $device_category)
+            ->where('serial_number', $serial_number)
+            ->where('activa_number', $activa_number)
+            ->where('active', 1)
+            ->first();
+
+        if ($checkDuplicateData) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Telah ditemukan data peralatan ' . $device_name . ' yang masih aktif</div>'
+            ]);
+        }
+
+        $insertDevice = Device::find($id);
+        // dd($insertDevice, $id);
+        if(!$insertDevice){
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">ID tidak ditemukan.</div>'
+            ]);
+        }
+
+        try {
+            // CREATE DATA 
+            DB::beginTransaction();
+
+            $insertDevice->device_name =  $device_name;
+            $insertDevice->device_description = $description;
+            $insertDevice->brand = $brand;
+            $insertDevice->serial_number = $serial_number; 
+            $insertDevice->activa_number = $activa_number;
+            $insertDevice->save();
+
+            $insertDeviceHist = new DeviceHist([
+                'device_id'            => $insertDevice->id,
+                'device_name'          => $insertDevice->device_name,
+                'device_description'   => $insertDevice->device_description,
+                'brand'                => $insertDevice->brand,
+                'location_id'          => $insertDevice->location_id,
+                'department_id'        => $insertDevice->department_id,
+                'device_category_id'   => $insertDevice->device_category_id,
+                'serial_number'        => $insertDevice->serial_number,
+                'activa_number'        => $insertDevice->activa_number,
+                'active'               => $insertDevice->active,
+                'start_effective'      => $insertDevice->start_effective,
+                'end_effective'        => $insertDevice->end_effective,
+                'action'               => 'UPDATE',
+                'created_by'           => Auth::user()->id,
+                'created_at'           => Carbon::now(),
+            ]);
+            $insertDeviceHist->save();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                "message" => '<div class="alert alert-success">Data peralatan berhasil disimpan</div>'
+            ]);
+        } catch (Exception $e) {
+            // dd($e);
+            DB::rollback();
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Telah terjadi kesalahan sistem, data gagal diproses</div>'
+                // "message" => '<div class="alert alert-danger">'.$e.'</div>'
             ]);
         }
     }

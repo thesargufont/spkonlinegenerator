@@ -30,7 +30,7 @@
                     <div class="panel-body">
                         {{-- NOMOR WORK ORDER --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NOMOR WORK ORDER</label>
+                            <label class="col-md-2" for="wo_number">NOMOR WORK ORDER</label>
                             <div class="col-md-6">
                                 <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
                             </div>
@@ -39,7 +39,7 @@
 
                         {{-- NOMOR SPK --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NOMOR SPK</label>
+                            <label class="col-md-2" for="spk_number">NOMOR SPK</label>
                             <div class="col-md-6">
                                 <input maxlength="50" id="spk_number" type="text" class="text-uppercase form-control" name="spk_number" title="NOMOR SPK" placeholder="NOMOR SPK">
                             </div>
@@ -48,7 +48,7 @@
 
                         {{-- KATEGORI WORK ORDER --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">KATEGORI WORK ORDER</label>
+                            <label class="col-md-2" for="wo_category">KATEGORI WORK ORDER</label>
                             <div class="col-md-6">
                                 <select title="STATUS" id="wo_category" class="form-control">
                                     <option value="" selected>SEMUA KATEGORI</option>
@@ -61,7 +61,7 @@
 
                         {{-- DEPARTEMEN --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">DEPARTEMEN</label>
+                            <label class="col-md-2" for="department">DEPARTEMEN</label>
                             <div class="col-md-6">
                                 <select title="DEPARTEMEN" id="department" class="form-control">
                                     <option value="" selected>SEMUA DEPARTEMEN</option>
@@ -75,7 +75,7 @@
 
                         {{-- STATUS WO --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">STATUS WORK ORDER</label>
+                            <label class="col-md-2" for="wo_status">STATUS WORK ORDER</label>
                             <div class="col-md-6">
                                 <select title="DEPARTEMEN" id="wo_status" class="form-control">
                                     <option value="" selected>SEMUA STATUS</option>

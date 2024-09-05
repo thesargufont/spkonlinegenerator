@@ -141,6 +141,8 @@ Route::get('masters/device/create-new', [DeviceController::class, 'createNew'])-
 Route::post('masters/device/create-new/create', [DeviceController::class, 'submitData'])->name('masters/device/create-new/create')->middleware('auth');
 Route::post('masters/device/delete-data', [DeviceController::class, 'deleteData'])->name('masters/device/delete-data');
 Route::get('masters/device/detail-data/{id}', [DeviceController::class, 'detailData'])->name('masters/device/detail-data')->middleware('auth');
+Route::get('masters/device/edit-data/{id}', [DeviceController::class, 'editData'])->name('masters/device/edit-data')->middleware('auth');
+Route::post('masters/device/update-data', [DeviceController::class, 'updateData'])->name('masters.device.update-data')->middleware('auth');
 
 // ROLE
 Route::get('masters/role/index', [RoleController::class, 'index'])->name('masters/role/index')->middleware('auth');

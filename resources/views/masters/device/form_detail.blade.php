@@ -120,7 +120,7 @@
 
                         {{-- START EFFECTIVE --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">START EFFECTIVE</label>
+                            <label class="col-md-2">TANGGAL EFEKTIF</label>
                             <div class="col-md-6">
                                 <input disabled required id="start_effective" type="text" class="text-uppercase form-control" name="start_effective" title="START EFFECTIVE" placeholder="START EFFECTIVE">
                             </div>
@@ -130,7 +130,7 @@
 
                         {{-- END EFFECTIVE --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">END EFFECTIVE</label>
+                            <label class="col-md-2">BERAKHIR EFEKTIF</label>
                             <div class="col-md-6">
                                 <input disabled required id="end_effective" type="text" class="text-uppercase form-control" name="end_effective" title="END EFFECTIVE" placeholder="END EFFECTIVE">
                             </div>

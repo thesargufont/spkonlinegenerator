@@ -36,7 +36,7 @@
                         <div class="col-md-6">
                             {{-- NOMOR SPK --}}
                             <div class="form-group">
-                                <label class="col-md-3">NOMOR SPK</label>
+                                <label class="col-md-3" for="spk_number">NOMOR SPK</label>
                                 <div class="col-md-7">
                                     <input name="spk_number" id='spk_number' type="text" class="form-control" readonly="readonly" value="{{$spk_number}}">
                                 </div>
@@ -44,7 +44,7 @@
 
                             {{-- NOMOR WORK ORDER --}}
                             <div class="form-group">
-                                <label class="col-md-3">NOMOR WORK ORDER</label>
+                                <label class="col-md-3" for="wo_number">NOMOR WORK ORDER</label>
                                 <div class="col-md-7">
                                     <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly" value="{{$wo_number}}">
                                 </div>
@@ -52,7 +52,7 @@
 
                             {{-- KATEGORI WORK ORDER --}}
                             <div class="form-group">
-                                <label class="col-sm-3">KATEGORI WORK ORDER</label>
+                                <label class="col-sm-3" for="wo_category">KATEGORI WORK ORDER</label>
                                 <div class="col-sm-7">
                                     <input name="wo_category" id='wo_category' type="text" class="form-control" readonly="readonly" value="{{$wo_category}}">
                                 </div>
@@ -61,7 +61,7 @@
                         <div class="col-md-6">
                             {{-- DEPARTEMEN --}}
                             <div class="form-group">
-                                <label class="col-sm-3">DEPARTEMEN</label>
+                                <label class="col-sm-3" for="department">DEPARTEMEN</label>
                                 <div class="col-sm-7">
                                     <input name="department" id='department' type="text" class="form-control" readonly="readonly" value="{{$department}}">
                                 </div>
@@ -69,7 +69,7 @@
 
                             {{-- KATEGORI PEKERJAAN --}}
                             <div class="form-group">
-                                <label class="col-sm-3">KATEGORI PEKERJAAN</label>
+                                <label class="col-sm-3" for="job_category">KATEGORI PEKERJAAN</label>
                                 <div class="col-sm-7">
                                     <input name="job_category" id='job_category' type="text" class="form-control" readonly="readonly" value="{{$job_category}}">
                                 </div>
@@ -77,7 +77,7 @@
 
                             {{-- TANGGAL EFEKTIF --}}
                             <div class="form-group">
-                                <label class="col-sm-3">TANGGAL EFEKTIF</label>
+                                <label class="col-sm-3" for="effective_date">TANGGAL EFEKTIF</label>
                                 <div class="col-sm-7">
                                     <input name="effective_date" id='effective_date' type="text" class="form-control" readonly="readonly" value="{{$effective_date}}">
                                 </div>
@@ -108,7 +108,7 @@
                             <div class="panel-body work-detail" data-index={{$detail['index']}}>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</label>
+                                        <h3 class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</h3>
                                     </div>
                                 </div>
 
@@ -117,7 +117,7 @@
                                 <div class="col-md-6">
                                     {{-- LOKASI --}}
                                     <div class="form-group">
-                                        <label class="col-md-2">LOKASI</label>
+                                        <label class="col-md-2" for="detail_location_{{ $detail['index'] }}">LOKASI</label>
                                         <div class="col-md-6">
                                             <input name="detail_location_{{ $detail['index'] }}" id="detail_location_{{ $detail['index'] }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['location'] }}">
                                         </div>
@@ -125,7 +125,7 @@
 
                                     {{-- ALAT --}}
                                     <div class="form-group">
-                                        <label class="col-md-2">ALAT</label>
+                                        <label class="col-md-2" for="detail_device_{{ $detail['index'] }}">ALAT</label>
                                         <div class="col-md-6">
                                             <input name="detail_device_{{ $detail['index'] }}" id="detail_device_{{ $detail['index'] }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device'] }}">
                                         </div>
@@ -133,7 +133,7 @@
 
                                     {{-- MODEL ALAT --}}
                                     <div class="form-group">
-                                        <label class="col-sm-2">MODEL ALAT</label>
+                                        <label class="col-sm-2" for="detail_device_model_{{ $detail['index'] }}">MODEL ALAT</label>
                                         <div class="col-sm-6">
                                             <input name="detail_device_model_{{ $detail['index'] }}" id="detail_device_model_{{ $detail['index'] }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_model'] }}">
                                         </div>
@@ -142,7 +142,7 @@
                                 <div class="col-md-6">
                                     {{-- KODE ALAT --}}
                                     <div class="form-group">
-                                        <label class="col-sm-2">KODE ALAT</label>
+                                        <label class="col-sm-2" for="detail_device_code_{{ $detail['index'] }}">KODE ALAT</label>
                                         <div class="col-sm-6">
                                             <input name="detail_device_code_{{ $detail['index'] }}" id="detail_device_code_{{ $detail['index'] }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['device_code'] }}">
                                         </div>
@@ -150,7 +150,7 @@
 
                                     {{-- KATEGORI GANGGUAN --}}
                                     <div class="form-group">
-                                        <label class="col-sm-2">KATEGORI GANGGUAN</label>
+                                        <label class="col-sm-2" for="detail_disturbance_category_{{ $detail['index'] }}">KATEGORI GANGGUAN</label>
                                         <div class="col-sm-6">
                                             <input name="detail_disturbance_category_{{ $detail['index'] }}" id="detail_disturbance_category_{{ $detail['index'] }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['disturbance_category'] }}">
                                         </div>
@@ -158,7 +158,7 @@
 
                                     {{-- DESKRIPSI PELAPORAN --}}
                                     <div class="form-group">
-                                        <label class="col-sm-2">DESKRIPSI PELAPORAN</label>
+                                        <label class="col-sm-2" for="detail_description_{{ $detail['index'] }}">DESKRIPSI PELAPORAN</label>
                                         <div class="col-sm-6">
                                             <input name="detail_description_{{ $detail['index'] }}" id="detail_description_{{ $detail['index'] }}" type="text" class="form-control" readonly="readonly" value="{{ $detail['description'] }}">
                                         </div>
@@ -167,15 +167,15 @@
                                 <div class="col-md-12">
                                     {{-- LAMPIRAN --}}
                                     <div class="form-group">
-                                        <label class="col-sm-1">LAMPIRAN #1</label>
+                                        <h3 class="col-sm-1" for="">LAMPIRAN #1</h3>
                                         <div class="col-sm-3">
                                             <img src="{{ Storage::url($detail['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
                                         </div>
-                                        <label class="col-sm-1">LAMPIRAN #2</label>
+                                        <h3 class="col-sm-1" for="">LAMPIRAN #2</h3>
                                         <div class="col-sm-3">
                                             <img src="{{ Storage::url($detail['image_path2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
                                         </div>
-                                        <label class="col-sm-1">LAMPIRAN #3</label>
+                                        <h3 class="col-sm-1" for="">LAMPIRAN #3</h3>
                                         <div class="col-sm-3">
                                             <img src="{{ Storage::url($detail['image_path3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
                                         </div>
@@ -188,7 +188,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</label>
+                                        <h3 class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</h3>
                                     </div>
                                 </div>
 
@@ -197,21 +197,21 @@
                                 <div class="col-md-6">
                                     {{-- TANGGAL MULAI --}}
                                     <div class="form-group">
-                                        <label class="col-sm-3">TANGGAL MULAI</label>
+                                        <label class="col-sm-3" for="detail[{{ $detail['index'] }}][start_at]">TANGGAL MULAI</label>
                                         <div class="col-sm-7">
                                             <input name="detail[{{ $detail['index'] }}][start_at]" id="detail[{{ $detail['index'] }}][start_at]" type="text" class="form-control" readonly="readonly" value="{{ $detail['start_effective'] }}">
                                         </div><!-- input-group -->
                                     </div>
                                     {{-- ESTIMASI SELESAI --}}
                                     <div class="form-group">
-                                        <label class="col-sm-3">ESTIMASI SELESAI</label>
+                                        <label class="col-sm-3" for="detail[{{ $detail['index'] }}][estimated_end]">ESTIMASI SELESAI</label>
                                         <div class="col-sm-7">
                                             <input name="detail[{{ $detail['index'] }}][estimated_end]" id="detail[{{ $detail['index'] }}][estimated_end]" type="text" class="form-control" readonly="readonly" value="{{ $detail['estimated_end'] }}">
                                         </div><!-- input-group -->
                                     </div>
                                     {{-- ENGINEER --}}
                                     <div class="form-group">
-                                        <label class="col-sm-3">ASSIGN ENGINEER</label>
+                                        <label class="col-sm-3" for="detail[{{ $detail['index'] }}][engineer]">ASSIGN ENGINEER</label>
                                         <div class="col-sm-7">
                                             <input name="detail[{{ $detail['index'] }}][engineer]" id="detail[{{ $detail['index'] }}][engineer]" type="text" class="form-control" readonly="readonly" value="{{ $detail['engineer'] }}">
                                         </div>
@@ -220,21 +220,21 @@
                                 <div class="col-md-6">
                                     {{-- SUPERVISOR --}}
                                     <div class="form-group">
-                                        <label class="col-sm-3">ASSIGN SUPERVISOR</label>
+                                        <label class="col-sm-3" for="detail[{{ $detail['index'] }}][supervisor]">ASSIGN SUPERVISOR</label>
                                         <div class="col-sm-7">
                                             <input name="detail[{{ $detail['index'] }}][supervisor]" id="detail[{{ $detail['index'] }}][supervisor]" type="text" class="form-control" readonly="readonly" value="{{ $detail['supervisor'] }}">
                                         </div>
                                     </div>
                                     {{-- K3 --}}
                                     <div class="form-group">
-                                        <label class="col-sm-3">ASSIGN K3</label>
+                                        <label class="col-sm-3" for="detail[{{ $detail['index'] }}][aid]">ASSIGN K3</label>
                                         <div class="col-sm-7">
                                             <input name="detail[{{ $detail['index'] }}][aid]" id="detail[{{ $detail['index'] }}][aid]" type="text" class="form-control" readonly="readonly" value="{{ $detail['aid'] }}">
                                         </div>
                                     </div>
                                     {{-- DESKRIPSI PENUGASAN --}}
                                     <div class="form-group">
-                                        <label class="col-sm-3">DESKRIPSI PENUGASAN</label>
+                                        <label class="col-sm-3" for="detail[{{ $detail['index'] }}][desc_job]">DESKRIPSI PENUGASAN</label>
                                         <div class="col-sm-7">
                                             <input name="detail[{{ $detail['index'] }}][desc_job]" id="detail[{{ $detail['index'] }}][desc_job]" type="text" class="form-control" value="{{ $detail['description'] }}" disabled>
                                         </div>
@@ -247,7 +247,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</label>
+                                        <h3 class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</h3>
                                     </div>
                                 </div>
 
@@ -261,7 +261,7 @@
                                 <div class="col-md-12">
                                     {{-- STATUS ENGINEER --}}
                                     <div class="form-group">
-                                        <label class="col-sm-1">STATUS ENGINEER</label>
+                                        <label class="col-sm-1" for="detail[{{ $detail['index'] }}][status_engineer]">STATUS ENGINEER</label>
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <select class="form-control" name="detail[{{ $detail['index'] }}][status_engineer]">
@@ -273,11 +273,11 @@
                                             <input name="detail[{{ $detail['index'] }}][status_engineer]" id="detail[{{ $detail['index'] }}][status_engineer]" type="text" class="form-control" value="{{ $detail['engineer_status'] }}" disabled>
                                             @endif
                                         </div>
-                                        <label class="col-sm-1">DESKRIPSI ENGINEER</label>
+                                        <label class="col-sm-1" for="detail[{{ $detail['index'] }}][desc_engineer]">DESKRIPSI ENGINEER</label>
                                         <div class="col-sm-3">
                                             <input name="detail[{{ $detail['index'] }}][desc_engineer]" id="detail[{{ $detail['index'] }}][desc_engineer]" type="text" class="form-control" value="{{ $detail['executor_desc'] }}" @if($status=='DONE' ) disabled @endif>
                                         </div>
-                                        <label class="col-sm-1" style="color: red;">NOMOR WP*</label>
+                                        <label class="col-sm-1" style="color: red;" for="detail[{{ $detail['index'] }}][wp_number]">NOMOR WP*</label>
                                         <div class="col-sm-3">
                                             <input name="detail[{{ $detail['index'] }}][wp_number]" id="detail[{{ $detail['index'] }}][wp_number]" type="text" class="form-control" value="{{ $detail['wp_number'] }}" @if($status=='DONE' ) disabled @endif>
                                         </div>
@@ -292,32 +292,32 @@
                                 {{-- LAMPIRAN FOTO # --}}
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="col-sm-1">LAMPIRAN #1</label>
+                                        <label class="col-sm-1" for="detail[{{ $detail['index'] }}][photo1]">LAMPIRAN #1</label>
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo1]" id="detail[{{ $detail['index'] }}][photo1]">
                                             @else
-                                            <img src="{{ Storage::url($detail['job_attachment1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
+                                            <img src="{{ Storage::url($detail['job_attachment1']) }}" id="detail[{{ $detail['index'] }}][photo1]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo1]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo1]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                         </div>
-                                        <label class="col-sm-1">LAMPIRAN #2</label>
+                                        <label class="col-sm-1" for="detail[{{ $detail['index'] }}][photo2]">LAMPIRAN #2</label>
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo2]" id="detail[{{ $detail['index'] }}][photo2]">
                                             @else
-                                            <img src="{{ Storage::url($detail['job_attachment2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
+                                            <img src="{{ Storage::url($detail['job_attachment2']) }}" id="detail[{{ $detail['index'] }}][photo2]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo2]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo2]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                         </div>
-                                        <label class="col-sm-1">LAMPIRAN #3</label>
+                                        <label class="col-sm-1" for="detail[{{ $detail['index'] }}][photo3]">LAMPIRAN #3</label>
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo3]" id="detail[{{ $detail['index'] }}][photo3]">
                                             @else
-                                            <img src="{{ Storage::url($detail['job_attachment3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
+                                            <img src="{{ Storage::url($detail['job_attachment3']) }}" id="detail[{{ $detail['index'] }}][photo3]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo3]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo3]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
