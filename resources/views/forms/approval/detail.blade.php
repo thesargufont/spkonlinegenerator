@@ -17,10 +17,10 @@
             <div class="form-group">
                 <button type="button" name="back" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
                 @if($status == 'NOT APPROVE')
-                <button type="button" name="back" id="approveBtn" class="btn btn-info"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Setujui'))}}</button>
-                <button type="button" name="back" id="notApproveBtn" class="btn btn-danger"><i class="fa fa-solid fa-square-xmark"></i> {{ucwords(__('Tidak Setujui'))}}</button>
+                <button type="button" name="back" id="approveBtn" class="btn btn-info" onclick="showModal('APPROVE')"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Setujui'))}}</button>
+                <button type="button" name="back" id="notApproveBtn" class="btn btn-danger" onclick="showModal('NOTAPPROVE')"><i class="fa fa-solid fa-square-xmark"></i> {{ucwords(__('Tidak Setujui'))}}</button>
                 @elseif($status == 'ONGOING')
-                <button type="button" name="back" id="cancelBtn" class="btn btn-warning"><i class="fa fa-fw fa-exclamation"></i> {{ucwords(__('Cancel'))}}</button>
+                <button type="button" name="back" id="doCancelBtn" class="btn btn-warning" onclick="showModal('CANCEL')"><i class="fa fa-fw fa-exclamation"></i> {{ucwords(__('Cancel'))}}</button>
                 @endif
             </div>
         </div>
@@ -41,6 +41,9 @@
                                 <label class="col-md-3">NOMOR SPK</label>
                                 <div class="col-md-7">
                                     <input name="spk_number" id='spk_number' type="text" class="form-control" readonly="readonly" value="{{$spk_number}}">
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="button" name="save" id="saveBtn" class="btn-sm btn-primary" onclick="getspknumber()"><i class="fa fa-fw fa-refresh"></i></button>
                                 </div>
                             </div>
 
@@ -91,7 +94,7 @@
                             <div class="form-group">
                                 <div><input name="action" id='action' type="hidden" class="form-control"></div>
                                 <div><input name="count" id='count' type="hidden" class="form-control" value="{{$length}}"></div>
-                                <div><input name="header_id" id='coheader_idunt' type="hidden" class="form-control" value="{{$id}}"></div>
+                                <div><input name="header_id" id='header_id' type="hidden" class="form-control" value="{{$id}}"></div>
                             </div>
                         </div>
                     </div> <!-- panel-body -->
@@ -357,14 +360,37 @@
     </div>
 </div>
 
+<body>
+    <div id="modal" class="modal-container"> 
+        <div class="modal-content"> 
+  
+            <h2>Konfirmasi</h2> 
+            <p class="confirmation-message"> 
+                Anda yakin akan menyimpan? 
+            </p> 
+  
+            <div class="button-container"> 
+                <button id="cancelBtn" class="btn btn-secondary"> Batal </button> 
+                <button id="actionBtn" class="btn btn-primary"> Ya </button> 
+            </div> 
+        </div> 
+    </div> 
+</body>
+
+<style>
+    .signature-canvas {
+        border: 2px solid #000;
+        margin-bottom: 10px;
+    }
+</style>
+
 <!-- Plugins js -->
-@endsection
 
 {{-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
 
-@section('script')
-
 <script>
+    var actionSubmit = ''; 
+
     $(document).ready(function() {
         $('.datepicker').datepicker({
             format: 'dd/mm/yyyy',
@@ -375,178 +401,235 @@
         $(document).on('click', '#backBtn', function() {
             window.location.href = "{{ route('form-input.approval.index') }}";
         });
-
-        $(document).on('click', '#approveBtn', function() {
-            $('#form_result').html('');
-            var length_ = $('#count').val();
-            document.getElementById('action').value = 'ONGOING';
-            console.log()
-            var formData = new FormData($('#wo-form')[0]);
-            formData.append('header_id', $("input[name=header_id]").val());
-            formData.append('spk_number', $("input[name=spk_number]").val());
-            formData.append('action', $("input[name=action]").val());
-            // Append form data for each detail block
-            for (let i = 1; i <= length_; i++) {
-                formData.append('detail[' + i + '][id]', $('input[name="detail[' + i + '][id]"]').val());
-                formData.append('detail[' + i + '][start_at]', $('input[name="detail[' + i + '][start_at]"]').val());
-                formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
-                formData.append('detail[' + i + '][engineer]', $('select[name="detail[' + i + '][engineer]"]').val());
-                formData.append('detail[' + i + '][supervisor]', $('select[name="detail[' + i + '][supervisor]"]').val());
-                formData.append('detail[' + i + '][aid]', $('select[name="detail[' + i + '][aid]"]').val());
-                formData.append('detail[' + i + '][job_description]', $('input[name="detail[' + i + '][job_description]"]').val());
-            }
-
-            console.log(formData);
-
-            artLoadingDialogDo("Proses menyimpan..", function() {
-                // AJAX request
-                $.ajax({
-                    url: "{{ route('form-input.approval.approve') }}",
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    dataType: "json",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
-                        artLoadingDialogClose();
-                        if (data.errors) {
-                            $('#form_result').html(data.message);
-                            setTimeout(function() {
-                                $('#form_result').html('');
-                            }, 5000);
-                        }
-                        if (data.success) {
-                            $('#form_result').html(data.message);
-                            //Optionally, redirect to another page after success
-                            setTimeout(function() {
-                                window.location.href = "{{ route('form-input.approval.index') }}";
-                            }, 1500);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        artLoadingDialogClose();
-                        console.log('Error Status:', status);
-                        console.log('Error:', error);
-                        console.log('Response:', xhr.responseText);
-                        var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                        $('#form_result').html(html);
-                    }
-                });
-            });
-            return false; // Prevent default form submission
-
-        });
-        $(document).on('click', '#notApproveBtn', function() {
-            $('#form_result').html('');
-            var length_ = $('#count').val();
-            document.getElementById('action').value = 'CLOSED';
-            console.log()
-            var formData = new FormData($('#wo-form')[0]);
-            formData.append('header_id', $("input[name=header_id]").val());
-            // formData.append('spk_number', $("input[name=spk_number]").val());
-            formData.append('action', $("input[name=action]").val());
-
-            // AJAX request
-            artLoadingDialogDo("Proses menyimpan..", function() {
-                $.ajax({
-                    url: "{{ route('form-input.approval.notapprove') }}",
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    dataType: "json",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
-                        artLoadingDialogClose();
-                        if (data.errors) {
-                            $('#form_result').html(data.message);
-                            setTimeout(function() {
-                                $('#form_result').html('');
-                            }, 5000);
-                        }
-                        if (data.success) {
-                            $('#form_result').html(data.message);
-                            //Optionally, redirect to another page after success
-                            setTimeout(function() {
-                                window.location.href = "{{ route('form-input.approval.index') }}";
-                            }, 1500);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        artLoadingDialogClose();
-                        console.log('Error Status:', status);
-                        console.log('Error:', error);
-                        console.log('Response:', xhr.responseText);
-                        var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                        $('#form_result').html(html);
-                    }
-                });
-            });
-            return false; // Prevent default form submission
-
-        });
-
-        $(document).on('click', '#cancelBtn', function() {
-            $('#form_result').html('');
-            var length_ = $('#count').val();
-            document.getElementById('action').value = 'CANCEL';
-            console.log()
-            var formData = new FormData($('#wo-form')[0]);
-            formData.append('header_id', $("input[name=header_id]").val());
-            formData.append('action', $("input[name=action]").val());
-            // Append form data for each detail block
-            for (let i = 1; i <= length_; i++) {
-                formData.append('detail[' + i + '][id]', $('input[name="detail[' + i + '][id]"]').val());
-            }
-
-            console.log(formData);
-
-            // AJAX request
-            artLoadingDialogDo("Proses menyimpan..", function() {
-                $.ajax({
-                    url: "{{ route('form-input.approval.cancel') }}",
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    dataType: "json",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
-                        artLoadingDialogClose();
-                        if (data.errors) {
-                            $('#form_result').html(data.message);
-                            setTimeout(function() {
-                                $('#form_result').html('');
-                            }, 5000);
-                        }
-                        if (data.success) {
-                            $('#form_result').html(data.message);
-                            //Optionally, redirect to another page after success
-                            setTimeout(function() {
-                                window.location.href = "{{ route('form-input.approval.index') }}";
-                            }, 1500);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        artLoadingDialogClose();
-                        console.log('Error Status:', status);
-                        console.log('Error:', error);
-                        console.log('Response:', xhr.responseText);
-                        var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                        $('#form_result').html(html);
-                    }
-                });
-            });
-            return false; // Prevent default form submission
-
-        });
     });
+
+    function getspknumber() {
+        var id = document.getElementById('header_id').value;
+        console.log('a',id);
+
+        $.ajax({
+            url: "{{ route('form-input.approval.getspknumber') }}",
+            type: 'get',
+            dataType: "json",
+            data: {
+                'id': id
+            },
+            success: function(data) {
+                console.log('s');
+                if (data.success == true) {
+                    console.log(data.spk_number);
+                    //document.getElementsByName('wo_number').value = data.wo_number;
+                    document.getElementById('spk_number').value = data.spk_number;
+                } else {
+                    console.log(data);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('Error Status:', status);
+                console.log('Error:', error);
+                console.log('Response:', xhr.responseText);
+                var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                $('#form_result').html(html);
+            }
+        });
+    }
+
+    function doApprove() {
+        console.log('doApprove');
+        $('#form_result').html('');
+        var length_ = $('#count').val();
+        // document.getElementById('action').value = 'APPROVE';
+        var formData = new FormData($('#wo-form')[0]);
+        formData.append('header_id', $("input[name=header_id]").val());
+        formData.append('spk_number', $("input[name=spk_number]").val());
+        formData.append('action', $("input[name=action]").val());
+        // Append form data for each detail block
+        for (let i = 1; i <= length_; i++) {
+            formData.append('detail[' + i + '][id]', $('input[name="detail[' + i + '][id]"]').val());
+            formData.append('detail[' + i + '][start_at]', $('input[name="detail[' + i + '][start_at]"]').val());
+            formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
+            formData.append('detail[' + i + '][engineer]', $('select[name="detail[' + i + '][engineer]"]').val());
+            formData.append('detail[' + i + '][supervisor]', $('select[name="detail[' + i + '][supervisor]"]').val());
+            formData.append('detail[' + i + '][aid]', $('select[name="detail[' + i + '][aid]"]').val());
+            formData.append('detail[' + i + '][job_description]', $('input[name="detail[' + i + '][job_description]"]').val());
+        }
+
+        console.log(formData);
+
+        artLoadingDialogDo("Proses menyimpan..", function() {
+            // AJAX request
+            $.ajax({
+                url: "{{ route('form-input.approval.approve') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: "json",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    artLoadingDialogClose();
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 5000);
+                    }
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        //Optionally, redirect to another page after success
+                        setTimeout(function() {
+                            window.location.href = "{{ route('form-input.approval.index') }}";
+                        }, 1500);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    artLoadingDialogClose();
+                    console.log('Error Status:', status);
+                    console.log('Error:', error);
+                    console.log('Response:', xhr.responseText);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                }
+            });
+            return false;
+        });
+        return false; // Prevent default form submission
+
+    }
+
+    function doNotApprove() {
+        console.log('doNotApprove');
+        $('#form_result').html('');
+        var length_ = $('#count').val();
+        // document.getElementById('action').value = 'NOTAPPROVE';
+        var formData = new FormData($('#wo-form')[0]);
+        formData.append('header_id', $("input[name=header_id]").val());
+        // formData.append('spk_number', $("input[name=spk_number]").val());
+        formData.append('action', $("input[name=action]").val());
+
+        // AJAX request
+        artLoadingDialogDo("Proses menyimpan..", function() {
+            $.ajax({
+                url: "{{ route('form-input.approval.notapprove') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: "json",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    artLoadingDialogClose();
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 5000);
+                    }
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        //Optionally, redirect to another page after success
+                        setTimeout(function() {
+                            window.location.href = "{{ route('form-input.approval.index') }}";
+                        }, 1500);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    artLoadingDialogClose();
+                    console.log('Error Status:', status);
+                    console.log('Error:', error);
+                    console.log('Response:', xhr.responseText);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                }
+            });
+            return false;
+        });
+        return false; // Prevent default form submission
+
+    }
+
+    function doCancel() {
+        console.log('doCancel');
+        $('#form_result').html('');
+        var length_ = $('#count').val();
+        var formData = new FormData($('#wo-form')[0]);
+        formData.append('header_id', $("input[name=header_id]").val());
+        formData.append('action', $("input[name=action]").val());
+        // Append form data for each detail block
+        for (let i = 1; i <= length_; i++) {
+            formData.append('detail[' + i + '][id]', $('input[name="detail[' + i + '][id]"]').val());
+        }
+
+        console.log(formData);
+
+        // AJAX request
+        artLoadingDialogDo("Proses menyimpan..", function() {
+            $.ajax({
+                url: "{{ route('form-input.approval.cancel') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: "json",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    artLoadingDialogClose();
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 5000);
+                    }
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        //Optionally, redirect to another page after success
+                        setTimeout(function() {
+                            window.location.href = "{{ route('form-input.approval.index') }}";
+                        }, 1500);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    artLoadingDialogClose();
+                    console.log('Error Status:', status);
+                    console.log('Error:', error);
+                    console.log('Response:', xhr.responseText);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                }
+            });
+            return false;
+        });
+        return false; // Prevent default form submission
+
+    }
+
+    function showModal(action) { 
+        document.getElementById('action').value = action;
+        modal.style.display = 'flex'; 
+    } 
+
+    // Hide modal function 
+    function hideModal() { 
+        modal.style.display = 'none'; 
+    } 
+
+    function actionResponse(){
+        var action_ = $('#action').val();
+        console.log(action_);
+        if (action_ == 'APPROVE') { doApprove(); }
+        if (action_ == 'NOTAPPROVE') { doNotApprove(); }
+        if (action_ == 'CANCEL') { doCancel(); }
+        hideModal();
+    }
+
+    cancelBtn.addEventListener('click', hideModal); 
+    actionBtn.addEventListener('click', actionResponse); 
 </script>
 @endsection

@@ -26,21 +26,21 @@
                 <div class="panel panel-primary">
 
                     <div class="panel-body">
+                        {{-- NIK KARYAWAN --}}
+                        <div class="row mb-2">
+                            <label class="col-md-2">NIK KARYAWAN</label>
+                            <div class="col-md-6">
+                                <input id="employee_nik" type="text" class="text-uppercase form-control" name="employee_nik" title="NIK KARYAWAN" placeholder="NAMA KARYAWAN">
+                            </div>
+                        </div>
+                        <br>
+
                         {{-- EMPLOYEE NAME --}}
                         <div class="row mb-2">
                             <label class="col-md-2">NAMA KARYAWAN</label>
                             <div class="col-md-6">
                                 <input id="employee_name" type="text" class="text-uppercase form-control" name="employee_name" title="NAMA KARYAWAN" placeholder="NAMA KARYAWAN">
                                 <input name="employee_name_id" id="employee_name_id" type="hidden" />
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- NIK KARYAWAN --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">NIK KARYAWAN</label>
-                            <div class="col-md-6">
-                                <input id="employee_nik" type="text" class="text-uppercase form-control" name="employee_nik" title="NIK KARYAWAN" placeholder="NAMA KARYAWAN">
                             </div>
                         </div>
                         <br>
@@ -72,7 +72,7 @@
                         </div>
                         <br>
                         
-                        {{-- GENDER --}}
+                        {{-- STATUS --}}
                         <div class="row mb-2">
                             <label class="col-md-2">STATUS</label>
                             <div class="col-md-6">

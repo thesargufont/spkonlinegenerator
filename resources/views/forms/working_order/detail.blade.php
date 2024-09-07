@@ -228,7 +228,7 @@
                                     <div class="form-group">
                                         <label class="col-sm-3" for="detail[desc_job]">DESKRIPSI PENUGASAN</label>
                                         <div class="col-sm-7">
-                                            <input name="detail[desc_job]" id="detail[desc_job]" type="text" class="form-control" value="{{ $detail['description'] }}" disabled>
+                                            <input name="detail[desc_job]" id="detail[desc_job]" type="text" class="form-control" value="{{ $detail['job_description'] }}" disabled>
                                         </div>
                                     </div>
                                 </div>
