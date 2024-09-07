@@ -28,64 +28,71 @@
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
                     <div class="panel-body">
-                        {{-- NOMOR WORK ORDER --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2" for="wo_number">NOMOR WORK ORDER</label>
+                        <div class="col-md-12">
+                            {{-- NOMOR WORK ORDER --}}
                             <div class="col-md-6">
-                                <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
+                                <label class="col-md-2" for="wo_number">NOMOR WORK ORDER</label>
+                                <div class="col-md-6">
+                                    <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
+                                </div>
                             </div>
+                            <br>
+    
+                            {{-- NOMOR SPK --}}
+                            <div class="col-md-6">
+                                <label class="col-md-2" for="spk_number">NOMOR SPK</label>
+                                <div class="col-md-6">
+                                    <input maxlength="50" id="spk_number" type="text" class="text-uppercase form-control" name="spk_number" title="NOMOR SPK" placeholder="NOMOR SPK">
+                                </div>
+                            </div>
+                            <br>
                         </div>
-                        <br>
 
-                        {{-- NOMOR SPK --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2" for="spk_number">NOMOR SPK</label>
+                        <div class="col-md-12">
+                            {{-- KATEGORI WORK ORDER --}}
                             <div class="col-md-6">
-                                <input maxlength="50" id="spk_number" type="text" class="text-uppercase form-control" name="spk_number" title="NOMOR SPK" placeholder="NOMOR SPK">
+                                <label class="col-md-2" for="wo_category">KATEGORI WORK ORDER</label>
+                                <div class="col-md-6">
+                                    <select title="STATUS" id="wo_category" class="form-control">
+                                        <option value="" selected>SEMUA KATEGORI</option>
+                                        <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
+                                        <option value="PEKERJAAN">PEKERJAAN</option>
+                                    </select>
+                                </div>
                             </div>
+                            <br>
+    
+                            {{-- DEPARTEMEN --}}
+                            <div class="col-md-6">
+                                <label class="col-md-2" for="department">DEPARTEMEN</label>
+                                <div class="col-md-6">
+                                    <select title="DEPARTEMEN" id="department" class="form-control">
+                                        <option value="" selected>SEMUA DEPARTEMEN</option>
+                                        @foreach ($departments as $item)
+                                            <option value={{ $item->id }}>{{ $item->department }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
                         </div>
-                        <br>
 
-                        {{-- KATEGORI WORK ORDER --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2" for="wo_category">KATEGORI WORK ORDER</label>
+                        <div class="col-md-12">
+                            {{-- STATUS WO --}}
                             <div class="col-md-6">
-                                <select title="STATUS" id="wo_category" class="form-control">
-                                    <option value="" selected>SEMUA KATEGORI</option>
-                                    <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
-                                    <option value="PEKERJAAN">PEKERJAAN</option>
-                                </select>
+                                <label class="col-md-2" for="wo_status">STATUS WORK ORDER</label>
+                                <div class="col-md-6">
+                                    <select title="DEPARTEMEN" id="wo_status" class="form-control">
+                                        <option value="" selected>SEMUA STATUS</option>
+                                        @foreach ($wo_status as $item)
+                                            <option value={{ $item->reff1 }}>{{ $item->reff1 }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
+                            <br>
                         </div>
-                        <br>
 
-                        {{-- DEPARTEMEN --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2" for="department">DEPARTEMEN</label>
-                            <div class="col-md-6">
-                                <select title="DEPARTEMEN" id="department" class="form-control">
-                                    <option value="" selected>SEMUA DEPARTEMEN</option>
-                                    @foreach ($departments as $item)
-                                        <option value={{ $item->id }}>{{ $item->department }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- STATUS WO --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2" for="wo_status">STATUS WORK ORDER</label>
-                            <div class="col-md-6">
-                                <select title="DEPARTEMEN" id="wo_status" class="form-control">
-                                    <option value="" selected>SEMUA STATUS</option>
-                                    @foreach ($wo_status as $item)
-                                        <option value={{ $item->reff1 }}>{{ $item->reff1 }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <br>
 
                         <!-- {{-- LOKASI --}}
                         <div class="row mb-2">
@@ -99,11 +106,9 @@
                                 </select>
                             </div>
                         </div> -->
-                        <br>
-                        <br>
-                        <br>
                         {{-- SEARCH --}}
-                        <div class="row">
+                        <div class="col-md-6">
+                            <br>
                             <div class="col col-md-3"><button type="submit" class="btn btn-primary" title="search"><i class="fa fa-search"></i> {{ucwords(__('search'))}}</button> </div>
                         </div>
                     </div> <!-- panel-body -->

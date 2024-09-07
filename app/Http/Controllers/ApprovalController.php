@@ -185,14 +185,6 @@ class ApprovalController extends Controller
             ]);
         }
 
-        $spongeHeader = SpongeHeader::find($request->header_id);
-        if (!$spongeHeader) {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Data Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
-            ]);
-        }
-
         //HEADER VALIDATION - CHECK WO NUMBER DUPLICATION
         $spk_number_cek = SpongeHeader::where('spk_number', $request->spk_number)->first();
         if ($spk_number_cek) {
@@ -201,6 +193,16 @@ class ApprovalController extends Controller
                 "message" => '<div class="alert alert-danger">Nomor SPK sudah terpakai. Mohon muat ulang halaman.</div>'
             ]);
         }
+
+        $spongeHeader = SpongeHeader::find($request->header_id);
+        if (!$spongeHeader) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Data Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
+            ]);
+        }
+
+        
 
 
         //DETAIL VALIDATION
@@ -211,6 +213,18 @@ class ApprovalController extends Controller
             ]);
         }
         foreach ($request->detail as $detail) {
+            if ($detail['start_at'] == '' || $detail['start_at'] == null) {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Ada tanggal mulai yang belum diisi. Mohon cek kembali.</div>'
+                ]);
+            }
+            if ($detail['estimated_end'] == '' || $detail['estimated_end'] == null) {
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger">Ada estimasi selesai yang belum diisi. Mohon cek kembali.</div>'
+                ]);
+            }
             if ($detail['engineer'] == '' || $detail['engineer'] == null) {
                 return response()->json([
                     'errors' => true,
@@ -254,18 +268,20 @@ class ApprovalController extends Controller
                     }
                 }
             }
-            if ($detail['start_at'] == '' || $detail['start_at'] == null) {
+            // dd($detail['aid']);
+            if ($detail['aid'] == '' || $detail['aid'] == null || $detail['aid'] == 'null') {
                 return response()->json([
                     'errors' => true,
-                    "message" => '<div class="alert alert-danger">Ada tanggal mulai yang belum diisi. Mohon cek kembali.</div>'
+                    "message" => '<div class="alert alert-danger">Ada K3 yang belum diassign. Mohon cek kembali.</div>'
                 ]);
             }
-            if ($detail['estimated_end'] == '' || $detail['estimated_end'] == null) {
+            if ($detail['job_description'] == '' || $detail['job_description'] == null) {
                 return response()->json([
                     'errors' => true,
-                    "message" => '<div class="alert alert-danger">Ada estimasi selesai yang belum diisi. Mohon cek kembali.</div>'
+                    "message" => '<div class="alert alert-danger">Ada deskripsi penugasan yang belum diisi. Mohon cek kembali.</div>'
                 ]);
             }
+            
 
             $spongeDetail = SpongeDetail::find($detail['id']);
             if (!$spongeDetail) {
@@ -282,7 +298,7 @@ class ApprovalController extends Controller
             $spongeHeader->spk_number = $request->spk_number;
             $spongeHeader->approve_by = Auth::user()->id;
             $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
-            $spongeHeader->status = $request->action;
+            $spongeHeader->status = 'ONGOING';
             $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->save();
 
@@ -418,7 +434,7 @@ class ApprovalController extends Controller
         //TRANSACTION
         try {
             DB::beginTransaction();
-            $spongeHeader->status = $request->action;
+            $spongeHeader->status = 'CLOSED';
             $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->approve_by =  Auth::user()->id;
             $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
@@ -503,11 +519,11 @@ class ApprovalController extends Controller
         //TRANSACTION
         try {
             DB::beginTransaction();
-            $spongeHeader->status = $request->action;
+            $spongeHeader->status = 'CANCEL';
             $spongeHeader->approve_at = Carbon::now()->timezone('Asia/Jakarta');
             $spongeHeader->approve_by =  Auth::user()->id;
             $spongeHeader->updated_by =  Auth::user()->id;
-            $spongeHeader->updated_at = Carbon::now()->timezone('Asia/Jakarta');
+            $spongeHeader->updated_at = $spongeHeader->approve_at;
             $spongeHeader->save();
 
             $spongeDetailCek = SpongeDetail::where('wo_number_id', $spongeHeader->id)->pluck('id')->toArray();
@@ -516,35 +532,38 @@ class ApprovalController extends Controller
                 foreach ($spongeDetail as $detail) {
                     $detail->canceled_at = Carbon::now()->timezone('Asia/Jakarta');
                     $detail->updated_by =  Auth::user()->id;
-                    $detail->updated_at = Carbon::now()->timezone('Asia/Jakarta');
+                    $detail->updated_at =  $detail->canceled_at;
                     $detail->save();
+
+                    $spongeDetailHist = new SpongeDetailHist([
+                        'sponge_detail_id'        => $detail->id,
+                        'wo_number_id'            => $detail->wo_number_id,
+                        'wp_number'            => $detail->wp_number,
+                        'location_id'       => $detail->location_id,
+                        'device_id'               => $detail->device_id,
+                        'disturbance_category'    => $detail->disturbance_category,
+                        'wo_description'          => $detail->wo_description,
+                        'wo_attachment1'          => $detail->wo_attachment1,
+                        'wo_attachment2'          => $detail->wo_attachment2,
+                        'wo_attachment3'          => $detail->wo_attachment3,
+                        'job_executor'          => $detail->job_executor,
+                        'job_supervisor'          => $detail->job_supervisor,
+                        'job_aid'          => $detail->job_aid,
+                        'job_description'          => $detail->job_description,
+                        'executor_progress'          => $detail->executor_progress,
+                        'executor_desc'          => $detail->executor_desc,
+                        'start_at'                => $detail->start_at,
+                        'estimated_end'           => $detail->estimated_end,
+                        'canceled_at'              => $detail->canceled_at,
+                        'action'                  => 'UPDATE',
+                        'created_by'              => Auth::user()->id,
+                        'created_at'              => $detail->created_at,
+                        'updated_by'              => Auth::user()->id,
+                        'updated_at'              => $detail->canceled_at,
+                    ]);
+                    $spongeDetailHist->save();
                 }
 
-                $spongeDetailHist = new SpongeDetailHist([
-                    'sponge_detail_id'        => $detail->id,
-                    'wo_number_id'            => $detail->wo_number_id,
-                    'location_id'       => $detail->location_id,
-                    'device_id'               => $detail->device_id,
-                    'disturbance_category'    => $detail->disturbance_category,
-                    'wo_description'          => $detail->wo_description,
-                    'wo_attachment1'          => $detail->wo_attachment1,
-                    'wo_attachment2'          => $detail->wo_attachment2,
-                    'wo_attachment3'          => $detail->wo_attachment3,
-                    'job_executor'          => $detail->job_executor,
-                    'job_supervisor'          => $detail->job_supervisor,
-                    'job_aid'          => $detail->job_aid,
-                    'job_description'          => $detail->job_description,
-                    'executor_progress'          => $detail->executor_progress,
-                    'start_at'                => $detail->start_at,
-                    'estimated_end'           => $detail->estimated_end,
-                    'canceled_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                    'action'                  => 'UPDATE',
-                    'created_by'              => Auth::user()->id,
-                    'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                    'updated_by'              => Auth::user()->id,
-                    'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                ]);
-                $spongeDetailHist->save();
             }
 
             //notif input
@@ -630,7 +649,7 @@ class ApprovalController extends Controller
     public function detail($id)
     {
         $spongeheader = SpongeHeader::find($id);
-        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->OrderBy('id')->get();
 
         // $get_engineers = Role::where('role', 'ENGINEER')->where('active', 1)->pluck('user_id')->toArray();
         // $engineers = [];
@@ -690,7 +709,7 @@ class ApprovalController extends Controller
 
 
 
-        $get_aids = User::where('department_id', $spongeheader->department_id)->where('active', 1)->orderBy('name')->pluck('id')->toArray();
+        $get_aids = User::where('active', 1)->orderBy('name')->pluck('id')->toArray();
         $aids = [];
         foreach ($get_aids as $id) {
             $aid = User::where('id', $id)->where('active', 1)->first();
@@ -802,6 +821,45 @@ class ApprovalController extends Controller
         ];
 
         return view('forms.approval.detail', $data);
+    }
+
+    public function getSPKNumber(Request $request)
+    {
+        try {
+            $spongeheader = SpongeHeader::find($request->id);
+            //dd($request->id);
+           /*SPK NUMBER Preparation*/
+            //get month year
+            $now = Carbon::now();
+            $year = $now->year;
+            $month =  $now->month;
+
+            //get user department
+            $dept_code = substr(Department::find($spongeheader->department_id)->department, 0, 3);
+
+            //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
+            //get number
+            $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
+            $number = 0;
+            if ($cek_number) {
+                $number = intval(substr($cek_number->spk_number, 0, 5));
+            }
+            $number++;
+
+            //generate wo number
+            if ($spongeheader->spk_number == '' || $spongeheader->spk_number == null) {
+                $spk_number = str_pad($number, 5, '0', STR_PAD_LEFT) . '/' . 'SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' . $year;
+            } else {
+                $spk_number = $spongeheader->spk_number;
+            }
+            /*WO NUMBER complete*/
+
+            return response()->json(['success' => true, 'message' => '', 'spk_number' => $spk_number]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function generatePDF($id)

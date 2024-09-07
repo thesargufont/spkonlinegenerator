@@ -16,7 +16,7 @@
         <div class="btn-group" role="group">
             <div class="form-group">
                 <button type="button" name="back" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
-                <button type="button" name="save" id="saveBtn" class="btn btn-primary"><i class="fa fa-fw fa-save"></i> {{ucwords(__('Simpan'))}}</button>
+                <button type="button" name="save" id="saveBtn" class="btn btn-primary" onclick="showModal()"><i class="fa fa-fw fa-save"></i> {{ucwords(__('Simpan'))}}</button>
             </div>
         </div>
     </div>
@@ -36,6 +36,9 @@
                                 <label class="col-sm-3" for="wo_number">NOMOR WORK ORDER</label>
                                 <div class="col-sm-7">
                                     <input name="wo_number" id='wo_number' type="text" class="form-control" readonly="readonly">
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="button" name="save" id="saveBtn" class="btn-sm btn-primary" onclick="getwonumber()"><i class="fa fa-fw fa-refresh"></i></button>
                                 </div>
                             </div>
 
@@ -67,7 +70,7 @@
                         <div class="col-md-6">
                             {{-- KATEGORI PEKERJAAN --}}
                             <div class="form-group">
-                                <label class="col-sm-3" for="job_category">KATEGORI PEKERJAAN</label>
+                                <label class="col-sm-3" for="job_category" onchange="checkwocategory()">KATEGORI PEKERJAAN</label>
                                 <div class="col-sm-7">
                                     <select class="form-control" name="job_category" id="job_category">
                                     </select>
@@ -108,12 +111,33 @@
     </div>
 </div>
 
+<body>
+    <div id="modal" class="modal-container"> 
+        <div class="modal-content"> 
+  
+            <h2>Konfirmasi</h2> 
+            <p class="confirmation-message"> 
+                Anda yakin akan menyimpan? 
+            </p> 
+  
+            <div class="button-container"> 
+                <button id="cancelBtn" class="btn btn-secondary"> Batal </button> 
+                <button id="actionBtn" class="btn btn-primary"> Ya </button> 
+            </div> 
+        </div> 
+    </div> 
+</body>
+
+<style>
+    .signature-canvas {
+        border: 2px solid #000;
+        margin-bottom: 10px;
+    }
+</style>
+
 <!-- Plugins js -->
-@endsection
 
 {{-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
-
-@section('script')
 
 <script>
     $(document).ready(function() {
@@ -232,7 +256,7 @@
             </div>
             </div>
         `);
-            checkwocategory();
+            checkwocategory_ng();
             getdevicemodel(detailIndex);
             getdevicecode(detailIndex);
         });
@@ -248,85 +272,6 @@
         });
 
         $('.wo-select').select2();
-
-        $(document).on('click', '#saveBtn', function() {
-            $('#form_result').html('');
-
-            // Defining URLs
-            var urls = {
-                create: "{{ route('form-input.working-order.create-new') }}", // Correctly use curly braces for Blade syntax
-                index: "{{ route('form-input.working-order.index') }}" // Correct the route format to dot notation for consistency
-            };
-
-            var formData = new FormData($('#wo-form')[0]);
-            formData.append('wo_number', $("input[name=wo_number]").val());
-            formData.append('wo_category', $("select[name=wo_category]").val());
-            formData.append('department', $("select[name=department]").val());
-            formData.append('job_category', $("select[name=job_category]").val());
-            formData.append('effective_date', $("input[name=effective_date]").val());
-
-            // Append form data for each detail block
-            $('.work-detail').each(function() {
-                var detailIndex = $(this).data('index');
-                formData.append('details[' + detailIndex + '][location]', $(this).find('select[name="details[' + detailIndex + '][location]"]').val());
-                formData.append('details[' + detailIndex + '][disturbance_category]', $(this).find('select[name="details[' + detailIndex + '][disturbance_category]"]').val());
-                formData.append('details[' + detailIndex + '][device]', $(this).find('select[name="details[' + detailIndex + '][device_model]"]').val());
-                formData.append('details[' + detailIndex + '][description]', $(this).find('textarea[name="details[' + detailIndex + '][description]"]').val());
-
-                // Append file inputs
-                var files = $(this).find('input[type="file"]');
-                $.each(files, function(index, fileInput) {
-                    if (fileInput.files.length > 0) {
-                        formData.append('details[' + detailIndex + '][photo' + (index + 1) + ']', fileInput.files[0]);
-                    }
-                });
-            });
-
-            console.log(detailIndex);
-            console.log(formData);
-
-
-
-            // AJAX request
-            artLoadingDialogDo("Proses menyimpan..", function() {
-                $.ajax({
-                    url: "{{ route('form-input.working-order.create-new') }}",
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    dataType: "json",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
-                        artLoadingDialogClose();
-                        if (data.errors) {
-                            $('#form_result').html(data.message);
-                            setTimeout(function() {
-                                $('#form_result').html('');
-                            }, 5000);
-                        }
-                        if (data.success) {
-                            $('#form_result').html(data.message);
-                            //Optionally, redirect to another page after success
-                            setTimeout(function() {
-                                window.location.href = "{{ route('form-input.working-order.index') }}";
-                            }, 1500);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        artLoadingDialogClose();
-                        console.log('Error Status:', status);
-                        console.log('Error:', error);
-                        console.log('Response:', xhr.responseText);
-                        var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                        $('#form_result').html(html);
-                    }
-                });
-            });
-            return false; // Prevent default form submission
-        });
 
         $(document).on('click', '#backBtn', function() {
             window.location.href = "{{ route('form-input.working-order.index') }}";
@@ -359,6 +304,14 @@
             $('.disturbance_category').each(function() {
                 getDisturbanceCategory(this.id.substring(7, 8));
             });
+        }
+    }
+
+    function checkwocategory_ng() {
+        if ($('#wo_category').val() == 'PEKERJAAN') {
+            $('.disturbance_category').prop('disabled', true);
+        } else {
+            $('.disturbance_category').prop('disabled', false);
         }
     }
 
@@ -558,5 +511,99 @@
             }
         });
     }
+
+    function doSubmit(e) {
+        hideModal();
+        e.preventDefault();
+        e.stopPropagation();
+        $('#form_result').html('');
+
+        // Defining URLs
+        var urls = {
+            create: "{{ route('form-input.working-order.create-new') }}", // Correctly use curly braces for Blade syntax
+            index: "{{ route('form-input.working-order.index') }}" // Correct the route format to dot notation for consistency
+        };
+
+        var formData = new FormData($('#wo-form')[0]);
+        formData.append('wo_number', $("input[name=wo_number]").val());
+        formData.append('wo_category', $("select[name=wo_category]").val());
+        formData.append('department', $("select[name=department]").val());
+        formData.append('job_category', $("select[name=job_category]").val());
+        formData.append('effective_date', $("input[name=effective_date]").val());
+
+        // Append form data for each detail block
+        $('.work-detail').each(function() {
+            var detailIndex = $(this).data('index');
+            formData.append('details[' + detailIndex + '][location]', $(this).find('select[name="details[' + detailIndex + '][location]"]').val());
+            formData.append('details[' + detailIndex + '][disturbance_category]', $(this).find('select[name="details[' + detailIndex + '][disturbance_category]"]').val());
+            formData.append('details[' + detailIndex + '][device]', $(this).find('select[name="details[' + detailIndex + '][device_model]"]').val());
+            formData.append('details[' + detailIndex + '][description]', $(this).find('textarea[name="details[' + detailIndex + '][description]"]').val());
+
+            // Append file inputs
+            var files = $(this).find('input[type="file"]');
+            $.each(files, function(index, fileInput) {
+                if (fileInput.files.length > 0) {
+                    formData.append('details[' + detailIndex + '][photo' + (index + 1) + ']', fileInput.files[0]);
+                }
+            });
+        });
+
+
+        // AJAX request
+        artLoadingDialogDo("Proses menyimpan..", function() {
+            $.ajax({
+                url: "{{ route('form-input.working-order.create-new') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: "json",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    artLoadingDialogClose();
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 5000);
+                    }
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        //Optionally, redirect to another page after success
+                        setTimeout(function() {
+                            window.location.href = "{{ route('form-input.working-order.index') }}";
+                        }, 1500);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    artLoadingDialogClose();
+                    console.log('Error Status:', status);
+                    console.log('Error:', error);
+                    console.log('Response:', xhr.responseText);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                }
+            });
+            return false;
+        });
+        return false; // Prevent default form submission
+    }
+
+    function showModal() { 
+        modal.style.display = 'flex'; 
+        $(effective_date).prop("disabled", true);
+        $(effective_date).blur(); 
+    } 
+
+    // Hide modal function 
+    function hideModal() { 
+        modal.style.display = 'none'; 
+        $(effective_date).prop("disabled", false);
+    } 
+
+    cancelBtn.addEventListener('click', hideModal); 
+    actionBtn.addEventListener('click', doSubmit); 
 </script>
 @endsection

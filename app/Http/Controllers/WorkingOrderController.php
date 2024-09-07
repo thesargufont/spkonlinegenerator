@@ -20,6 +20,7 @@ use App\Models\SpongeDetailHist;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -169,16 +170,17 @@ class WorkingOrderController extends Controller
                 }
             })
             ->editColumn('job_category', function ($item) {
-                $job_category = Job::where('id', $item->job_category)->first();
-                if ($job_category) {
-                    if ($job_category->$job_category != '' || $job_category->$job_category != null) {
-                        return $job_category->job_category;
-                    } else {
-                        return '-';
-                    }
-                } else {
-                    return '-';
-                }
+                return $item->job_category;
+                // $job_category = Job::where('id', $item->job_category)->first();
+                // if ($job_category) {
+                //     if ($job_category->$job_category != '' || $job_category->$job_category != null) {
+                //         return $job_category->job_category;
+                //     } else {
+                //         return '-';
+                //     }
+                // } else {
+                //     return '-';
+                // }
             })
             ->editColumn('created_by', function ($item) {
                 $cek = User::find($item->created_by);
@@ -432,19 +434,28 @@ class WorkingOrderController extends Controller
                 "message" => '<div class="alert alert-danger">Nomor WO belum diisi. Mohon cek kembali.</div>'
             ]);
         }
-        if ($request->wo_category == '' || $request->wo_category == null) {
+        //HEADER VALIDATION - CHECK WO NUMBER DUPLICATION
+        $wo_number_cek = SpongeHeader::where('wo_number', $request->wo_number)->first();
+        if ($wo_number_cek) {
+            // dd($wo_number_cek);
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Nomor WO sudah terpakai. Mohon muat ulang halaman.</div>'
+            ]);
+        }
+        if ($request->wo_category == '' || $request->wo_category == null || $request->wo_category == 'null') {
             return response()->json([
                 'errors' => true,
                 "message" => '<div class="alert alert-danger">Kategori pekerjaan belum diisi. Mohon cek kembali.</div>'
             ]);
         }
-        // if ($request->job_category == '' || $request->job_category == null) {
-        //     return response()->json([
-        //         'errors' => true,
-        //         "message" => '<div class="alert alert-danger">Tipe pekerjaan belum diisi. Mohon cek kembali.</div>'
-        //     ]);
-        // }
-        if ($request->department == '' || $request->department == null) {
+        if (($request->job_category == '' || $request->job_category == null || $request->job_category == 'null') && $request->wo_category == 'PEKERJAAN') {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger">Kategori pekerjaan belum diisi. Mohon cek kembali.</div>'
+            ]);
+        }
+        if ($request->department == '' || $request->department == null || $request->department == 'null') {
             return response()->json([
                 'errors' => true,
                 "message" => '<div class="alert alert-danger">Departemen belum diisi. Mohon cek kembali.</div>'
@@ -456,14 +467,7 @@ class WorkingOrderController extends Controller
                 "message" => '<div class="alert alert-danger">Tanggal efektif belum diisi. Mohon cek kembali.</div>'
             ]);
         }
-        //HEADER VALIDATION - CHECK WO NUMBER DUPLICATION
-        $wo_number_cek = SpongeHeader::where('wo_number', $request->wo_number)->first();
-        if ($wo_number_cek) {
-            return response()->json([
-                'errors' => true,
-                "message" => '<div class="alert alert-danger">Nomor WO sudah terpakai. Mohon muat ulang halaman.</div>'
-            ]);
-        }
+        
         //HEADER VALIDATION - VERIFY DEPARTMENT ID
         $department_cek = Department::find($request->department);
         if (!$department_cek) {
@@ -537,7 +541,7 @@ class WorkingOrderController extends Controller
                     }
                 }
             }
-            if ($request->wo_category == 'PEKERJAAN' && ($detail['disturbance_category'] == '' || $detail['disturbance_category'] == null)) {
+            if ($request->wo_category == 'LAPORAN GANGGUAN' && ($detail['disturbance_category'] == '' || $detail['disturbance_category'] == null || $detail['disturbance_category'] == 'null')) {
                 return response()->json([
                     'errors' => true,
                     "message" => '<div class="alert alert-danger">Ada kategori gangguan yang belum diisi. Mohon cek kembali.</div>'
@@ -742,11 +746,25 @@ class WorkingOrderController extends Controller
                 'success' => true,
                 "message" => '<div class="alert alert-success">' . $spongeHeader->wo_number . ' berhasil disimpan</div>'
             ]);
-        } catch (Exception $e) {
+        } catch (QueryException $e){
+            DB::rollback();
+            if($e->getCode() == 23000){
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Ada data detail yang serupa. Silahkan cek kembali dan pastikan tidak ada inputan detail yang sama.</div>'
+                ]);
+            }else{
+                return response()->json([
+                    'errors' => true,
+                    "message" => '<div class="alert alert-danger"> Terjadi kesalahan. Query Error ['. $e->errorInfo[1] .'] : ' . $e->errorInfo[2] . '. Silahkan kontak developer atau admin.</div>'
+                ]);
+            }
+        }
+        catch (Exception $e) {
             DB::rollback();
             return response()->json([
                 'errors' => true,
-                "message" => '<div class="alert alert-danger"> Server Error : ' . $e->getMessage() . '. Silahkan kontak developer atau admin.</div>'
+                "message" => '<div class="alert alert-danger"> Terjadi kesalahan. Server Error : ' . $e->getMessage() . '. Silahkan kontak developer atau admin.</div>'
             ]);
         }
     }
@@ -779,7 +797,7 @@ class WorkingOrderController extends Controller
         if (!$spongeheader) {
             return back()->with('status', '<div class="alert alert-success"> Data tidak ditemukan. Silahkan coba lagi atau hubungi admin.</div>');
         }
-        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->orderBy('id')->get();
         if (empty($spongedetails->toArray())) {
             return back()->with('status', '<div class="alert alert-success"> Detail data tidak ditemukan. Silahkan coba lagi atau hubungi admin.</div>');
         }

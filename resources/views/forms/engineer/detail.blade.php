@@ -17,7 +17,7 @@
             <div class="form-group">
                 <button type="button" name="back" id="backBtn" class="btn btn-primary"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
                 @if($status != 'DONE')
-                <button type="button" name="back" id="approveBtn" class="btn btn-info"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Submit'))}}</button>
+                <button type="button" name="back" id="approveBtn" class="btn btn-info" onclick="showModal()"><i class="fa fa-fw fa-check"></i> {{ucwords(__('Submit'))}}</button>
                 @endif
                 <!-- <button type="button" name="back" id="pdfBtn" class="btn btn-info">{{ucwords(__('Download PDF'))}}</button> -->
             </div>
@@ -108,7 +108,7 @@
                             <div class="panel-body work-detail" data-index={{$detail['index']}}>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <h3 class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</h3>
+                                        <h4 class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</h4>
                                     </div>
                                 </div>
 
@@ -167,15 +167,15 @@
                                 <div class="col-md-12">
                                     {{-- LAMPIRAN --}}
                                     <div class="form-group">
-                                        <h3 class="col-sm-1" for="">LAMPIRAN #1</h3>
+                                        <label class="col-sm-1" for="">LAMPIRAN #1</label>
                                         <div class="col-sm-3">
                                             <img src="{{ Storage::url($detail['image_path1']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
                                         </div>
-                                        <h3 class="col-sm-1" for="">LAMPIRAN #2</h3>
+                                        <label class="col-sm-1" for="">LAMPIRAN #2</label>
                                         <div class="col-sm-3">
                                             <img src="{{ Storage::url($detail['image_path2']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
                                         </div>
-                                        <h3 class="col-sm-1" for="">LAMPIRAN #3</h3>
+                                        <label class="col-sm-1" for="">LAMPIRAN #3</label>
                                         <div class="col-sm-3">
                                             <img src="{{ Storage::url($detail['image_path3']) }}" alt="..tidak ditemukan." class="img-responsive" style="max-width:70%;">
                                         </div>
@@ -188,7 +188,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <h3 class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</h3>
+                                        <h4 class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</h4>
                                     </div>
                                 </div>
 
@@ -247,7 +247,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <h3 class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</h3>
+                                        <h4 class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</h4>
                                     </div>
                                 </div>
 
@@ -266,14 +266,14 @@
                                             @if($status != 'DONE')
                                             <select class="form-control" name="detail[{{ $detail['index'] }}][status_engineer]">
                                                 @foreach($status_detail as $status_det)
-                                                <option value="{{$status_det}}" @if ($status_det== $status ) selected @endif>{{$status_det}}</option>
+                                                <option value="{{$status_det}}" @if ($status_det== $detail['engineer_status'] ) selected @endif>{{$status_det}}</option>
                                                 @endforeach
                                             </select>
                                             @else
                                             <input name="detail[{{ $detail['index'] }}][status_engineer]" id="detail[{{ $detail['index'] }}][status_engineer]" type="text" class="form-control" value="{{ $detail['engineer_status'] }}" disabled>
                                             @endif
                                         </div>
-                                        <label class="col-sm-1" for="detail[{{ $detail['index'] }}][desc_engineer]">DESKRIPSI ENGINEER</label>
+                                        <label class="col-sm-1" >DESKRIPSI ENGINEER</label>
                                         <div class="col-sm-3">
                                             <input name="detail[{{ $detail['index'] }}][desc_engineer]" id="detail[{{ $detail['index'] }}][desc_engineer]" type="text" class="form-control" value="{{ $detail['executor_desc'] }}" @if($status=='DONE' ) disabled @endif>
                                         </div>
@@ -296,6 +296,9 @@
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo1]" id="detail[{{ $detail['index'] }}][photo1]">
+                                            <br>
+                                            <p style="font-style: italic;">preview gambar yg tersimpan :</p>
+                                            <img src="{{ Storage::url($detail['job_attachment1']) }}" id="detail[{{ $detail['index'] }}][photo1]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @else
                                             <img src="{{ Storage::url($detail['job_attachment1']) }}" id="detail[{{ $detail['index'] }}][photo1]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
@@ -306,6 +309,9 @@
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo2]" id="detail[{{ $detail['index'] }}][photo2]">
+                                            <br>
+                                            <p style="font-style: italic;">preview gambar yg tersimpan :</p>
+                                            <img src="{{ Storage::url($detail['job_attachment2']) }}" id="detail[{{ $detail['index'] }}][photo2]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @else
                                             <img src="{{ Storage::url($detail['job_attachment2']) }}" id="detail[{{ $detail['index'] }}][photo2]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
@@ -316,6 +322,9 @@
                                         <div class="col-sm-3">
                                             @if($status != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo3]" id="detail[{{ $detail['index'] }}][photo3]">
+                                            <br>
+                                            <p style="font-style: italic;">preview gambar yg tersimpan :</p>
+                                            <img src="{{ Storage::url($detail['job_attachment3']) }}" id="detail[{{ $detail['index'] }}][photo3]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @else
                                             <img src="{{ Storage::url($detail['job_attachment3']) }}" id="detail[{{ $detail['index'] }}][photo3]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
@@ -342,11 +351,32 @@
 </div>
 
 <!-- Plugins js -->
-@endsection
+
+<body>
+    <div id="modal" class="modal-container"> 
+        <div class="modal-content"> 
+  
+            <h2>Konfirmasi</h2> 
+            <p class="confirmation-message"> 
+                Anda yakin akan menyimpan? 
+            </p> 
+  
+            <div class="button-container"> 
+                <button id="cancelBtn" class="btn btn-secondary"> Batal </button> 
+                <button id="actionBtn" class="btn btn-primary"> Ya </button> 
+            </div> 
+        </div> 
+    </div> 
+</body>
+
+<style>
+    .signature-canvas {
+        border: 2px solid #000;
+        margin-bottom: 10px;
+    }
+</style>
 
 {{-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
-
-@section('script')
 
 <script>
     $(document).ready(function() {
@@ -365,81 +395,84 @@
             window.open(url, '_blank');
         });
 
-        $(document).on('click', '#approveBtn', function() {
-            $('#form_result').html('');
-            var length_ = $('#count').val();
-            console.log()
-            var formData = new FormData($('#wo-form')[0]);
-            formData.append('header_id', $("input[name=header_id]").val());
-            // Append form data for each detail block
-            for (let i = 1; i <= length_; i++) {
-                formData.append('detail[' + i + '][id]', $('input[name="detail[' + i + '][id]"]').val());
-                formData.append('detail[' + i + '][desc_engineer]', $('input[name="detail[' + i + '][desc_engineer]"]').val());
-                formData.append('detail[' + i + '][wp_number]', $('input[name="detail[' + i + '][wp_number]"]').val());
-                formData.append('detail[' + i + '][start_at]', $('input[name="detail[' + i + '][start_at]"]').val());
-                formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
-                formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
-                formData.append('detail[' + i + '][status_engineer]', $('select[name="detail[' + i + '][status_engineer]"]').val());
+    });
 
-                let fileInput = $('input[name="detail[' + i + '][photo1]"]')[0];
-                if (fileInput.files[0]) {
-                    formData.append('detail[' + i + '][photo1]', fileInput.files[0]);
-                }
-                let fileInput2 = $('input[name="detail[' + i + '][photo2]"]')[0];
-                if (fileInput2.files[0]) {
-                    formData.append('detail[' + i + '][photo2]', fileInput2.files[0]);
-                }
-                let fileInput3 = $('input[name="detail[' + i + '][photo3]"]')[0];
-                if (fileInput3.files[0]) {
-                    formData.append('detail[' + i + '][photo3]', fileInput3.files[0]);
-                }
+    function doSubmit() {
+        hideModal();
+        $('#form_result').html('');
+        var length_ = $('#count').val();
+        console.log()
+        var formData = new FormData($('#wo-form')[0]);
+        formData.append('header_id', $("input[name=header_id]").val());
+        // Append form data for each detail block
+        for (let i = 1; i <= length_; i++) {
+            formData.append('detail[' + i + '][id]', $('input[name="detail[' + i + '][id]"]').val());
+            formData.append('detail[' + i + '][desc_engineer]', $('input[name="detail[' + i + '][desc_engineer]"]').val());
+            formData.append('detail[' + i + '][wp_number]', $('input[name="detail[' + i + '][wp_number]"]').val());
+            formData.append('detail[' + i + '][start_at]', $('input[name="detail[' + i + '][start_at]"]').val());
+            formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
+            formData.append('detail[' + i + '][estimated_end]', $('input[name="detail[' + i + '][estimated_end]"]').val());
+            formData.append('detail[' + i + '][status_engineer]', $('select[name="detail[' + i + '][status_engineer]"]').val());
 
+            let fileInput = $('input[name="detail[' + i + '][photo1]"]')[0];
+            if (fileInput.files[0]) {
+                formData.append('detail[' + i + '][photo1]', fileInput.files[0]);
+            }
+            let fileInput2 = $('input[name="detail[' + i + '][photo2]"]')[0];
+            if (fileInput2.files[0]) {
+                formData.append('detail[' + i + '][photo2]', fileInput2.files[0]);
+            }
+            let fileInput3 = $('input[name="detail[' + i + '][photo3]"]')[0];
+            if (fileInput3.files[0]) {
+                formData.append('detail[' + i + '][photo3]', fileInput3.files[0]);
             }
 
-            console.log(formData);
+        }
 
-            // AJAX request
-            artLoadingDialogDo("Proses menyimpan..", function() {
-                $.ajax({
-                    url: "{{ route('form-input.engineer.submit') }}",
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    dataType: "json",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
-                        artLoadingDialogClose();
-                        if (data.errors) {
-                            $('#form_result').html(data.message);
-                            setTimeout(function() {
-                                $('#form_result').html('');
-                            }, 5000);
-                        }
-                        if (data.success) {
-                            $('#form_result').html(data.message);
-                            //Optionally, redirect to another page after success
-                            setTimeout(function() {
-                                window.location.href = "{{ route('form-input.engineer.index') }}";
-                            }, 1500);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        artLoadingDialogClose();
-                        console.log('Error Status:', status);
-                        console.log('Error:', error);
-                        console.log('Response:', xhr.responseText);
-                        var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                        $('#form_result').html(html);
+        console.log(formData);
+
+        // AJAX request
+        artLoadingDialogDo("Proses menyimpan..", function() {
+            $.ajax({
+                url: "{{ route('form-input.engineer.submit') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: "json",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    artLoadingDialogClose();
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                        setTimeout(function() {
+                            $('#form_result').html('');
+                        }, 5000);
                     }
-                });
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        //Optionally, redirect to another page after success
+                        setTimeout(function() {
+                            window.location.href = "{{ route('form-input.engineer.index') }}";
+                        }, 1500);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    artLoadingDialogClose();
+                    console.log('Error Status:', status);
+                    console.log('Error:', error);
+                    console.log('Response:', xhr.responseText);
+                    var html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                }
             });
-            return false; // Prevent default form submission
-
+            return false;
         });
-    });
+        return false; // Prevent default form submission
+
+    }
 
     function toggleClearButton(detailIndex, photoIndex) {
         var fileInput = document.getElementById('photo' + photoIndex + '_' + detailIndex);
@@ -457,5 +490,17 @@
         fileInput.value = '';
         clearButton.style.display = 'none';
     }
+
+    function showModal() { 
+        modal.style.display = 'flex'; 
+    } 
+
+    // Hide modal function 
+    function hideModal() { 
+        modal.style.display = 'none'; 
+    } 
+
+    cancelBtn.addEventListener('click', hideModal); 
+    actionBtn.addEventListener('click', doSubmit); 
 </script>
 @endsection

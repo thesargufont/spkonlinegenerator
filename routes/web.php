@@ -87,6 +87,7 @@ Route::get('form-input/working-order/detail/{id}', [WorkingOrderController::clas
 
 //APPROVAL
 Route::get('form-input/approval/index', [ApprovalController::class, 'index'])->name('form-input.approval.index')->middleware('auth');
+Route::get('form-input/approval/getspknumber', [ApprovalController::class, 'getSPKNumber'])->name('form-input.approval.getspknumber')->middleware('auth');
 Route::post('form-input/approval/dashboard-data', [ApprovalController::class, 'data'])->name('form-input.approval.dashboard-data')->middleware('auth');
 Route::get('form-input/approval/detail/{id}', [ApprovalController::class, 'detail'])->name('form-input.approval.detail')->middleware('auth');
 Route::post('form-input/approval/approve', [ApprovalController::class, 'approve'])->name('form-input.approval.approve')->middleware('auth');
