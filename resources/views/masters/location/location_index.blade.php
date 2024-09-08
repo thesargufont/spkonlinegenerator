@@ -61,9 +61,7 @@
                                 </select>
                             </div>
                         </div>
-                        <br>
 
-                        <br>
                         <br>
                         {{-- SEARCH --}}
                         <div class="row">

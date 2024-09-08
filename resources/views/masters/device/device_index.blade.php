@@ -27,100 +27,112 @@
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
                     <div class="panel-body">
-                        {{-- NAMA PERALATAN --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NAMA PERALATAN</label>
+                            {{-- NAMA PERALATAN --}}
                             <div class="col-md-6">
-                                <input maxlength="150" id="device_name" type="text" class="text-uppercase form-control" name="device_name" title="NAMA PERALATAN" placeholder="NAMA PERALATAN">
-                                <input name="device_name_id" id="location_name_id" type="hidden"/>
+                                <label class="col-md-2">NAMA PERALATAN</label>
+                                <div class="col-md-6">
+                                    <input maxlength="150" id="device_name" type="text" class="text-uppercase form-control" name="device_name" title="NAMA PERALATAN" placeholder="NAMA PERALATAN">
+                                    <input name="device_name_id" id="location_name_id" type="hidden"/>
+                                </div>
                             </div>
+                            
+    
+                            {{-- BRAND --}}
+                            <div class="col-md-6">
+                                <label class="col-md-2">BRAND</label>
+                                <div class="col-md-6">
+                                    <input maxlength="50" id="brand" type="text" class="text-uppercase form-control" name="brand" title="BRAND" placeholder="BRAND">
+                                    <input name="brand_id" id="location_name_id" type="hidden"/>
+                                </div>
+                            </div>
+
                         </div>
                         <br>
-
-                        {{-- BRAND --}}
+                        
                         <div class="row mb-2">
-                            <label class="col-md-2">BRAND</label>
+                            {{-- LOKASI --}}
                             <div class="col-md-6">
-                                <input maxlength="50" id="brand" type="text" class="text-uppercase form-control" name="brand" title="BRAND" placeholder="BRAND">
-                                <input name="brand_id" id="location_name_id" type="hidden"/>
+                                <label class="col-md-2">LOKASI</label>
+                                <div class="col-md-6">
+                                    <select title="LOKASI" id="location" class="form-control">
+                                        <option value="" selected>SEMUA LOKASI</option>
+                                        @foreach ($locations as $item)
+                                            <option value={{ $item->id }}>{{ $item->location }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
+                            
+    
+                            {{-- DEPARTEMEN --}}
+                            <div class="col-md-6">
+                                <label class="col-md-2">DEPARTEMEN</label>
+                                <div class="col-md-6">
+                                    <select title="DEPARTEMEN" id="department" class="form-control">
+                                        <option value="" selected>SEMUA DEPARTEMEN</option>
+                                        @foreach ($departments as $item)
+                                            <option value={{ $item->id }}>{{ $item->department }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
                         <br>
+                        
 
-                        {{-- LOKASI --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">LOKASI</label>
+                            {{-- KATEGORI ALAT --}}
                             <div class="col-md-6">
-                                <select title="LOKASI" id="location" class="form-control">
-                                    <option value="" selected>SEMUA LOKASI</option>
-                                    @foreach ($locations as $item)
-                                        <option value={{ $item->id }}>{{ $item->location }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="col-md-2">KATEGORI ALAT</label>
+                                <div class="col-md-6">
+                                    <select title="KATEGORI ALAT" id="device_category" class="form-control">
+                                        <option value="" selected>SEMUA KATEGORI ALAT</option>
+                                        @foreach ($deviceCategories as $item)
+                                            <option value={{ $item->id }}>{{ $item->device_category }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
+                           
+    
+                            {{-- NOMOR SERI --}}
+                            <div class="col-md-6">
+                                <label class="col-md-2">NOMOR SERI</label>
+                                <div class="col-md-6">
+                                    <input maxlength="100" id="serial_number" type="text" class="text-uppercase form-control" name="serial_number" title="NOMOR SERI" placeholder="NOMOR SERI">
+                                    <input name="serial_number_id" id="location_name_id" type="hidden"/>
+                                </div>
+                            </div>
+
                         </div>
                         <br>
+                        
 
-                        {{-- DEPARTEMEN --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">DEPARTEMEN</label>
+                            {{-- EQ ID --}}
                             <div class="col-md-6">
-                                <select title="DEPARTEMEN" id="department" class="form-control">
-                                    <option value="" selected>SEMUA DEPARTEMEN</option>
-                                    @foreach ($departments as $item)
-                                        <option value={{ $item->id }}>{{ $item->department }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="col-md-2">NOMOR AKTIVA</label>
+                                <div class="col-md-6">
+                                    <input maxlength="50" id="activa_number" type="text" class="text-uppercase form-control" name="activa_number" title="NOMOR AKTIVA" placeholder="NOMOR AKTIVA">
+                                    <input name="activa_number_id" id="location_name_id" type="hidden"/>
+                                </div>
                             </div>
-                        </div>
-                        <br>
+    
+                            {{-- STATUS --}}
+                            <div class="col-md-6">
+                                <label class="col-md-2">STATUS</label>
+                                <div class="col-md-6">
+                                    <select title="STATUS" id="status" class="form-control">
+                                        <option value="1" selected>AKTIF</option>
+                                        <option value="0">TIDAK AKTIF</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                        {{-- KATEGORI ALAT --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">KATEGORI ALAT</label>
-                            <div class="col-md-6">
-                                <select title="KATEGORI ALAT" id="device_category" class="form-control">
-                                    <option value="" selected>SEMUA KATEGORI ALAT</option>
-                                    @foreach ($deviceCategories as $item)
-                                        <option value={{ $item->id }}>{{ $item->device_category }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- NOMOR SERI --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">NOMOR SERI</label>
-                            <div class="col-md-6">
-                                <input maxlength="100" id="serial_number" type="text" class="text-uppercase form-control" name="serial_number" title="NOMOR SERI" placeholder="NOMOR SERI">
-                                <input name="serial_number_id" id="location_name_id" type="hidden"/>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- EQ ID --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">NOMOR AKTIVA</label>
-                            <div class="col-md-6">
-                                <input maxlength="50" id="activa_number" type="text" class="text-uppercase form-control" name="activa_number" title="NOMOR AKTIVA" placeholder="NOMOR AKTIVA">
-                                <input name="activa_number_id" id="location_name_id" type="hidden"/>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- STATUS --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">STATUS</label>
-                            <div class="col-md-6">
-                                <select title="STATUS" id="status" class="form-control">
-                                    <option value="1" selected>AKTIF</option>
-                                    <option value="0">TIDAK AKTIF</option>
-                                </select>
-                            </div>
                         </div>
 
-                        <br>
                         <br>
                         {{-- SEARCH --}}
                         <div class="row">

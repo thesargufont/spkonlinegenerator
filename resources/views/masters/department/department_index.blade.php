@@ -48,8 +48,6 @@
                             </div>
                         </div>
                         <br>
-                        <br>
-                        <br>
                         {{-- SEARCH --}}
                         <div class="row">
                             <div class="col col-md-3"><button type="submit" class="btn btn-primary" title="search"><i class="fa fa-search"></i> {{ucwords(__('search'))}}</button> </div>
