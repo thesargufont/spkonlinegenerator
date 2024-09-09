@@ -106,13 +106,19 @@
                         </div>
                         <div id="collapseOne-{{ $detail['index'] }}" class="panel-collapse collapse">
                             <div class="panel-body work-detail" data-index={{$detail['index']}}>
+                                <!-- <div class="col-md-12">
+                                              
+                                </div> -->
+                                
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <h4 class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</h4>
                                     </div>
                                 </div>
 
-                                <div class="col-md-12"><br></div>
+                                <div class="col-md-12">       
+                                    <br>
+                                </div>
 
                                 <div class="col-md-6">
                                     {{-- LOKASI --}}
@@ -251,7 +257,12 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12"><br></div>
+                                <div class="col-md-12">
+                                    @if($detail['engineer_status'] == 'DONE')
+                                    <button type="button" name="back" id="downloadBtn" class="btn-sm btn-info" onclick="downloadItem({{ $detail['id'] }})"><i class="fa fa-fw fa-download"></i> Download BA</button>
+                                    @endif
+                                    <br>
+                                </div>
 
                                 <div class="form-group">
                                     <div><input name="detail[{{ $detail['index'] }}][id]" type="hidden" class="form-control" value="{{ $detail['id'] }}"></div>
@@ -263,23 +274,27 @@
                                     <div class="form-group">
                                         <label class="col-sm-1" for="detail[{{ $detail['index'] }}][status_engineer]">STATUS ENGINEER</label>
                                         <div class="col-sm-3">
-                                            @if($status != 'DONE')
+                                            @if($detail['engineer_status'] != 'DONE')
                                             <select class="form-control" name="detail[{{ $detail['index'] }}][status_engineer]">
                                                 @foreach($status_detail as $status_det)
                                                 <option value="{{$status_det}}" @if ($status_det== $detail['engineer_status'] ) selected @endif>{{$status_det}}</option>
                                                 @endforeach
                                             </select>
                                             @else
-                                            <input name="detail[{{ $detail['index'] }}][status_engineer]" id="detail[{{ $detail['index'] }}][status_engineer]" type="text" class="form-control" value="{{ $detail['engineer_status'] }}" disabled>
+                                            <select class="form-control" name="detail[{{ $detail['index'] }}][status_engineer]" disabled>
+                                                @foreach($status_detail as $status_det)
+                                                <option value="{{$status_det}}" @if ($status_det== 'DONE' ) selected @endif>{{$status_det}}</option>
+                                                @endforeach
+                                            </select>
                                             @endif
                                         </div>
                                         <label class="col-sm-1" >DESKRIPSI ENGINEER</label>
                                         <div class="col-sm-3">
-                                            <input name="detail[{{ $detail['index'] }}][desc_engineer]" id="detail[{{ $detail['index'] }}][desc_engineer]" type="text" class="form-control" value="{{ $detail['executor_desc'] }}" @if($status=='DONE' ) disabled @endif>
+                                            <input name="detail[{{ $detail['index'] }}][desc_engineer]" id="detail[{{ $detail['index'] }}][desc_engineer]" type="text" class="form-control" value="{{ $detail['executor_desc'] }}" @if($detail['engineer_status']=='DONE' ) disabled @endif>
                                         </div>
                                         <label class="col-sm-1" style="color: red;" for="detail[{{ $detail['index'] }}][wp_number]">NOMOR WP*</label>
                                         <div class="col-sm-3">
-                                            <input name="detail[{{ $detail['index'] }}][wp_number]" id="detail[{{ $detail['index'] }}][wp_number]" type="text" class="form-control" value="{{ $detail['wp_number'] }}" @if($status=='DONE' ) disabled @endif>
+                                            <input name="detail[{{ $detail['index'] }}][wp_number]" id="detail[{{ $detail['index'] }}][wp_number]" type="text" class="form-control" value="{{ $detail['wp_number'] }}" @if($detail['engineer_status']=='DONE' ) disabled @endif>
                                         </div>
                                     </div>
                                     <!-- {{-- DESKRIPSI ENGINEER --}}
@@ -294,12 +309,13 @@
                                     <div class="form-group">
                                         <label class="col-sm-1" for="detail[{{ $detail['index'] }}][photo1]">LAMPIRAN #1</label>
                                         <div class="col-sm-3">
-                                            @if($status != 'DONE')
+                                            @if($detail['engineer_status'] != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo1]" id="detail[{{ $detail['index'] }}][photo1]">
                                             <br>
                                             <p style="font-style: italic;">preview gambar yg tersimpan :</p>
                                             <img src="{{ Storage::url($detail['job_attachment1']) }}" id="detail[{{ $detail['index'] }}][photo1]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @else
+                                            <input type="file" name="detail[{{ $detail['index'] }}][photo1]" id="detail[{{ $detail['index'] }}][photo1]" hidden disabled>
                                             <img src="{{ Storage::url($detail['job_attachment1']) }}" id="detail[{{ $detail['index'] }}][photo1]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo1]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
@@ -307,12 +323,13 @@
                                         </div>
                                         <label class="col-sm-1" for="detail[{{ $detail['index'] }}][photo2]">LAMPIRAN #2</label>
                                         <div class="col-sm-3">
-                                            @if($status != 'DONE')
+                                            @if($detail['engineer_status'] != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo2]" id="detail[{{ $detail['index'] }}][photo2]">
                                             <br>
                                             <p style="font-style: italic;">preview gambar yg tersimpan :</p>
                                             <img src="{{ Storage::url($detail['job_attachment2']) }}" id="detail[{{ $detail['index'] }}][photo2]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @else
+                                            <input type="file" name="detail[{{ $detail['index'] }}][photo2]" id="detail[{{ $detail['index'] }}][photo2]" hidden disabled>
                                             <img src="{{ Storage::url($detail['job_attachment2']) }}" id="detail[{{ $detail['index'] }}][photo2]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo2]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
@@ -320,12 +337,13 @@
                                         </div>
                                         <label class="col-sm-1" for="detail[{{ $detail['index'] }}][photo3]">LAMPIRAN #3</label>
                                         <div class="col-sm-3">
-                                            @if($status != 'DONE')
+                                            @if($detail['engineer_status'] != 'DONE')
                                             <input type="file" name="detail[{{ $detail['index'] }}][photo3]" id="detail[{{ $detail['index'] }}][photo3]">
                                             <br>
                                             <p style="font-style: italic;">preview gambar yg tersimpan :</p>
                                             <img src="{{ Storage::url($detail['job_attachment3']) }}" id="detail[{{ $detail['index'] }}][photo3]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @else
+                                            <input type="file" name="detail[{{ $detail['index'] }}][photo3]" id="detail[{{ $detail['index'] }}][photo3]" hidden disabled>
                                             <img src="{{ Storage::url($detail['job_attachment3']) }}" id="detail[{{ $detail['index'] }}][photo3]" alt="..tidak ditemukan." class="img-responsive" style="max-width: 70%;">
                                             @endif
                                             <!-- <button class="btn btn-danger btn-sm waves-effect waves-light" type="button" id="clear_detail[{{ $detail['index'] }}][photo3]" onclick="clearFileInput($detail['index'], 1)" style="display: none;">Clear</button> -->
@@ -489,6 +507,13 @@
         var clearButton = document.getElementById('clear_detail[' + $detail['index'] + '][photo1]');
         fileInput.value = '';
         clearButton.style.display = 'none';
+    }
+
+    function downloadItem(id) {
+        {
+            var url = "{{route('form-input.engineer.download', '')}}" + "/" + id;
+            window.open(url, '_blank');
+        }
     }
 
     function showModal() { 

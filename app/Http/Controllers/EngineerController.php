@@ -42,18 +42,23 @@ class EngineerController extends Controller
 
     public function getData($request, $isExcel = '')
     {
-        $user = Auth::user()->id;
-        // $spongeheader = SpongeHeader::leftJoin('sponge_details', 'sponge_headers.id', '=', 'sponge_details.wo_number_id')
-        //     ->where('sponge_headers.status', 'ONGOING')
-        //     ->where('sponge_details.job_executor', $user);
+        if ($isExcel == "") {
+            session([
+                'working_order' . '.wo_number' => $request->has('wo_number') ?  $request->input('wo_number') : '',
+            ]);
+        }
 
-        // return $spongeheader;
+        $wo_number    = session('working_order' . '.wo_number') != '' ? session('working_order' . '.wo_number') : '';
+        $user = Auth::user()->id;
+
         $spongeheader = SpongeHeader::select('sponge_headers.*')
             ->distinct('sponge_headers.wo_number')
             ->leftJoin('sponge_details', 'sponge_headers.id', '=', 'sponge_details.wo_number_id')
             ->where('sponge_headers.status', '!=', 'CANCEL')
             ->where('sponge_headers.status', '!=', 'CLOSED')
-            ->where('sponge_details.job_executor', $user);
+            ->where('sponge_details.job_executor', $user)
+            ->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%")
+            ->orderBy('sponge_headers.status','desc');
 
         return $spongeheader;
         // $spongeDetail = SpongeDetail::where('job_executor', $user)->pluck('sponge_header_id')->groupBy('sponge_header_id')->toArray();
@@ -72,10 +77,10 @@ class EngineerController extends Controller
             // dd($item);
             $txt = '';
             $txt .= "<a href=\"#\" onclick=\"showItem($item->id);\"title=\"" . ucfirst(__('edit')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-edit fa-fw fa-xs\"></i></a>";
-            $spongeDetail = SpongeDetail::where('wo_number_id', $item->id)->where('executor_progress', 'DONE')->first();
-            if ($spongeDetail) {
-                $txt .= "<a href=\"#\" onclick=\"downloadItem($item[id]);\"title=\"" . ucfirst(__('download')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-download fa-fw fa-xs\"></i></a>";
-            }
+            // $spongeDetail = SpongeDetail::where('wo_number_id', $item->id)->where('executor_progress', 'DONE')->first();
+            // if ($spongeDetail) {
+            //     $txt .= "<a href=\"#\" onclick=\"downloadItem($item[id]);\"title=\"" . ucfirst(__('download')) . "\" class=\"btn btn-xs btn-secondary\"><i class=\"fa fa-download fa-fw fa-xs\"></i></a>";
+            // }
             return $txt;
         })
             // ->editColumn('job_category', function ($item) {
@@ -179,87 +184,90 @@ class EngineerController extends Controller
                     "message" => '<div class="alert alert-danger">Status Engineer kosong. Mohon cek kembali.</div>'
                 ]);
             }
-            if ($detail['desc_engineer'] == '' || $detail['desc_engineer'] == null || $detail['desc_engineer'] == 'null') {
-                return response()->json([
-                    'errors' => true,
-                    "message" => '<div class="alert alert-danger">Deskripsi Engineer kosong. Mohon cek kembali.</div>'
-                ]);
-            }
-            if ($detail['wp_number'] == '' || $detail['wp_number'] == null || $detail['wp_number'] == 'null') {
-                return response()->json([
-                    'errors' => true,
-                    "message" => '<div class="alert alert-danger">Nomor WP masih kosong. Mohon cek kembali.</div>'
-                ]);
-            }
-            $spongeDetail = SpongeDetail::find($detail['id']);
-            if (!$spongeDetail) {
-                return response()->json([
-                    'errors' => true,
-                    "message" => '<div class="alert alert-danger">Detail Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
-                ]);
-            }
-            // $newFilename1 = '';
-            if (array_key_exists('photo1', $detail)) {
-                //dd($detail);
-                //dd(strval($detail['photo1']->getClientOriginalExtension()));
-                if (strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpeg') {
-                    return response()->json([
-                        'errors' => true,
-                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
-                    ]);
-                }
-                if (filesize($detail['photo1']) > 5120000) {
-                    return response()->json([
-                        'errors' => true,
-                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
-                    ]);
-                }
-                // $newFilename1 = str_replace('/', '-', $spongeHeader->wo_number) . '-photo1_job' . Auth::user()->nik . '.'  . $detail['photo1']->getClientOriginalExtension();
-                // if(Storage::exists($newFilename1)){
+            if($detail['status_engineer'] != 'PENDING'){
 
-                // }
-                // Storage::delete('public/' . $newFilename1);
-                // Storage::putFileAs('public', $detail['photo1'], $newFilename1);
-            }
-            // $newFilename2 = '';
-            if (array_key_exists('photo2', $detail)) {
-                //dd($detail);
-                //dd(strval($detail['photo2']->getClientOriginalExtension()));
-                if (strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpeg') {
+                if ($detail['desc_engineer'] == '' || $detail['desc_engineer'] == null || $detail['desc_engineer'] == 'null') {
                     return response()->json([
                         'errors' => true,
-                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                        "message" => '<div class="alert alert-danger">Deskripsi Engineer kosong. Mohon cek kembali.</div>'
                     ]);
                 }
-                if (filesize($detail['photo2']) > 5120000) {
+                if ($detail['wp_number'] == '' || $detail['wp_number'] == null || $detail['wp_number'] == 'null') {
                     return response()->json([
                         'errors' => true,
-                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                        "message" => '<div class="alert alert-danger">Nomor WP masih kosong. Mohon cek kembali.</div>'
                     ]);
                 }
-                // $newFilename2 = str_replace('/', '-', $spongeHeader->wo_number) . '-photo2_job' . Auth::user()->nik . '.' . $detail['photo2']->getClientOriginalExtension();
-                // Storage::delete('public/' . $newFilename2);
-                // Storage::putFileAs('public', $detail['photo2'], $newFilename2);
-            }
-            // $newFilename3 = '';
-            if (array_key_exists('photo3', $detail)) {
-                //dd($detail);
-                //dd(strval($detail['photo3']->getClientOriginalExtension()));
-                if (strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpeg') {
+                $spongeDetail = SpongeDetail::find($detail['id']);
+                if (!$spongeDetail) {
                     return response()->json([
                         'errors' => true,
-                        "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                        "message" => '<div class="alert alert-danger">Detail Work Order tidak ditemukan. Pastikan kembali nomor WO tidak dibatalkan atau hubungi admin.</div>'
                     ]);
                 }
-                if (filesize($detail['photo3']) > 5120000) {
-                    return response()->json([
-                        'errors' => true,
-                        "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
-                    ]);
+                // $newFilename1 = '';
+                if (array_key_exists('photo1', $detail)) {
+                    //dd($detail);
+                    //dd(strval($detail['photo1']->getClientOriginalExtension()));
+                    if (strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo1']->getClientOriginalExtension())) != 'jpeg') {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                        ]);
+                    }
+                    if (filesize($detail['photo1']) > 5120000) {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                        ]);
+                    }
+                    // $newFilename1 = str_replace('/', '-', $spongeHeader->wo_number) . '-photo1_job' . Auth::user()->nik . '.'  . $detail['photo1']->getClientOriginalExtension();
+                    // if(Storage::exists($newFilename1)){
+    
+                    // }
+                    // Storage::delete('public/' . $newFilename1);
+                    // Storage::putFileAs('public', $detail['photo1'], $newFilename1);
                 }
-                // $newFilename3 = str_replace('/', '-', $spongeHeader->wo_number) . '-photo3_job' . Auth::user()->nik . '.' . $detail['photo3']->getClientOriginalExtension();
-                // Storage::delete('public/' . $newFilename3);
-                // Storage::putFileAs('public', $detail['photo3'], $newFilename3);
+                // $newFilename2 = '';
+                if (array_key_exists('photo2', $detail)) {
+                    //dd($detail);
+                    //dd(strval($detail['photo2']->getClientOriginalExtension()));
+                    if (strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo2']->getClientOriginalExtension())) != 'jpeg') {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                        ]);
+                    }
+                    if (filesize($detail['photo2']) > 5120000) {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                        ]);
+                    }
+                    // $newFilename2 = str_replace('/', '-', $spongeHeader->wo_number) . '-photo2_job' . Auth::user()->nik . '.' . $detail['photo2']->getClientOriginalExtension();
+                    // Storage::delete('public/' . $newFilename2);
+                    // Storage::putFileAs('public', $detail['photo2'], $newFilename2);
+                }
+                // $newFilename3 = '';
+                if (array_key_exists('photo3', $detail)) {
+                    //dd($detail);
+                    //dd(strval($detail['photo3']->getClientOriginalExtension()));
+                    if (strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpg' && strtolower(strval($detail['photo3']->getClientOriginalExtension())) != 'jpeg') {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Format tipe Gambar 1 tidak sesuai. Mohon cek kembali.</div>'
+                        ]);
+                    }
+                    if (filesize($detail['photo3']) > 5120000) {
+                        return response()->json([
+                            'errors' => true,
+                            "message" => '<div class="alert alert-danger">Ukuran gambar tidak boleh lebih dari 500KB. Mohon cek kembali.</div>'
+                        ]);
+                    }
+                    // $newFilename3 = str_replace('/', '-', $spongeHeader->wo_number) . '-photo3_job' . Auth::user()->nik . '.' . $detail['photo3']->getClientOriginalExtension();
+                    // Storage::delete('public/' . $newFilename3);
+                    // Storage::putFileAs('public', $detail['photo3'], $newFilename3);
+                }
             }
         }
 
@@ -270,6 +278,7 @@ class EngineerController extends Controller
             DB::beginTransaction();
 
             $photonumber = 1;
+            $cr_number_temp = '';
             foreach ($request->detail as $detail) {
                 /*cr NUMBER Preparation*/
                 //get month year
@@ -281,7 +290,7 @@ class EngineerController extends Controller
                 $dept_code = Department::where('id', $spongeHeader->department_id)->first()->department_code;
 
                 //get number
-                $cek_number = SpongeDetail::where('cr_number', 'like', '%BA' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('created_at', 'desc')->first();
+                $cek_number = SpongeDetail::where('cr_number', 'like', '%BA' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('updated_at', 'desc')->first();
                 $number = 0;
                 if ($cek_number) {
                     $number = intval(substr($cek_number->cr_number, 0, 5));
@@ -289,8 +298,22 @@ class EngineerController extends Controller
                 $number++;
 
                 //generate wo number
+
+                $spongeDetail = SpongeDetail::find($detail['id']);
+
                 if ($detail['status_engineer'] == 'DONE') {
                     $cr_number = str_pad($number, 5, '0', STR_PAD_LEFT) . '/' . 'BA' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year;
+                    $cek_location = SpongeDetail::where('wo_number_id',$spongeDetail->wo_number_id)->pluck('location_id')->toArray();
+                    if(!empty($cek_location)){
+                        if(in_array($spongeDetail->location_id,$cek_location)){
+                            $cek_cr_number = SpongeDetail::where('wo_number_id',$spongeDetail->wo_number_id)->where('location_id',$spongeDetail->location_id)->where('cr_number','!=','')->pluck('cr_number')->toArray();
+                            if(!empty($cek_cr_number)){
+                                foreach ($cek_cr_number as $number){
+                                    $cr_number = $number;
+                                }
+                            }
+                        }
+                    }
                 } else {
                     $cr_number = '';
                 }
@@ -305,6 +328,7 @@ class EngineerController extends Controller
                 $minute = $now->minute;
                 $second = $now->second;
 
+
                 if (array_key_exists('photo1', $detail)) {
                     $newFilename1 = str_replace('/', '-', $spongeHeader->wo_number) . '-jobdet1_' . $photonumber . '_' . $hour . $minute . $second . '_' . Auth::user()->nik . '.'  . $detail['photo1']->getClientOriginalExtension();
                     Storage::putFileAs('public', $detail['photo1'], $newFilename1);
@@ -314,33 +338,34 @@ class EngineerController extends Controller
                     }
                 }
                 if (array_key_exists('photo2', $detail)) {
-                    $newFilename1 = str_replace('/', '-', $spongeHeader->wo_number) . '-jobdet2_' . $photonumber . '_' . $hour . $minute . $second . '_' . Auth::user()->nik . '.'  . $detail['photo1']->getClientOriginalExtension();
-                    Storage::putFileAs('public', $detail['photo1'], $newFilename2);
+                    $newFilename2 = str_replace('/', '-', $spongeHeader->wo_number) . '-jobdet2_' . $photonumber . '_' . $hour . $minute . $second . '_' . Auth::user()->nik . '.'  . $detail['photo2']->getClientOriginalExtension();
+                    Storage::putFileAs('public', $detail['photo2'], $newFilename2);
                 }else{
                     if ($spongeDetail->job_attachment2 != '' ) {
-                        $newFilename1 = str_replace('public/', '', $spongeDetail->job_attachment2);
+                        $newFilename2 = str_replace('public/', '', $spongeDetail->job_attachment2);
                     }
                 }
                 if (array_key_exists('photo3', $detail)) {
-                    $newFilename1 = str_replace('/', '-', $spongeHeader->wo_number) . '-jobdet3_' . $photonumber . '_' . $hour . $minute . $second . '_' . Auth::user()->nik . '.'  . $detail['photo1']->getClientOriginalExtension();
-                    Storage::putFileAs('public', $detail['photo1'], $newFilename3);
+                    $newFilename3 = str_replace('/', '-', $spongeHeader->wo_number) . '-jobdet3_' . $photonumber . '_' . $hour . $minute . $second . '_' . Auth::user()->nik . '.'  . $detail['photo3']->getClientOriginalExtension();
+                    Storage::putFileAs('public', $detail['photo3'], $newFilename3);
                 }else{
                     if ($spongeDetail->job_attachment3 != '' ) {
-                        $newFilename1 = str_replace('public/', '', $spongeDetail->job_attachment3);
+                        $newFilename3 = str_replace('public/', '', $spongeDetail->job_attachment3);
                     }
                 }
 
                 //dd($newFilename1);
 
-                $spongeDetail = SpongeDetail::find($detail['id']);
                 $spongeDetail->executor_progress = $detail['status_engineer'];
-                $spongeDetail->executor_desc     = $detail['desc_engineer'];
-                $spongeDetail->wp_number     = $detail['wp_number'];
+                $spongeDetail->executor_desc     = $detail['desc_engineer'] ? $detail['desc_engineer'] : '';
+                $spongeDetail->wp_number     = $detail['wp_number'] ? $detail['wp_number'] : '';
                 $spongeDetail->cr_number     = $cr_number;
                 $spongeDetail->job_attachment1   = $newFilename1 != '' ? 'public/' . $newFilename1 : $newFilename1;
                 $spongeDetail->job_attachment2   = $newFilename2 != '' ? 'public/' . $newFilename2 : $newFilename2;
                 $spongeDetail->job_attachment3   = $newFilename3 != '' ? 'public/' . $newFilename3 : $newFilename3;
-                $spongeDetail->close_at  = $detail['status_engineer'] == 'DONE' ? Carbon::now()->timezone('Asia/Jakarta'): null;
+                if($spongeDetail->close_at == null){
+                    $spongeDetail->close_at  = $detail['status_engineer'] == 'DONE' ? Carbon::now()->timezone('Asia/Jakarta'): null;
+                }
                 $spongeDetail->updated_at   = Carbon::now()->timezone('Asia/Jakarta');
                 $spongeDetail->save();
 
@@ -368,7 +393,7 @@ class EngineerController extends Controller
                     'start_at'             => $spongeDetail->start_at,
                     'estimated_end'        => $spongeDetail->estimated_end,
                     'action'               => 'UPDATE',
-                    'close_at'           => $spongeDetail->executor_progress == 'DONE' ? Carbon::now()->timezone('Asia/Jakarta') : null,
+                    'close_at'           => $spongeDetail->close_at,
                     'created_by'           => Auth::user()->id,
                     'created_at'           => Carbon::now()->timezone('Asia/Jakarta'),
                     'updated_by'           => Auth::user()->id,
@@ -482,7 +507,6 @@ class EngineerController extends Controller
         }
 
         $index = 1;
-        $status = '';
         foreach ($spongedetails as $detail) {
             $device = Device::find($detail->device_id);
             $details[] = [
@@ -500,7 +524,8 @@ class EngineerController extends Controller
                 'supervisor' => User::find($detail->job_supervisor) ? User::find($detail->job_supervisor)->name : 'ID user tidak ditemukan : ' . $detail->job_supervisor,
                 'engineer' => User::find($detail->job_executor) ? User::find($detail->job_executor)->name : 'ID user tidak ditemukan : ' . $detail->job_executor,
                 'aid' => User::find($detail->job_aid) ? User::find($detail->job_aid)->name : 'ID user tidak ditemukan : ' . $detail->job_aid,
-                'engineer_status' => $detail->executor_progress == 'DONE' ? $detail->executor_progress : 'ONGOING',
+                // 'engineer_status' => $detail->executor_progress == 'DONE' ? $detail->executor_progress : 'ONGOING',
+                'engineer_status' => $detail->executor_progress,
                 'executor_desc' => $detail->executor_desc,
                 'start_effective' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y'),
                 'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y'),
@@ -511,42 +536,15 @@ class EngineerController extends Controller
             ];
             // dd($details);
             $index++;
-            $status = $detail->executor_progress;
-        }
-
-        if($spongeheader->status == 'CANCEL' || $spongeheader->status == 'CLOSED'){
-            $status = 'DONE';
+            // $status = $detail->executor_progress;
         }
         //dd($status);
 
         $count = count($details);
-        //dd($details);
-
-        /*SPK NUMBER Preparation*/
-        //get month year
-        // $now = Carbon::now();
-        // $year = $now->year;
-        // $month =  $now->month;
-
-        //get user department
-        // $dept_code = substr(Department::find($spongeheader->department_id)->department, 0, 3);
-
-        //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
-        //get number
-        // $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
-        // $number = 0;
-        // if ($cek_number) {
-        //     $number = intval(substr($cek_number->spk_number, 0, 5));
-        // }
-        // $number++;
-
-        //generate wo number
-        // $spk_number = str_pad($number, 5, '0', STR_PAD_LEFT) . '/' . 'SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' . $year;
-        /*WO NUMBER complete*/
-
-        // if (is_array($details) && count($details) > 0) {
-        //     dd($details, $status_detail);
-        // }
+        $status = $spongeheader->status;
+        if($spongeheader->status == 'CANCEL' || $spongeheader->status == 'CLOSED'){
+            $status = 'DONE';
+        }
 
         $data = [
             'spk_number' => $spongeheader->spk_number,
@@ -633,20 +631,30 @@ class EngineerController extends Controller
 
     public function generateWord($id)
     {
-        $dataHeader = SpongeHeader::where('id', $id)->first();
-        $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->where('executor_progress', 'DONE')->where('job_executor', Auth::user()->id)->get();
-
+        // $dataHeader = SpongeHeader::where('id', $id)->first();
+        // $dataDetail = SpongeDetail::where('wo_number_id', $dataHeader->id)->where('executor_progress', 'DONE')->where('job_executor', Auth::user()->id)->get();
+        try {
+            $dataDetail = SpongeDetail::find($id);
+            $dataHeader = SpongeHeader::find($dataDetail->wo_number_id);
+        } catch (Exception $e) {
+           return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger"> Server Error : ' . $e->getMessage(). 'Silahkan kontak developer atau admin.</div>'
+            ]);
+        }
+        $dataDetail = SpongeDetail::find($id);
+        $dataHeader = SpongeHeader::find($dataDetail->wo_number_id);
         // dd($dataHeader, $dataDetail);
 
         $getData = [];
         $index = 1;
-        foreach ($dataDetail as $detail) {
-            $device = Device::find($detail->device_id);
-            $path1 = $detail->job_attachment1 !== '' ? 'app/' . $detail->job_attachment1 : '';
-            $path2 = $detail->job_attachment2 !== '' ? 'app/' . $detail->job_attachment2 : '';
-            $path3 = $detail->job_attachment3 !== '' ? 'app/' . $detail->job_attachment3 : '';
+        //foreach ($dataDetail as $detail) {
+            $device = Device::find($dataDetail->device_id);
+            $path1 = $dataDetail->job_attachment1 !== '' ? 'app/' . $dataDetail->job_attachment1 : '';
+            $path2 = $dataDetail->job_attachment2 !== '' ? 'app/' . $dataDetail->job_attachment2 : '';
+            $path3 = $dataDetail->job_attachment3 !== '' ? 'app/' . $dataDetail->job_attachment3 : '';
 
-            $location = Location::find($detail->location_id);
+            $location = Location::find($dataDetail->location_id);
             if ($location) {
                 $basecamp = Basecamp::find($location->basecamp_id);
             } else {
@@ -656,16 +664,16 @@ class EngineerController extends Controller
             $getData[$index] = [
                 'spk_number'     => $dataHeader->spk_number,
                 'wo_number'     => $dataHeader->wo_number,
-                'cr_number'     => $detail->cr_number,
-                'wp_number'     => $detail->wp_number,
+                'cr_number'     => $dataDetail->cr_number,
+                'wp_number'     => $dataDetail->wp_number,
                 'department'     => Department::find($dataHeader->department_id) ? Department::find($dataHeader->department_id)->department : '-',
                 'job_category'     => $dataHeader->job_category,
                 'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->effective_date)->format('d/m/Y'),
-                'updated_at' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->updated_at)->format('d/m/Y'),
+                'updated_at' => Carbon::createFromFormat("Y-m-d H:i:s", $dataDetail->updated_at)->format('d/m/Y'),
                 'day' => strtoupper(Carbon::parse($dataHeader->effective_date)->day),
                 'approve_at' => Carbon::createFromFormat("Y-m-d H:i:s", $dataHeader->approve_at)->format('d-m-Y'),
-                'start_at' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y'),
-                'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y'),
+                'start_at' => Carbon::createFromFormat("Y-m-d H:i:s", $dataDetail->start_at)->format('d/m/Y'),
+                'estimated_end' => Carbon::createFromFormat("Y-m-d H:i:s", $dataDetail->estimated_end)->format('d/m/Y'),
                 'location'       => $location ? $location->location : '-',
                 'basecamp'       => $basecamp ? $basecamp->basecamp : '-',
                 'device'       => $device ? $device->device_name : '-',
@@ -673,16 +681,16 @@ class EngineerController extends Controller
                 'serial_number'       => $device ? $device->serial_number : '-',
                 'activa_number'       => $device ? $device->activa_number : '-',
                 'device_category'       => DeviceCategory::find($device->device_category_id) ? DeviceCategory::find($device->device_category_id)->device_category : '-',
-                'engineer'   => $detail->executorBy != '' ? optional($detail->executorBy)->name : '',
-                'supervisor' => $detail->supervisorBy != '' ? optional($detail->supervisorBy)->name : '',
-                'wo_description' => $detail->wo_description,
-                'job_description'    => $detail->job_description,
+                'engineer'   => $dataDetail->executorBy != '' ? optional($dataDetail->executorBy)->name : '',
+                'supervisor' => $dataDetail->supervisorBy != '' ? optional($dataDetail->supervisorBy)->name : '',
+                'wo_description' => $dataDetail->wo_description,
+                'job_description'    => $dataDetail->job_description,
                 'image_path1' => $path1,
                 'image_path2' => $path2,
                 'image_path3' => $path3,
             ];
             $index++;
-        }
+        //}
 
         foreach ($getData as $key => $data) {
             //dd($key, $data['wp_number']);
@@ -714,7 +722,7 @@ class EngineerController extends Controller
                 $templateProcessor->setValue('imagepath3', '');
             }
 
-            $executorSignaturePath   = optional($detail->executorBy)->signature_path;
+            $executorSignaturePath   = optional($dataDetail->executorBy)->signature_path;
             // dd($executorSignaturePath);
             if ($executorSignaturePath != '' || $executorSignaturePath != null) {
                 $pathExecutor = $executorSignaturePath !== 'public/' ? 'app/' . $executorSignaturePath : '';
@@ -730,8 +738,8 @@ class EngineerController extends Controller
 
 
 
-            $documentNumber = str_replace('/', '', $data['wp_number']);
-            $fileName = $documentNumber . '_' . $data['engineer'] . '_' . $key;
+            $documentNumber = str_replace('/', '', $data['cr_number']);
+            $fileName = $documentNumber . '_' . $data['engineer'] . '_' . $dataDetail->id;
             $templateProcessor->saveAs($fileName . '.docx');
             return response()->download($fileName . '.docx')->deleteFileAfterSend(true);
         }

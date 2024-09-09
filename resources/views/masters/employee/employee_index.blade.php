@@ -26,64 +26,70 @@
                 <div class="panel panel-primary">
 
                     <div class="panel-body">
-                        {{-- NIK KARYAWAN --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">NIK KARYAWAN</label>
+                            {{-- NIK KARYAWAN --}}
                             <div class="col-md-6">
-                                <input id="employee_nik" type="text" class="text-uppercase form-control" name="employee_nik" title="NIK KARYAWAN" placeholder="NAMA KARYAWAN">
+                                <label class="col-md-2">NIK KARYAWAN</label>
+                                <div class="col-md-6">
+                                    <input id="employee_nik" type="text" class="text-uppercase form-control" name="employee_nik" title="NIK KARYAWAN" placeholder="NIK KARYAWAN">
+                                </div>
                             </div>
-                        </div>
-                        <br>
-
-                        {{-- EMPLOYEE NAME --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">NAMA KARYAWAN</label>
+                            
+    
+                            {{-- EMPLOYEE NAME --}}
                             <div class="col-md-6">
-                                <input id="employee_name" type="text" class="text-uppercase form-control" name="employee_name" title="NAMA KARYAWAN" placeholder="NAMA KARYAWAN">
-                                <input name="employee_name_id" id="employee_name_id" type="hidden" />
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- DEPARTMENT --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">DEPARTMENT *</label>
-                            <div class="col-md-6">
-                                <select title="DEPARTMENT" id="department" class="form-control">
-                                    <option value="" selected>SEMUA</option>
-                                    @foreach ($departments as $item)
-                                        <option value={{ $item->id }}>{{ $item->department }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-
-                        {{-- GENDER --}}
-                        <div class="row mb-2">
-                            <label class="col-md-2">JENIS KELAMIN *</label>
-                            <div class="col-md-6">
-                                <select title="JENIS KELAMIN" id="gender" class="form-control">
-                                    <option value="" selected>SEMUA</option>
-                                    <option value="PRIA">PRIA</option>
-                                    <option value="WANITA">WANITA</option>
-                                </select>
+                                <label class="col-md-2">NAMA KARYAWAN</label>
+                                <div class="col-md-6">
+                                    <input id="employee_name" type="text" class="text-uppercase form-control" name="employee_name" title="NAMA KARYAWAN" placeholder="NAMA KARYAWAN">
+                                    <input name="employee_name_id" id="employee_name_id" type="hidden" />
+                                </div>
                             </div>
                         </div>
                         <br>
                         
-                        {{-- STATUS --}}
+
                         <div class="row mb-2">
-                            <label class="col-md-2">STATUS</label>
+                            {{-- DEPARTMENT --}}
                             <div class="col-md-6">
-                                <select title="STATUS" id="status" class="form-control">
-                                    <option value="1" selected>AKTIF</option>
-                                    <option value="0">TIDAK AKTIF</option>
-                                </select>
+                                <label class="col-sm-2">DEPARTMENT</label>
+                                <div class="col-sm-6">
+                                    <select title="DEPARTMENT" id="department" class="form-control">
+                                        <option value="" selected>SEMUA</option>
+                                        @foreach ($departments as $item)
+                                            <option value={{ $item->id }}>{{ $item->department }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                         
+    
+                            {{-- GENDER --}}
+                            <div class="col-md-6">
+                                <label class="col-sm-2">JENIS KELAMIN</label>
+                                <div class="col-sm-6">
+                                    <select title="JENIS KELAMIN" id="gender" class="form-control">
+                                        <option value="" selected>SEMUA</option>
+                                        <option value="PRIA">PRIA</option>
+                                        <option value="WANITA">WANITA</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-
                         <br>
+
+                        <div class="row mb-2">
+                            {{-- STATUS --}}
+                                <div class="col-md-6">
+                                    <label class="col-sm-2">STATUS</label>
+                                    <div class="col-sm-6">
+                                        <select title="STATUS" id="status" class="form-control">
+                                            <option value="1" selected>AKTIF</option>
+                                            <option value="0">TIDAK AKTIF</option>
+                                        </select>
+                                    </div>
+                                </div>
+                        </div>
+
                         <br>
                         {{-- SEARCH --}}
                         <div class="row">
