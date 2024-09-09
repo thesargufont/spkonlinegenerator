@@ -787,7 +787,7 @@ class ApprovalController extends Controller
 
         //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
         //get number
-        $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
+        $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('updated_at', 'desc')->first();
         $number = 0;
         if ($cek_number) {
             $number = intval(substr($cek_number->spk_number, 0, 5));
@@ -839,7 +839,7 @@ class ApprovalController extends Controller
 
             //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
             //get number
-            $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
+            $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('updated_at', 'desc')->first();
             $number = 0;
             if ($cek_number) {
                 $number = intval(substr($cek_number->spk_number, 0, 5));

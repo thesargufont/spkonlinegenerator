@@ -337,7 +337,7 @@ class WorkingOrderController extends Controller
             $dept_code = Department::where('id', $request->department_id)->first()->department_code;
 
             //get number
-            $cek_number = SpongeHeader::where('wo_number', 'like', '%WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('created_at', 'desc')->first();
+            $cek_number = SpongeHeader::where('wo_number', 'like', '%WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('updated_at', 'desc')->first();
             $number = 0;
             if ($cek_number) {
                 $number = intval(substr($cek_number->wo_number, 0, 5));
