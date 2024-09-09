@@ -1,23 +1,24 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\JobController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\TrialController;
-use App\Http\Controllers\DeviceController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ApprovalController;
+use App\Http\Controllers\AutorisationController;
 use App\Http\Controllers\BasecampController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\EngineerController;
-use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\AutorisationController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\WorkingOrderController;
 use App\Http\Controllers\DeviceCategoryController;
+use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EngineerController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TrialController;
+use App\Http\Controllers\WorkingOrderController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -174,3 +175,9 @@ Route::get('masters/device-category/detail-data/{id}', [DeviceCategoryController
 
 // otorisasi
 Route::get('masters/autorisation/index', [AutorisationController::class, 'index'])->name('masters/autorisation/index')->middleware('auth');
+
+// VINCENT
+// REPORT
+Route::get('reports/index', [ReportController::class, 'index'])->name('reports.index')->middleware('auth');
+Route::get('reports/getDataFilter', [ReportController::class, 'getDataFilter'])->name('reports.getDataFilter')->middleware('auth');
+Route::post('reports/getDataTable', [ReportController::class, 'dataTable'])->name('reports.getDataTable')->middleware('auth');
