@@ -155,9 +155,9 @@
                         </ul>
                     </li> -->
 
-                   <!-- <li>
+                    <li>
                         <a class="waves-effect"><i class="ti-calendar"></i><span> Schedule <span class="badge badge-primary pull-right">NEW</span></span></a>
-                    </li> -->
+                    </li>
 
                     <li id="master_nav_non_editable" class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master

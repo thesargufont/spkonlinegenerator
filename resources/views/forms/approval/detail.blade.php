@@ -295,9 +295,11 @@
                                     </div>
                                 </div>
 
+                                @if ($status != 'NOT APPROVE')
                                 <div class="col-md-12">
                                     <hr style="border-top: 3px solid #bbb">
                                 </div>
+                                
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</label>
@@ -347,6 +349,7 @@
 
                                     </div>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -248,7 +248,7 @@
                 <td class="fontBold">Mengetahui</td>
             </tr>
             <tr>
-                <td style="text-align: center;">
+                <td style="text-align: center; width: 40%;">
                     @if($data['executor_signature_path'] != '')
                     @php
                     $imagePath = storage_path($data['executor_signature_path'] ?? '');
@@ -261,7 +261,9 @@
                         <img src="data:image/png;base64,{{ $imageData }}" alt="..tidak ditemukan." style="max-width: 100%; display: block; margin: 0 auto;">
                     </div>
                     @else
-                    <img src="" alt="..tidak ditemukan." style="max-width: 100%;">
+                    <!-- <img src="" alt="..tidak ditemukan." style="max-width: 100%;"> -->
+                     <br><br>
+                    <span>Dokumen ini telah ditandatangani secara komputerisasi oleh <strong>{{$data['engineer']}}</strong> pada tanggal {{$data['approve_at']}}</span>
                     @endif
                     @else
                     <br><br>
@@ -269,24 +271,30 @@
                     @endif
                     <!--                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/pln_logo.png'))) }}" alt="tidak ditemukan..." width="125%" style="filter: grayscale(100%);">-->
                 </td>
-                <td style="text-align: center;">
+                <td style="text-align: center; width: 40%;">
                     @if($data['supervisor_signature_path'] != '')
-                    @php
-                    $imagePath = storage_path($data['supervisor_signature_path'] ?? '');
-                    @endphp
-                    @if (file_exists($imagePath))
-                    @php
-                    $imageData = base64_encode(file_get_contents($imagePath));
-                    @endphp
-                    <div style="display: flex; justify-content: center; align-items: center;">
-                        <img src="data:image/png;base64,{{ $imageData }}" alt="..tidak ditemukan." style="max-width: 100%; display: block; margin: 0 auto;">
-                    </div>
-                    @else
-                    <img src="" alt="..tidak ditemukan." style="max-width: 100%;">
-                    @endif
+                        @php
+                        $imagePath = storage_path($data['supervisor_signature_path'] ?? '');
+                        @endphp
+                        @if (file_exists($imagePath))
+                            @php
+                            $imageData = base64_encode(file_get_contents($imagePath));
+                            @endphp
+                            <div style="display: flex; justify-content: center; align-items: center;">
+                                <img src="data:image/png;base64,{{ $imageData }}" alt="..tidak ditemukan." style="max-width: 100%; display: block; margin: 0 auto;">
+                            </div>
+                        @else
+                            <!-- <img src="" alt="..tidak ditemukan." style="max-width: 100%;"> -->
+                            <br><br>
+                                <span>Dokumen ini telah ditandatangani secara komputerisasi</span>
+                                <span>oleh <strong>{{$data['supervisor']}}</strong></span> 
+                                <span>pada tanggal {{$data['approve_at']}}</span>
+                        @endif
                     @else
                     <br><br>
-                    <span>Dokumen ini telah ditandatangani secara komputerisasi oleh <strong>{{$data['supervisor']}}</strong> pada tanggal {{$data['approve_at']}}</span>
+                        <span>Dokumen ini telah ditandatangani secara komputerisasi</span>
+                        <span>oleh <strong>{{$data['supervisor']}}</strong></span> 
+                        <span>pada tanggal {{$data['approve_at']}}</span>
                     @endif
                     <!--                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/pln_logo.png'))) }}" alt="tidak ditemukan" width="125%" style="filter: grayscale(100%);">-->
 
