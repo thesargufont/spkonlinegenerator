@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ReportExport;
 
 class ReportController extends Controller {
     public function index() {
@@ -24,6 +26,7 @@ class ReportController extends Controller {
 
         $woNumber           = $getDataFilter['woNumber'];
         $spkNumber          = $getDataFilter['spkNumber'];
+        $woCategory         = $getDataFilter['woCategory'];
         $department         = $getDataFilter['department'];
         $location           = $getDataFilter['location'];
         $workOrderStatus    = $getDataFilter['workOrderStatus'];
@@ -33,24 +36,27 @@ class ReportController extends Controller {
             return redirect()->route('home');
         }
 
-        // Mengirim data ke view
-        return view('reports.report_index', [
-            'woNumberDropdown'  => $woNumber,
-            'spkNumberDropdown' => $spkNumber,
+        $array = [
+            'woNumber'          => $woNumber,
+            'spkNumber'         => $spkNumber,
+            'woCategory'        => $woCategory,
             'department'        => $department,
             'location'          => $location,
             'workOrderStatus'   => $workOrderStatus,
             'engineerStatus'    => $engineerStatus,
-        ]);
+        ];
+
+        // Mengirim data ke view
+        return view('reports.report_index', $array);
     }
 
     public function getDataSpongeHeader($request, $isExcel = '') {
         try {
-            if($isExcel === "") {
-                session([
-                    'working_order' . '.wo_number' => $request->has('wo_number') ?  $request->input('wo_number') : '',
-                ]);
-            }
+//            if($isExcel === "") {
+//                session([
+//                    'working_order' . '.wo_number' => $request->has('wo_number') ?  $request->input('wo_number') : '',
+//                ]);
+//            }
 
 //            $user_login = Auth::user()->id;
 //            $users = Role::whereIn('role',['SPV','SUPERADMIN'])->pluck('id')->toArray();
@@ -184,49 +190,54 @@ class ReportController extends Controller {
     public function getDataFilter() {
         try {
             $woNumber = SpongeHeader::pluck('wo_number')
+                ->unique()
                 ->toArray();
 
             $spkNumber = SpongeHeader::pluck('spk_number')
+                ->unique()
                 ->toArray();
 
             $woCategory = Job::pluck('wo_category')
+                ->unique()
                 ->toArray();
 
             $department = Department::where('active', 1)
                 ->whereNull('end_effective')
                 ->select('department_code', 'department')
                 ->get()
-                ->toArray();
+                ->toArray() ?: [];
 
             $location = Location::where('active', 1)
                 ->whereNull('end_effective')
                 ->select('location','location_type')
                 ->get()
-                ->toArray();
+                ->toArray() ?: [];
 
-            $status = GeneralCode::where('section', 'SPONGE')
-                ->whereNull('end_effective')
-                ->whereNull('end_effective');
+            $workOrderStatus = GeneralCode::where('section', 'SPONGE')
+                                ->whereNull('end_effective')
+                                ->where('label', 'STATUS_HEADER')
+                                ->pluck('reff1')
+                                ->toArray();
 
-            $workOrderStatus = $status->where('label', 'STATUS_HEADER')
-                ->pluck('reff1')
-                ->toArray();
+            $engineerStatus = GeneralCode::where('section', 'SPONGE')
+                                ->whereNull('end_effective')
+                                ->where('label', 'STATUS_DETAIL')
+                                ->pluck('reff1')
+                                ->toArray();
 
-            $engineerStatus = $status->where('label', 'STATUS_DETAIL')
-                ->pluck('reff1')
-                ->toArray();
-
-            return [
-                'success'   => true,
-                'message'   => 'Data Fetch Successfully',
-                'woNumber'  => $woNumber ?? [],
-                'spkNumber' => $spkNumber ?? [],
-                'woCategory' => $woCategory ?? [],
-                'department' => $department ?? [],
-                'location' => $location ?? [],
-                'workOrderStatus' => $workOrderStatus ?? [],
-                'engineerStatus' => $engineerStatus ?? [],
+            $array = [
+                'success'           => true,
+                'message'           => 'Data Fetch Successfully',
+                'woNumber'          => $woNumber ?? [],
+                'spkNumber'         => $spkNumber ?? [],
+                'woCategory'        => $woCategory ?? [],
+                'department'        => $department ?? [],
+                'location'          => $location ?? [],
+                'workOrderStatus'   => $workOrderStatus ?? [],
+                'engineerStatus'    => $engineerStatus ?? [],
             ];
+
+            return $array;
 
         } catch (\Exception $e) {
             return [
@@ -238,9 +249,18 @@ class ReportController extends Controller {
 
     public function downloadXLSX(Request $request) {
         try {
+            $dataExcel = $this->getDataSpongeHeader(null);
 
+            if(!$dataExcel) {
+                throw new \Exception('Error');
+            }
+
+//            dd(json_encode($dataExcel->get()->toArray()));
+
+            return Excel::download(new ReportExport($dataExcel), 'TransactionReport.xlsx');
         } catch (\Exception $e) {
-
+            dd($e->getMessage());
+            return back()->with('error', 'Failed to export data: ' . $e->getMessage());
         }
     }
 }

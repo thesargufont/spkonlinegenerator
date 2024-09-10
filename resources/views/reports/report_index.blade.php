@@ -17,7 +17,9 @@
                 <div class="form-group">
                     <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
                     {{--                    @if($access)--}}
-                    <button type="button" name="download" id="download" class="btn btn-secondary" onclick="location.replace('{{url('form-input/working-order/create')}}');"><i class="fa fa-arrow-down"></i> {{ucwords(__('Unduh'))}}</button>
+                    <button type="button" name="download" id="download" class="btn btn-secondary" onclick="location.replace('{{ route('report.export') }}');">
+                        <i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}
+                    </button>
                     {{--                    @endif--}}
                 </div>
             </div>
@@ -29,11 +31,16 @@
                     <div class="panel panel-primary">
                         <div class="panel-body">
                             <div class="col-md-12">
-                                {{-- NOMOR WORK ORDER --}}
+                                {{-- KATEGORI WORK ORDER --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="wo_number">NOMOR WORK ORDER</label>
+                                    <label class="col-md-2" for="wo_category">NOMOR WORK ORDER</label>
                                     <div class="col-md-6">
-                                        <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
+                                        <select title="STATUS" id="wo_category" class="form-control">
+                                            <option selected value="">-</option>
+                                            @foreach($woNumber as $wo)
+                                                <option value="{{$wo}}">{{$wo}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
 
@@ -41,8 +48,12 @@
                                 <div class="col-md-6">
                                     <label class="col-md-2" for="spk_number">NOMOR SPK</label>
                                     <div class="col-md-6">
-                                        <input maxlength="50" id="spk_number" type="text" class="text-uppercase form-control" name="spk_number" title="NOMOR SPK" placeholder="NOMOR SPK">
-                                    </div>
+                                        <select title="STATUS" id="wo_category" class="form-control">
+                                            <option selected value="">-</option>
+                                            @foreach($spkNumber as $spk)
+                                                <option value="{{$spk}}">{{$spk}}</option>
+                                            @endforeach
+                                        </select>                                    </div>
                                 </div>
 
                                 {{-- TANGGAL EFEKTIF --}}
@@ -51,11 +62,11 @@
                                     <div class="col-md-3"></div>
                                     <label class="col-md-1" for="effective_date">DARI</label>
                                     <div class="col-md-3">
-                                        <input name="effective_date_start" id='effective_date_start' type="text" class="form-control doStartDate" readonly="readonly" value="">
+                                        <input name="effective_date_start" id='effective_date_start' type="text" class="form-control doStartDate" readonly value="">
                                     </div>
                                     <label class="col-md-1" for="effective_date">KE</label>
                                     <div class="col-md-3">
-                                        <input name="effective_date_end" id='effective_date_end' type="text" class="form-control doEndDate" readonly="readonly" value="">
+                                        <input name="effective_date_end" id='effective_date_end' type="text" class="form-control doEndDate" readonly value="">
                                     </div>
                                 </div>
 
@@ -64,9 +75,10 @@
                                     <label class="col-md-2" for="wo_category">KATEGORI WORK ORDER</label>
                                     <div class="col-md-6">
                                         <select title="STATUS" id="wo_category" class="form-control">
-                                            <option value="" selected>SEMUA KATEGORI</option>
-                                            <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
-                                            <option value="PEKERJAAN">PEKERJAAN</option>
+                                            <option selected value="">-</option>
+                                            @foreach($woCategory as $department)
+                                                <option value="{{$department}}">{{$department}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -83,26 +95,40 @@
                                     </div>
                                 </div>
 
-                                {{-- DEPARTEMEN --}}
+                                {{-- DEPARTMENT --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="wo_category">DEPARTEMEN</label>
+                                    <label class="col-md-2" for="department_select">DEPARTMENT</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option value="" selected>SEMUA KATEGORI</option>
-                                            <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
-                                            <option value="PEKERJAAN">PEKERJAAN</option>
+                                        <select title="DEPARTMENT" id="department_select" class="form-control">
+                                            <option selected value="">-</option>
+                                            @if (!empty($department) && is_array($department))
+                                                @foreach ($department as $dept)
+                                                    <option value="{{ $dept['department_code'] }}">
+                                                        {{ $dept['department_code'] }} - {{ $dept['department'] }}
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                <option value="">No departments found</option>
+                                            @endif
                                         </select>
                                     </div>
                                 </div>
 
                                 {{-- LOKASI --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="wo_category">LOKASI</label>
+                                    <label class="col-md-2" for="location_select">LOKASI</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option value="" selected>SEMUA KATEGORI</option>
-                                            <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
-                                            <option value="PEKERJAAN">PEKERJAAN</option>
+                                        <select title="LOKASI" id="location_select" class="form-control">
+                                            <option selected value="">-</option>
+                                            @if (!empty($location) && is_array($location))
+                                                @foreach ($location as $loc)
+                                                    <option value="{{ $loc['location'] }}">
+                                                        {{ $loc['location'] }} - {{ $loc['location_type'] }}
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                <option value="">No locations found</option>
+                                            @endif
                                         </select>
                                     </div>
                                 </div>
@@ -112,9 +138,10 @@
                                     <label class="col-md-2" for="wo_category">STATUS WORK ORDER</label>
                                     <div class="col-md-6">
                                         <select title="STATUS" id="wo_category" class="form-control">
-                                            <option value="" selected>SEMUA KATEGORI</option>
-                                            <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
-                                            <option value="PEKERJAAN">PEKERJAAN</option>
+                                            <option selected value="">-</option>
+                                            @foreach($workOrderStatus as $workOrderStatus)
+                                                <option value="{{$workOrderStatus}}">{{$workOrderStatus}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -124,9 +151,10 @@
                                     <label class="col-md-2" for="wo_category">STATUS ENGINEER</label>
                                     <div class="col-md-6">
                                         <select title="STATUS" id="wo_category" class="form-control">
-                                            <option value="" selected>SEMUA KATEGORI</option>
-                                            <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
-                                            <option value="PEKERJAAN">PEKERJAAN</option>
+                                            <option selected value="">-</option>
+                                            @foreach($engineerStatus as $engineerStatus)
+                                                <option value="{{$engineerStatus}}">{{$engineerStatus}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -173,15 +201,15 @@
         </div> <!-- End Row -->
     </div>
 
-{{--    --}}{{--Link CSS--}}
-{{--    <!-- Datetimepicker -->--}}
-{{--    <link href="{{ asset('css/datetimepicker/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" type="text/css" >--}}
-{{--    <!-- selectize -->--}}
-{{--    <link href="{!! asset('css/selectize/selectize.bootstrap3.css') !!}"  media="all" rel="stylesheet" type="text/css" />--}}
+    {{--    --}}{{--Link CSS--}}
+    {{--    <!-- Datetimepicker -->--}}
+    {{--    <link href="{{ asset('css/datetimepicker/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" type="text/css" >--}}
+    {{--    <!-- selectize -->--}}
+    {{--    <link href="{!! asset('css/selectize/selectize.bootstrap3.css') !!}"  media="all" rel="stylesheet" type="text/css" />--}}
 
-{{--    <script type='text/javascript' src="{{ asset('js/datetimepicker/moment.min.js') }}"></script>--}}
-{{--    <script type='text/javascript' src="{{ asset('js/datetimepicker/bootstrap-datetimepicker.min.js') }}"></script>--}}
-{{--    <script type='text/javascript' src="{{ asset('js/datetimepicker/id.js') }}"></script>--}}
+    {{--    <script type='text/javascript' src="{{ asset('js/datetimepicker/moment.min.js') }}"></script>--}}
+    {{--    <script type='text/javascript' src="{{ asset('js/datetimepicker/bootstrap-datetimepicker.min.js') }}"></script>--}}
+    {{--    <script type='text/javascript' src="{{ asset('js/datetimepicker/id.js') }}"></script>--}}
     <!-- Plugins js -->
     <script src="{{ asset('plugins/timepicker/bootstrap-timepicker.js') }}"></script>
     <script src="{{ asset('plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js') }}"></script>
