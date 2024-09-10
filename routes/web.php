@@ -208,6 +208,11 @@ Route::get('masters/autorisation/index', [AutorisationController::class, 'index'
 Route::post('masters/autorisation/dashboard-data', [AutorisationController::class, 'data'])->name('masters/autorisation/dashboard-data')->middleware('auth');
 Route::get('masters/autorisation/create-new', [AutorisationController::class, 'createNew'])->name('masters/autorisation/create-new')->middleware('auth');
 Route::post('masters/autorisation/create-new/create', [AutorisationController::class, 'submitData'])->name('masters/autorisation/create-new/create')->middleware('auth');
+Route::get('masters/autorisation/import-excel', [AutorisationController::class, 'importExcel'])->name('masters/autorisation/import-excel')->middleware('auth');
+Route::get('masters/autorisation/download-template', [AutorisationController::class, 'downloadDepartmentTemplate'])->name('masters/autorisation/download-template')->middleware('auth');
+Route::post('masters/autorisation/upload', [AutorisationController::class, 'uploadDepartment'])->name('masters/autorisation/upload')->middleware('auth');
+Route::post('masters/autorisation/display-upload', [AutorisationController::class, 'displayUpload'])->name('masters/autorisation/display-upload')->middleware('auth');
+Route::post('masters/autorisation/save-upload', [AutorisationController::class, 'saveUpload'])->name('masters/autorisation/save-upload')->middleware('auth');
 Route::post('masters/autorisation/delete-data', [AutorisationController::class, 'deleteData'])->name('masters/autorisation/delete-data')->middleware('auth');
 Route::get('masters/autorisation/detail-data/{id}', [AutorisationController::class, 'detailData'])->name('masters/autorisation/detail-data')->middleware('auth');
 //Route::get('masters/autorisation/edit-data/{id}', [AutorisationController::class, 'editData'])->name('masters/autorisation/edit-data')->middleware('auth');

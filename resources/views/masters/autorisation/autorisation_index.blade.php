@@ -16,6 +16,7 @@
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
                 <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/autorisation/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
+                <button type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button>
 
             </div>
         </div>
@@ -253,8 +254,8 @@
     });
 
     $('#btn_upload_xlsx').click(function() {
-    location.replace('{{ url('masters/location/import-excel') }}');
-});
+        location.replace('{{ url('masters/autorisation/import-excel') }}');
+    });
 
     function deleteItem(id) {
         $('#form_result').html('');

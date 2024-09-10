@@ -524,4 +524,319 @@ class AutorisationController extends Controller
             ]);
         }
     }
+
+    public function importExcel()
+    {
+        return view('masters.autorisation.upload');
+    }
+
+    public function makeTempTable()
+    {
+        Schema::create('temp', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 150)->nullable();
+            $table->string('role', 50)->nullable();
+            $table->string('autorisation', 50)->nullable();
+            $table->text('remark')->default('');
+            $table->temporary();
+        });
+    }
+
+    public function dropTempTable()
+    {
+        Schema::dropIfExists('temp');
+    }
+
+    public function uploadDepartment(Request $request)
+    {
+        $countError = 0;
+        $success   = false;
+        if ($request->hasfile('validatedCustomFile')) {
+            $name = $request->file('validatedCustomFile')->getClientOriginalName();
+            $filename = $name;
+            $ext = pathinfo($name, PATHINFO_EXTENSION);
+            if (strtolower($ext) != 'xlsx') {
+                $filename = "";
+                $message = '<div class="alert alert-danger">format file tidak sesuai</div>';
+                // $error    = ucfirst(__('format file tidak sesuai'));
+                $success    = false;
+                return response()->json([
+                    'filename'    => $filename,
+                    'message'    => $message,
+                    'success'    => $success,
+                ]);
+            }
+
+            $extension = $request->file('validatedCustomFile')->getClientOriginalExtension();
+
+            $name = "Department" . "_" . Auth::user()->id . "." . $extension;
+            $request->file('validatedCustomFile')->move(storage_path() . '/app/uploads/', $name);
+            $attachments = storage_path() . '/app/uploads/' . $name;
+            
+            $data = (new FastExcel)->import($attachments);
+
+            foreach ($data as $row) {
+                $error = 0;
+
+                $name          = trim(strtoupper($row['Nama Pengguna']), ' ');
+                $role          = trim(strtoupper($row['Role']), ' ');
+                $autorisation  = trim(strtoupper($row['Autorisasi']), ' ');
+
+                if($name == '' && $role == '' && $autorisation == ''){
+                    continue;
+                }
+
+                if ($name == '') {
+                    $error++;
+                } else {
+                    $checkUser = User::where('name', $name)->where('active', 1)->first();
+                    if(!$checkUser){
+                        $error++;
+                    }
+                }
+
+                if ($role == '') {
+                    $error++;
+                } else {
+                    $arrRole = ['SPV', 'SUPERADMIN', 'USER', 'ENGINEER'];
+                    if(!in_array($role, $arrRole)){
+                        $error++;
+                    }
+                }
+
+                if ($autorisation == '') {
+                    $error++;
+                } else {
+                    $arrAutorisation = ['APPROVE', 'INPUT', 'MASTER', 'PROGRESS'];
+                    if(!in_array($autorisation, $arrAutorisation)){
+                        $error++;
+                    }
+                }
+
+                if ($error > 0) {
+                    $countError++;
+                }
+            }
+
+            if ($countError > 0) {
+                $success   = false;
+                $message   = '<div class="alert alert-danger">Terdapat data error, harap periksa kembali file ' . $filename . '</div>';
+            } else {
+                $success   = true;
+                $message   = '<div class="alert alert-success">Validasi data berhasil, data dapat disimpan</div>';
+            }
+
+            return response()->json([
+                'filename'  => $attachments,
+                'success'  => $success,
+                'message'  => $message,
+            ]);
+        } else {
+            $message   = '<div class="alert alert-danger">Pilih file...</div>';
+            return response()->json([
+                'filename'  => '',
+                'success'  => $success,
+                'message'  => $message,
+            ]);
+        }
+    }
+
+    public function displayUpload(Request $request)
+    {
+        $this->dropTempTable();
+        $this->makeTempTable();
+        
+        if ($request->fileName != "" || $request->fileName != null) {
+            $attachments = $request->fileName;
+            $data = (new FastExcel)->import($attachments);
+
+            $countError = 0;
+            $tempData = [];
+            foreach ($data as $row) {
+                $remark = [];
+
+                $name          = trim(strtoupper($row['Nama Pengguna']), ' ');
+                $role          = trim(strtoupper($row['Role']), ' ');
+                $autorisation  = trim(strtoupper($row['Autorisasi']), ' ');
+
+                if($name == '' && $role == '' && $autorisation == ''){
+                    continue;
+                }
+
+                if ($name == '') {
+                    $remark [] = 'Nama Pengguna tidak boleh kosong';
+                } else {
+                    $checkUser = User::where('name', $name)->where('active', 1)->first();
+                    if(!$checkUser){
+                        $remark [] = 'Nama Pengguna tidak ditemukan';
+                    }
+                }
+
+                if ($role == '') {
+                    $remark [] = 'Role tidak boleh kosong';
+                } else {
+                    $arrRole = ['SPV', 'SUPERADMIN', 'USER', 'ENGINEER'];
+                    if(!in_array($role, $arrRole)){
+                        $remark [] = 'Silahkan pilih salah satu role SPV/SUPERADMIN/USER/ENGINEER';
+                    }
+                }
+
+                if ($autorisation == '') {
+                    $remark [] = 'Autorisasi tidak boleh kosong';
+                } else {
+                    $arrAutorisation = ['APPROVE', 'INPUT', 'MASTER', 'PROGRESS'];
+                    if(!in_array($autorisation, $arrAutorisation)){
+                        $remark [] = 'Silahkan pilih salah satu autorisasi APPROVE/INPUT/MASTER/PROGRESS';
+                    }
+                }
+
+                if (count($remark) > 0) {
+                    $countError++;
+                }
+
+                $tempOutput = [
+                    'name'     => $name,
+                    'role'           => $role,
+                    'autorisation'    => $autorisation,
+                    'remark'         => implode(', ', $remark)
+                ];
+                DB::table('temp')->insert($tempOutput);
+                $tempData = DB::table('temp')->get();
+            }
+            if(count($tempData) == 0){
+                $tempOutput = [
+                    'name'     => '',
+                    'role'           => '',
+                    'autorisation'    => '',
+                    'remark'         => ''
+                ];
+                DB::table('temp')->insert($tempOutput);
+                $tempData = DB::table('temp')->get();
+            }
+        } else {
+            $tempOutput = [
+                'name'     => '',
+                'role'           => '',
+                'autorisation'    => '',
+                'remark'         => ''
+            ];
+            DB::table('temp')->insert($tempOutput);
+            $tempData = DB::table('temp')->get();
+        }
+
+        $datatables = Datatables::of($tempData)
+            ->filter(function ($instance) use ($request) {
+                return true;
+            });
+
+        return $datatables->make(TRUE);
+    }
+
+    public function saveUpload(Request $request)
+    {
+        if($request->fileData != "")
+        {
+            $attachments = $request->fileData;  
+            $data = (new FastExcel)->import($attachments);
+            
+            try {
+                DB::beginTransaction();
+                foreach ($data as $row) {
+                    $error = false;
+
+                    $name          = trim(strtoupper($row['Nama Pengguna']), ' ');
+                    $role          = trim(strtoupper($row['Role']), ' ');
+                    $autorisation  = trim(strtoupper($row['Autorisasi']), ' ');
+
+                    if($name == '' && $role == '' && $autorisation == ''){
+                        continue;
+                    }
+
+                    if ($name == '') {
+                        $error = true;
+                    } else {
+                        $checkUser = User::where('name', $name)->where('active', 1)->first();
+                        if(!$checkUser){
+                            $error = true;
+                        }
+                    }
+
+                    if ($role == '') {
+                        $error = true;
+                    } else {
+                        $arrRole = ['SPV', 'SUPERADMIN', 'USER', 'ENGINEER'];
+                        if(!in_array($role, $arrRole)){
+                            $error = true;
+                        }
+                    }
+
+                    if ($autorisation == '') {
+                        $error = true;
+                    } else {
+                        $arrAutorisation = ['APPROVE', 'INPUT', 'MASTER', 'PROGRESS'];
+                        if(!in_array($autorisation, $arrAutorisation)){
+                            $error = true;
+                        }
+                    }
+
+                    if (!$error){
+                        $insertrole = new Role([
+                            'user_id'             => $checkUser->id,
+                            'role'                => $role,
+                            'authority'           => $autorisation,
+                            'active'              => 1,
+                            'start_effective'     => Carbon::now()->timezone('Asia/Jakarta'),
+                            'end_effective'       => null,
+                            'created_by'          => Auth::user()->id,
+                            'created_at'          => Carbon::now()->timezone('Asia/Jakarta'),
+                            'updated_by'          => Auth::user()->id,
+                            'updated_at'          => Carbon::now()->timezone('Asia/Jakarta'),
+                        ]);
+                        $insertrole->save();
+                    } else {
+                        DB::rollback();
+
+                        $success   = false;
+                        $message   = '<div class="alert alert-danger">Terdapat data error, harap periksa kembali file</div>';
+
+                        return response()->json([
+                            'success'  => $success,
+                            'message'  => $message,
+                        ]);
+                    }
+                }
+                DB::commit();
+
+                $success   = true;
+                $message   = '<div class="alert alert-success">File berhasil diproses</div>';
+                return response()->json([
+                    'success'  => $success,
+                    'message'  => $message,
+                ]);
+            } catch(\Exception $e){
+                DB::rollback();
+                $success   = false;
+                $message   = '<div class="alert alert-danger">Terdapat kesalahn, harap proses kembali</div>';
+
+                return response()->json([
+                    'success'  => $success,
+                    'message'  => $message,
+                ]);
+            }
+        } else {
+            $success   = false;
+            $message   = '<div class="alert alert-danger">File tidak ditemukan, harap periksa kembali</div>';
+
+            return response()->json([
+                'success'  => $success,
+                'message'  => $message,
+            ]);
+        }
+    }
+
+    public function downloadDepartmentTemplate()
+    {
+        $filename = 'Template_Master_Autorisasi.xlsx';
+        return response()->download(storage_path('app/files/' . $filename));
+    }
 }
