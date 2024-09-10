@@ -1,23 +1,24 @@
 <?php
 
-use App\Http\Controllers\ApprovalController;
-use App\Http\Controllers\AutorisationController;
-use App\Http\Controllers\BasecampController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DeviceCategoryController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\TrialController;
 use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ApprovalController;
+use App\Http\Controllers\BasecampController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EngineerController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\JobController;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\AutorisationController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\TrialController;
 use App\Http\Controllers\WorkingOrderController;
+use App\Http\Controllers\DeviceCategoryController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -110,6 +111,11 @@ Route::get('masters/employee/index', [EmployeeController::class, 'index'])->name
 Route::post('master/employee/dashboard-data', [EmployeeController::class, 'data'])->name('master/employee/dashboard-data');
 Route::post('master/employee/delete-data', [EmployeeController::class, 'deleteData'])->name('master/employee/delete-data');
 Route::get('masters/employee/detail-data/{id}', [EmployeeController::class, 'detailData'])->name('masters/employee/detail-data')->middleware('auth');
+Route::get('masters/employee/import-excel', [EmployeeController::class, 'importExcel'])->name('masters/employee/import-excel')->middleware('auth');
+Route::get('masters/employee/download-template', [EmployeeController::class, 'downloadDepartmentTemplate'])->name('masters/employee/download-template')->middleware('auth');
+Route::post('masters/employee/upload', [EmployeeController::class, 'uploadDepartment'])->name('masters/employee/upload')->middleware('auth');
+Route::post('masters/employee/display-upload', [EmployeeController::class, 'displayUpload'])->name('masters/employee/display-upload')->middleware('auth');
+Route::post('masters/employee/save-upload', [EmployeeController::class, 'saveUpload'])->name('masters/employee/save-upload')->middleware('auth');
 Route::get('masters/employee/create-new', [EmployeeController::class, 'createNew'])->name('masters/employee/create-new')->middleware('auth');
 Route::post('masters/employee/create-new/create', [EmployeeController::class, 'submitData'])->name('masters/employee/create-new/create')->middleware('auth');
 
@@ -123,6 +129,7 @@ Route::post('masters/department/create-new/create', [DepartmentController::class
 Route::get('masters/department/download-template', [DepartmentController::class, 'downloadDepartmentTemplate'])->name('masters/department/download-template')->middleware('auth');
 Route::post('masters/department/upload', [DepartmentController::class, 'uploadDepartment'])->name('masters/department/upload')->middleware('auth');
 Route::post('masters/department/display-upload', [DepartmentController::class, 'displayUpload'])->name('masters/department/display-upload')->middleware('auth');
+Route::post('masters/department/save-upload', [DepartmentController::class, 'saveUpload'])->name('masters/department/save-upload')->middleware('auth');
 Route::post('masters/department/delete-data', [DepartmentController::class, 'deleteData'])->name('masters/department/delete-data');
 Route::get('masters/department/detail-data/{id}', [DepartmentController::class, 'detailData'])->name('masters/department/detail-data')->middleware('auth');
 
@@ -133,6 +140,10 @@ Route::get('masters/location/export-excel', [LocationController::class, 'exportE
 Route::get('masters/location/import-excel', [LocationController::class, 'importExcel'])->name('masters/location/import-excel')->middleware('auth');
 Route::get('masters/location/create-new', [LocationController::class, 'createNew'])->name('masters/location/create-new')->middleware('auth');
 Route::post('masters/location/create-new/create', [LocationController::class, 'submitData'])->name('masters/location/create-new/create')->middleware('auth');
+Route::get('masters/location/download-template', [LocationController::class, 'downloadDepartmentTemplate'])->name('masters/location/download-template')->middleware('auth');
+Route::post('masters/location/upload', [LocationController::class, 'uploadDepartment'])->name('masters/location/upload')->middleware('auth');
+Route::post('masters/location/display-upload', [LocationController::class, 'displayUpload'])->name('masters/location/display-upload')->middleware('auth');
+Route::post('masters/location/save-upload', [LocationController::class, 'saveUpload'])->name('masters/location/save-upload')->middleware('auth');
 Route::post('masters/location/delete-data', [LocationController::class, 'deleteData'])->name('masters/location/delete-data');
 Route::get('masters/location/detail-data/{id}', [LocationController::class, 'detailData'])->name('masters/location/detail-data')->middleware('auth');
 
@@ -141,6 +152,11 @@ Route::get('masters/device/index', [DeviceController::class, 'index'])->name('ma
 Route::post('masters/device/dashboard-data', [DeviceController::class, 'data'])->name('masters/device/dashboard-data')->middleware('auth');
 Route::get('masters/device/create-new', [DeviceController::class, 'createNew'])->name('masters/device/create-new')->middleware('auth');
 Route::post('masters/device/create-new/create', [DeviceController::class, 'submitData'])->name('masters/device/create-new/create')->middleware('auth');
+Route::get('masters/device/import-excel', [DeviceController::class, 'importExcel'])->name('masters/device/import-excel')->middleware('auth');
+Route::get('masters/device/download-template', [DeviceController::class, 'downloadDepartmentTemplate'])->name('masters/device/download-template')->middleware('auth');
+Route::post('masters/device/upload', [DeviceController::class, 'uploadDepartment'])->name('masters/device/upload')->middleware('auth');
+Route::post('masters/device/display-upload', [DeviceController::class, 'displayUpload'])->name('masters/device/display-upload')->middleware('auth');
+Route::post('masters/device/save-upload', [DeviceController::class, 'saveUpload'])->name('masters/device/save-upload')->middleware('auth');
 Route::post('masters/device/delete-data', [DeviceController::class, 'deleteData'])->name('masters/device/delete-data');
 Route::get('masters/device/detail-data/{id}', [DeviceController::class, 'detailData'])->name('masters/device/detail-data')->middleware('auth');
 Route::get('masters/device/edit-data/{id}', [DeviceController::class, 'editData'])->name('masters/device/edit-data')->middleware('auth');
@@ -154,6 +170,11 @@ Route::get('masters/basecamp/index', [BasecampController::class, 'index'])->name
 Route::post('masters/basecamp/dashboard-data', [BasecampController::class, 'data'])->name('masters/basecamp/dashboard-data')->middleware('auth');
 Route::get('masters/basecamp/create-new', [BasecampController::class, 'createNew'])->name('masters/basecamp/create-new')->middleware('auth');
 Route::post('masters/basecamp/create-new/create', [BasecampController::class, 'submitData'])->name('masters/basecamp/create-new/create')->middleware('auth');
+Route::get('masters/basecamp/import-excel', [BasecampController::class, 'importExcel'])->name('masters/basecamp/import-excel')->middleware('auth');
+Route::get('masters/basecamp/download-template', [BasecampController::class, 'downloadDepartmentTemplate'])->name('masters/basecamp/download-template')->middleware('auth');
+Route::post('masters/basecamp/upload', [BasecampController::class, 'uploadDepartment'])->name('masters/basecamp/upload')->middleware('auth');
+Route::post('masters/basecamp/display-upload', [BasecampController::class, 'displayUpload'])->name('masters/basecamp/display-upload')->middleware('auth');
+Route::post('masters/basecamp/save-upload', [BasecampController::class, 'saveUpload'])->name('masters/basecamp/save-upload')->middleware('auth');
 Route::post('masters/basecamp/delete-data', [BasecampController::class, 'deleteData'])->name('masters/basecamp/delete-data');
 Route::get('masters/basecamp/detail-data/{id}', [BasecampController::class, 'detailData'])->name('masters/basecamp/detail-data')->middleware('auth');
 

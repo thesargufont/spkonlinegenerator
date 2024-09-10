@@ -155,9 +155,9 @@
                         </ul>
                     </li> -->
 
-                    <li>
-                        <a class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span class="badge badge-primary pull-right">NEW</span></span></a>
-                    </li>
+                   <!-- <li>
+                        <a class="waves-effect"><i class="ti-calendar"></i><span> Schedule <span class="badge badge-primary pull-right">NEW</span></span></a>
+                    </li> -->
 
                     <li id="master_nav_non_editable" class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
@@ -175,8 +175,8 @@
                             <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
                             <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a>
                             </li>
-                            {{-- <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a>
-                    </li> --}}
+                            <li><a href="{{ route('masters/autorisation/index') }}">Data Autorisasi</a>
+                    		</li>
                         </ul>
                     </li>
                 </ul>

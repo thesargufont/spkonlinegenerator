@@ -177,12 +177,12 @@ class JobController extends Controller
                 'job'                 => '',
                 'job_description'     => $description,
                 'active'              => 1,
-                'start_effective'     => Carbon::now(),
+                'start_effective'     => Carbon::now()->timezone('Asia/Jakarta'),
                 'end_effective'       => null,
                 'created_by'          => Auth::user()->id,
-                'created_at'          => Carbon::now(),
+                'created_at'          => Carbon::now()->timezone('Asia/Jakarta'),
                 'updated_by'          => Auth::user()->id,
-                'updated_at'          => Carbon::now(),
+                'updated_at'          => Carbon::now()->timezone('Asia/Jakarta'),
             ]);
             $insertjiob->save();
 
@@ -197,7 +197,7 @@ class JobController extends Controller
                 'end_effective'       => $insertjiob->end_effective,
                 'action'              => 'CREATE',
                 'created_by'          => Auth::user()->id,
-                'created_at'          => Carbon::now(),
+                'created_at'          => Carbon::now()->timezone('Asia/Jakarta'),
             ]);
             $insertJobHist->save();
 
@@ -223,9 +223,9 @@ class JobController extends Controller
             DB::beginTransaction();
             if ($job) {
                 $job->active         = 0;
-                $job->end_effective  = Carbon::now();
+                $job->end_effective  = Carbon::now()->timezone('Asia/Jakarta');
                 $job->updated_by     = Auth::user()->id;
-                $job->updated_at     = Carbon::now();
+                $job->updated_at     = Carbon::now()->timezone('Asia/Jakarta');
                 $job->save();
 
                 $insertJobHist = new JobHist([
@@ -239,7 +239,7 @@ class JobController extends Controller
                     'end_effective'       => $job->end_effective,
                     'action'              => 'UPDATE',
                     'created_by'          => Auth::user()->id,
-                    'created_at'          => Carbon::now(),
+                    'created_at'          => Carbon::now()->timezone('Asia/Jakarta'),
                 ]);
                 $insertJobHist->save();
 
@@ -302,5 +302,353 @@ class JobController extends Controller
                 'updated_at'          => '',
             ]);
         }
+    }
+
+    public function importExcel()
+    {
+        return view('masters.job.upload');
+    }
+
+    public function makeTempTable()
+    {
+        Schema::create('temp', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('department', 50)->nullable();
+            $table->string('wo_category', 50)->nullable();
+            $table->string('job_category', 50)->nullable();
+            $table->string('description', 255)->nullable();
+            $table->text('remark')->default('');
+            $table->temporary();
+        });
+    }
+
+    public function dropTempTable()
+    {
+        Schema::dropIfExists('temp');
+    }
+
+    public function uploadDepartment(Request $request)
+    {
+        $countError = 0;
+        $success   = false;
+        if ($request->hasfile('validatedCustomFile')) {
+            $name = $request->file('validatedCustomFile')->getClientOriginalName();
+            $filename = $name;
+            $ext = pathinfo($name, PATHINFO_EXTENSION);
+            if (strtolower($ext) != 'xlsx') {
+                $filename = "";
+                $message = '<div class="alert alert-danger">format file tidak sesuai</div>';
+                // $error    = ucfirst(__('format file tidak sesuai'));
+                $success    = false;
+                return response()->json([
+                    'filename'    => $filename,
+                    'message'    => $message,
+                    'success'    => $success,
+                ]);
+            }
+
+            $extension = $request->file('validatedCustomFile')->getClientOriginalExtension();
+
+            $name = "Department" . "_" . Auth::user()->id . "." . $extension;
+            $request->file('validatedCustomFile')->move(storage_path() . '/app/uploads/', $name);
+            $attachments = storage_path() . '/app/uploads/' . $name;
+            
+            $data = (new FastExcel)->import($attachments);
+
+            foreach ($data as $row) {
+                $error = 0;
+
+                $department      = trim(strtoupper($row['Departemen']), ' ');
+                $wo_category     = trim(strtoupper($row['Kategori WO']), ' ');
+                $job_category    = trim(strtoupper($row['Kategori Pekerjaan']), ' ');
+                $description     = trim(strtoupper($row['Deskripsi Pekerjaan']), ' ');
+
+                if($department == '' && $wo_category == '' && $job_category == '' && $description == '') {
+                    continue;
+                }
+
+                if ($wo_category == '') {
+                    $error++;
+                } else {
+                    $arrWO = ['PEKERJAAN', 'LAPORAN GANGGHUAN'];
+                    if(!in_array($wo_category, $arrWO)){
+                        $error++;
+                    }
+                }
+
+                if ($job_category == '') {
+                    $error++;
+                }
+
+                $checkDepartment = Department::where('department', $department)
+                                                ->where('active', 1)
+                                                ->first();
+
+                if (!$checkDepartment) {
+                    $error++;
+                } else {
+                    $checkDuplicate = Job::where('department_id', $checkDepartment->id)
+                                         ->where('wo_category', $wo_category)
+                                         ->where('job_category', $job_category)
+                                         ->where('active', 1)
+                                         ->first();
+                    if($checkDuplicate){
+                        $error++;
+                    }
+                }
+
+                if ($error > 0) {
+                    $countError++;
+                }
+            }
+
+            if ($countError > 0) {
+                $success   = false;
+                $message   = '<div class="alert alert-danger">Terdapat data error, harap periksa kembali file ' . $filename . '</div>';
+            } else {
+                $success   = true;
+                $message   = '<div class="alert alert-success">Validasi data berhasil, data dapat disimpan</div>';
+            }
+
+            return response()->json([
+                'filename'  => $attachments,
+                'success'  => $success,
+                'message'  => $message,
+            ]);
+        } else {
+            $message   = '<div class="alert alert-danger">Pilih file...</div>';
+            return response()->json([
+                'filename'  => '',
+                'success'  => $success,
+                'message'  => $message,
+            ]);
+        }
+    }
+
+    public function displayUpload(Request $request)
+    {
+        $this->dropTempTable();
+        $this->makeTempTable();
+        
+        if ($request->fileName != "" || $request->fileName != null) {
+            $attachments = $request->fileName;
+            $data = (new FastExcel)->import($attachments);
+
+            $countError = 0;
+            $tempData = [];
+            foreach ($data as $row) {
+                $remark = [];
+
+                $department              = trim(strtoupper($row['Departemen']), ' ');
+                $wo_category             = trim(strtoupper($row['Kategori WO']), ' ');
+                $job_category            = trim(strtoupper($row['Kategori Pekerjaan']), ' ');
+                $description             = trim(strtoupper($row['Deskripsi Pekerjaan']), ' ');
+
+                if($department == '' && $wo_category == '' && $job_category == '' && $description == '') {
+                    continue;
+                }
+
+                if ($wo_category == '') {
+                    $remark [] = 'Kategori WO tidak boleh kosong';
+                } else {
+                    $arrWO = ['PEKERJAAN', 'LAPORAN GANGGHUAN'];
+                    if(!in_array($wo_category, $arrWO)){
+                        $remark [] = 'Kategori WO harus terisi PEKERJAAN / LAPORAN GANGGHUAN';
+                    }
+                }
+
+                if ($job_category == '') {
+                    $remark [] = 'Kategori Pekerjaan tidak boleh kosong';
+                }
+
+                $checkDepartment = Department::where('department', $department)
+                                                ->where('active', 1)
+                                                ->first();
+
+                if (!$checkDepartment) {
+                    $remark [] = 'Departemen '.$department.' tidak ditemukan';
+                } else {
+                    $checkDuplicate = Job::where('department_id', $checkDepartment->id)
+                                         ->where('wo_category', $wo_category)
+                                         ->where('job_category', $job_category)
+                                         ->where('active', 1)
+                                         ->first();
+                    if($checkDuplicate){
+                        $remark [] = 'Terdapat duplikat data untuk deparyemen '.$department.', kategori WO '.$wo_category.', kategori pekerjaan '.$job_category;
+                    }
+                }
+
+                if (count($remark) > 0) {
+                    $countError++;
+                }
+
+                $tempOutput = [
+                    'department'     => $department,
+                    'wo_category'    => $wo_category,
+                    'job_category'   => $job_category,
+                    'description'    => $description,
+                    'remark'         => implode(', ', $remark)
+                ];
+                DB::table('temp')->insert($tempOutput);
+                $tempData = DB::table('temp')->get();
+            }
+            if(count($tempData) == 0){
+                $tempOutput = [
+                    'department'     => '',
+                    'wo_category'    => '',
+                    'job_category'   => '',
+                    'description'    => '',
+                    'remark'         => ''
+                ];
+                DB::table('temp')->insert($tempOutput);
+                $tempData = DB::table('temp')->get();
+            }
+        } else {
+            $tempOutput = [
+                'department'     => '',
+                'wo_category'    => '',
+                'job_category'   => '',
+                'description'    => '',
+                'remark'         => ''
+            ];
+            DB::table('temp')->insert($tempOutput);
+            $tempData = DB::table('temp')->get();
+        }
+
+        $datatables = Datatables::of($tempData)
+            ->filter(function ($instance) use ($request) {
+                return true;
+            });
+
+        return $datatables->make(TRUE);
+    }
+
+    public function saveUpload(Request $request)
+    {
+        if($request->fileData != "")
+        {
+            $attachments = $request->fileData;  
+            $data = (new FastExcel)->import($attachments);
+            
+            try {
+                DB::beginTransaction();
+                foreach ($data as $row) {
+                    $error = false;
+
+                    $department              = trim(strtoupper($row['Departemen']), ' ');
+                    $wo_category             = trim(strtoupper($row['Kategori WO']), ' ');
+                    $job_category            = trim(strtoupper($row['Kategori Pekerjaan']), ' ');
+                    $description             = trim(strtoupper($row['Deskripsi Pekerjaan']), ' ');
+
+                    if($department == '' && $wo_category == '' && $job_category == '' && $description == '') {
+                        continue;
+                    }
+
+                    if ($wo_category == '') {
+                        $error = true;
+                    } else {
+                        $arrWO = ['PEKERJAAN', 'LAPORAN GANGGHUAN'];
+                        if(!in_array($wo_category, $arrWO)){
+                            $error = true;
+                        }
+                    }
+    
+                    if ($job_category == '') {
+                        $error = true;
+                    }
+    
+                    $checkDepartment = Department::where('department', $department)
+                                                    ->where('active', 1)
+                                                    ->first();
+    
+                    if (!$checkDepartment) {
+                        $error = true;
+                    } else {
+                        $checkDuplicate = Job::where('department_id', $checkDepartment->id)
+                                             ->where('wo_category', $wo_category)
+                                             ->where('job_category', $job_category)
+                                             ->where('active', 1)
+                                             ->first();
+                        if($checkDuplicate){
+                            $error = true;
+                        }
+                    }
+
+                    if (!$error){
+                        $insertjiob = new Job([
+                            'department_id'       => $checkDepartment->id,
+                            'wo_category'         => $wo_category,
+                            'job_category'        => $job_category,
+                            'job'                 => '',
+                            'job_description'     => $description,
+                            'active'              => 1,
+                            'start_effective'     => Carbon::now()->timezone('Asia/Jakarta'),
+                            'end_effective'       => null,
+                            'created_by'          => Auth::user()->id,
+                            'created_at'          => Carbon::now()->timezone('Asia/Jakarta'),
+                            'updated_by'          => Auth::user()->id,
+                            'updated_at'          => Carbon::now()->timezone('Asia/Jakarta'),
+                        ]);
+                        $insertjiob->save();
+            
+                        $insertJobHist = new JobHist([
+                            'job_category_id'     => $insertjiob->id,
+                            'department_id'       => $insertjiob->department_id,
+                            'wo_category'         => $insertjiob->wo_category,
+                            'job_category'        => $insertjiob->job_category,
+                            'job_description'     => $insertjiob->job_description,
+                            'active'              => $insertjiob->active,
+                            'start_effective'     => $insertjiob->start_effective,
+                            'end_effective'       => $insertjiob->end_effective,
+                            'action'              => 'CREATE',
+                            'created_by'          => Auth::user()->id,
+                            'created_at'          => Carbon::now()->timezone('Asia/Jakarta'),
+                        ]);
+                        $insertJobHist->save();
+                    } else {
+                        DB::rollback();
+
+                        $success   = false;
+                        $message   = '<div class="alert alert-danger">Terdapat data error, harap periksa kembali file</div>';
+
+                        return response()->json([
+                            'success'  => $success,
+                            'message'  => $message,
+                        ]);
+                    }
+                }
+                DB::commit();
+
+                $success   = true;
+                $message   = '<div class="alert alert-success">File berhasil diproses</div>';
+                return response()->json([
+                    'success'  => $success,
+                    'message'  => $message,
+                ]);
+            } catch(\Exception $e){
+                DB::rollback();
+                $success   = false;
+                $message   = '<div class="alert alert-danger">Terdapat kesalahn, harap proses kembali</div>';
+
+                return response()->json([
+                    'success'  => $success,
+                    'message'  => $message,
+                ]);
+            }
+        } else {
+            $success   = false;
+            $message   = '<div class="alert alert-danger">File tidak ditemukan, harap periksa kembali</div>';
+
+            return response()->json([
+                'success'  => $success,
+                'message'  => $message,
+            ]);
+        }
+    }
+
+    public function downloadDepartmentTemplate()
+    {
+        $filename = 'Template_Master_Pekerjaan.xlsx';
+        return response()->download(storage_path('app/files/' . $filename));
     }
 }

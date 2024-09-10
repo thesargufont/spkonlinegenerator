@@ -77,7 +77,7 @@ class ProfileController extends Controller
 
             $userData->password   = Hash::make($request->confirm_password);
             $userData->updated_by = Auth::user()->id;
-            $userData->updated_at = Carbon::now();
+            $userData->updated_at = Carbon::now()->timezone('Asia/Jakarta');
             $userData->save();
 
             DB::commit();
@@ -126,7 +126,7 @@ class ProfileController extends Controller
 
             $userData->signature_path = $path.$filenameWithExtension;
             $userData->updated_by     = Auth::user()->id;
-            $userData->updated_at     = Carbon::now();
+            $userData->updated_at     = Carbon::now()->timezone('Asia/Jakarta');
             $userData->save();
 
             DB::commit();

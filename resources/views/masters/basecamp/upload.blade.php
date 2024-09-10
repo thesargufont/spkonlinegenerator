@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Tambah Data Departemen</h4>
+<h4 class="pull-left page-title">Tambah Data Basecamp</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Tambah Data Departemen</li>
+    <li class="active">Tambah Data Basecamp</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -27,7 +27,7 @@
             <form id="formUpload" enctype="multipart/form-data" method="POST">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Upload Data Departemen</h3>
+                        <h3 class="panel-title">Upload Data Basecamp</h3>
                     </div>
                 
 
@@ -59,15 +59,14 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Preview Data Departemen</h3>
+                    <h3 class="panel-title">Preview Data Basecamp</h3>
                 </div>
                 <div class="panel-body">
                     <table  id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Departemen</th>
-                                <th>Kode Departemen</th>
+                                <th>Basecamp</th>
                                 <th>Deskripsi</th>
                                 <th>Keterangan</th>
                             </tr>
@@ -109,7 +108,7 @@
                 infoEmpty:      ""
             },
             ajax: {
-                'url': '{!! route('masters/department/display-upload') !!}',
+                'url': '{!! route('masters/basecamp/display-upload') !!}',
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
@@ -120,8 +119,7 @@
             }, 
             columns: [
                 { targets: 0, data: null, orderable: false, searchable: false , className: 'text-right'},
-                {data: 'department' ,         name: 'department'      },
-                {data: 'code' ,               name: 'code'            },
+                {data: 'basecamp' ,           name: 'basecamp'      },
                 {data: 'description' ,        name: 'description'     },
                 {data: 'remark' ,             name: 'remark'          },
             ],
@@ -141,7 +139,7 @@
     $('#template_department').click(function(){
         html = '';
         $('#form_result').html(html);
-        var uri = encodeURI("{{url('/masters/department/download-template')}}");
+        var uri = encodeURI("{{url('/masters/basecamp/download-template')}}");
         window.open(uri,'_blank');
     });
 
@@ -164,7 +162,7 @@
         
         $.ajax({
             method: 'POST', // Type of response and matches what we said in the route
-            url: '{!! route('masters/department/upload') !!}', // This is the url we gave in the route
+            url: '{!! route('masters/basecamp/upload') !!}', // This is the url we gave in the route
             headers: {
                 'X-CSRF-TOKEN': '{!!csrf_token()!!}'
             },
@@ -204,7 +202,7 @@
         artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
             $.ajax({
                 type: 'POST',
-                url: '{!! route('masters/department/save-upload') !!}', 
+                url: '{!! route('masters/basecamp/save-upload') !!}', 
                 headers: {
                     'X-CSRF-TOKEN': '{!!csrf_token()!!}'
                 },
@@ -247,7 +245,7 @@
     }
 
     function doBack(){
-        setTimeout(function(){ window.location.href = '{{url('masters/department/index')}}'; }, 100);
+        setTimeout(function(){ window.location.href = '{{url('masters/basecamp/index')}}'; }, 100);
     }
 </script>
 @endsection
