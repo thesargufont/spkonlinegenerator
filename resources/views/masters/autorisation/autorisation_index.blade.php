@@ -62,12 +62,12 @@
                             </div>
                             
     
-                            {{-- OTORITAS --}}
+                            {{-- AUTORISASI --}}
                             <div class="col-md-6">
-                                <label class="col-md-2">OTORITAS</label>
+                                <label class="col-md-2">AUTORISASI</label>
                                 <div class="col-md-6">
-                                    <select title="OTORITAS" id="authority" class="form-control">
-                                        <option value="" selected>SEMUA OTORITAS</option>
+                                    <select title="AUTORISASI" id="authority" class="form-control">
+                                        <option value="" selected>SEMUA AUTORISASI</option>
                                         @foreach ($authorities as $item)
                                             <option value={{ $item->reff1 }}>{{ $item->reff1 }}</option>
                                         @endforeach
@@ -142,7 +142,7 @@
                                 <th>NIK</th>
                                 <th>Pengguna</th>
                                 <th>Role</th>
-                                <th>Otoritas</th>
+                                <th>Autorisasi</th>
                                 <th>Aktif</th>
                                 <th>Tanggal Efektif</th>
                                 <th>Berakhir Efektif</th>
@@ -217,6 +217,16 @@
                 { data : 'active' ,                  name :  'active'                },
                 { data : 'start_effective' ,         name :  'start_effective'       },
                 { data : 'end_effective' ,           name :  'end_effective'         },
+            ],
+            columnDefs: [
+                { width: '5%', targets: 0 },
+                { width: '13%', targets: 1 },
+                { width: '15%', targets: 2 },
+                { width: '10%', targets: 3 },
+                { width: '7%', targets: 4 },
+                { width: '10%', targets: 5 },
+                { width: '10%', targets: 6 },
+                { width: '10%', targets: 7 },
             ],
             // order: [[ 2, "desc" ]],
             rowCallback: function( row, data, iDisplayIndex ) {

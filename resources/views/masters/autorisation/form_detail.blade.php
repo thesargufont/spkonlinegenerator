@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Detail Otoritas</h4>
+<h4 class="pull-left page-title">Detail Autorisasi</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Detail Otoritas</li>
+    <li class="active">Detail Autorisasi</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -24,7 +24,7 @@
             <form method="POST" id="search-form" class="form" role="form">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Form Otoritas</h3>
+                        <h3 class="panel-title">Form Autorisasi</h3>
                     </div>
                     <div class="panel-body">
                         <span id="form_result"></span>
@@ -60,9 +60,9 @@
 
                         {{-- AUTHORITY --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">OTORITAS</label>
+                            <label class="col-md-2">AUTORISASI</label>
                             <div class="col-md-6">
-                                <input disabled  class="form-control" rows="5" id="authority" type="text" class="text-uppercase form-control" name="authority" title="OTORITAS" placeholder="OTORITAS">
+                                <input disabled  class="form-control" rows="5" id="authority" type="text" class="text-uppercase form-control" name="authority" title="AUTORISASI" placeholder="AUTORISASI">
                             </div>
                             <small class="text-danger" id="location_error"></small>
                         </div>

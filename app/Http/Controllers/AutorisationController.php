@@ -98,6 +98,7 @@ class AutorisationController extends Controller
         // ->where('roles.start_effective',$effective_date)
         // ->where('roles.end_effective',$end_effective)
         // ->where('roles.role','SUPERADMIN')
+        ->orderBy('active','desc')
         ->orderBy('users.name')
         ;
 
@@ -147,13 +148,13 @@ class AutorisationController extends Controller
                 return optional($item->department)->department;
             })
             ->editColumn('start_effective', function ($item) {
-                return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y');
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->start_effective)->format('d/m/Y H:i:s');
             })
             ->editColumn('end_effective', function ($item) {
                 if ($item->end_effective == null) {
                     return '-';
                 } else {
-                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y');
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->end_effective)->format('d/m/Y H:i:s');
                 }
             })
             ->addColumn('nik', function ($item) {
@@ -243,12 +244,12 @@ class AutorisationController extends Controller
                 'role'         => $role,
                 'authority'        => $authority,
                 'active'              => 1,
-                'start_effective'     => Carbon::now(),
+                'start_effective'     => Carbon::now()->timezone('Asia/Jakarta'),
                 'end_effective'       => null,
                 'created_by'          => Auth::user()->id,
-                'created_at'          => Carbon::now(),
+                'created_at'          => Carbon::now()->timezone('Asia/Jakarta'),
                 'updated_by'          => Auth::user()->id,
-                'updated_at'          => Carbon::now(),
+                'updated_at'          => Carbon::now()->timezone('Asia/Jakarta'),
             ]);
             $insertrole->save();
 
@@ -274,9 +275,9 @@ class AutorisationController extends Controller
             DB::beginTransaction();
             if ($role) {
                 $role->active         = 0;
-                $role->end_effective  = Carbon::now();
+                $role->end_effective  = Carbon::now()->timezone('Asia/Jakarta');
                 $role->updated_by     = Auth::user()->id;
-                $role->updated_at     = Carbon::now();
+                $role->updated_at     = Carbon::now()->timezone('Asia/Jakarta');
                 $role->save();
 
                 DB::commit();
@@ -504,7 +505,7 @@ class AutorisationController extends Controller
                 'end_effective'        => $insertDevice->end_effective,
                 'action'               => 'UPDATE',
                 'created_by'           => Auth::user()->id,
-                'created_at'           => Carbon::now(),
+                'created_at'           => Carbon::now()->timezone('Asia/Jakarta'),
             ]);
             $insertDeviceHist->save();
 
