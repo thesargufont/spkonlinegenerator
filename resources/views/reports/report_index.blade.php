@@ -331,6 +331,43 @@
             });
         });
 
+        function showItem(id) {
+            {
+                var urlcek = "{{route('report.cekdetail', '')}}" + "/" + id;
+                var urldet = "{{route('report.detail', '')}}" + "/" + id;
+                $.ajax({
+                    url: urlcek,
+                    type: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    dataType: "json",
+                    data: id,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        if (data.errors) {
+                            $('#form_result').html(data.message);
+                            setTimeout(function() {
+                                $('#form_result').html('');
+                            }, 4000);
+                        }
+                        if (data.success) {
+                            window.location.href = urldet;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error Status:', status);
+                        console.log('Error:', error);
+                        console.log('Response:', xhr.responseText);
+                        var html = '<div class="alert alert-danger">Terjadi kesalahan : ' + error + '</div>';
+                        $('#form_result').html(html);
+                    }
+                });
+                // window.location.href = url;
+            }
+        }
+
         {{--function showItem(id) {--}}
         {{--    {--}}
         {{--        var url = "{{route('form-input.approval.detail', '')}}" + "/" + id;--}}

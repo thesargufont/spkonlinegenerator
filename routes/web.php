@@ -182,3 +182,5 @@ Route::get('reports/index', [ReportController::class, 'index'])->name('reports.i
 Route::get('reports/getDataFilter', [ReportController::class, 'getDataFilter'])->name('reports.getDataFilter')->middleware('auth');
 Route::post('reports/getDataTable', [ReportController::class, 'dataTable'])->name('reports.getDataTable')->middleware('auth');
 Route::get('report/export', [ReportController::class, 'downloadXLSX'])->name('report.export');
+Route::get('report/cekdetail/{id}', [ReportController::class, 'checkDetail'])->name('report.cekdetail')->middleware('auth');
+Route::get('report/detail/{id}', [ReportController::class, 'detail'])->name('report.detail')->middleware('auth');

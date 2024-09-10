@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\Device;
+use App\Models\DeviceCategory;
 use App\Models\GeneralCode;
 use App\Models\Job;
 use App\Models\Location;
 use App\Models\Role;
+use App\Models\SpongeDetail;
 use App\Models\SpongeHeader;
 use App\User;
 use Carbon\Carbon;
@@ -262,5 +265,103 @@ class ReportController extends Controller {
             dd($e->getMessage());
             return back()->with('error', 'Failed to export data: ' . $e->getMessage());
         }
+    }
+
+    public function checkDetail($id)
+    {
+        $spongeheader = SpongeHeader::find($id);
+        if (!$spongeheader) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger"> Server Error : Data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>'
+            ]);
+        }
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->get();
+        if (empty($spongedetails->toArray())) {
+            return response()->json([
+                'errors' => true,
+                "message" => '<div class="alert alert-danger"> Server Error : Detail data tidak ditemukan. Silahkan muat ulang halaman atau hubungi admin.</div>'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function detail($id)
+    {
+        $spongeheader = SpongeHeader::find($id);
+        if (!$spongeheader) {
+            return back()->with('status', '<div class="alert alert-success"> Data tidak ditemukan. Silahkan coba lagi atau hubungi admin.</div>');
+        }
+        $spongedetails = SpongeDetail::where('wo_number_id', $spongeheader->id)->orderBy('id')->get();
+        if (empty($spongedetails->toArray())) {
+            return back()->with('status', '<div class="alert alert-success"> Detail data tidak ditemukan. Silahkan coba lagi atau hubungi admin.</div>');
+        }
+        $job_category = $spongeheader->job_category;
+
+        $details = [];
+        $index = 1;
+        foreach ($spongedetails as $detail) {
+            //$device = Device::find($detail->device_id);
+            $engineer = '';
+            if ($detail->job_executor) {
+                $user = User::find($detail->job_executor);
+                if ($user) {
+                    $engineer = $user->name;
+                }
+            }
+            $supervisor = '';
+            if ($detail->job_supervisor) {
+                $user = User::find($detail->job_supervisor);
+                if ($user) {
+                    $supervisor = $user->name;
+                }
+            }
+            $aid = '';
+            if ($detail->job_aid) {
+                $user = User::find($detail->job_aid);
+                if ($user) {
+                    $aid = $user->name;
+                }
+            }
+            $details[$index] = [
+                'location' => Location::find($detail->location_id) ? Location::find($detail->location_id)->location : '',
+                'disturbance_category' => DeviceCategory::find($detail->disturbance_category) ? DeviceCategory::find($detail->disturbance_category)->disturbance_category : '-',
+                'description' => $detail->wo_description,
+                'image_path1' => $detail->wo_attachment1,
+                'image_path2' => $detail->wo_attachment2,
+                'image_path3' => $detail->wo_attachment3,
+                'device' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->device_name : '-',
+                'device_model' =>  Device::find($detail->device_id) ?  Device::find($detail->device_id)->brand : '-',
+                'device_code' => Device::find($detail->device_id) ?  Device::find($detail->device_id)->activa_number : '-',
+                'start_effective' => $detail->start_at ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->start_at)->format('d/m/Y') : null,
+                'estimated_end' => $detail->estimated_end ? Carbon::createFromFormat("Y-m-d H:i:s", $detail->estimated_end)->format('d/m/Y') : null,
+                'engineer' => $engineer,
+                'supervisor' => $supervisor,
+                'aid' => $aid,
+                'job_description' => $detail->job_description,
+                'job_attachment1' => $detail->job_attachment1,
+                'job_attachment2' => $detail->job_attachment2,
+                'job_attachment3' => $detail->job_attachment3,
+                'wp_number' => $detail->wp_number,
+                'engineer_status' => $detail->executor_progress,
+                'executor_desc' => $detail->executor_desc,
+            ];
+            $index++;
+        }
+
+        $data = [
+            'spk_number' => $spongeheader->spk_number,
+            'wo_number' => $spongeheader->wo_number,
+            'wo_category' => $spongeheader->wo_category,
+            'department' => Department::find($spongeheader->department_id) ? Department::find($spongeheader->department_id)->department : 'ID department tidak ditemukan : ' . $spongeheader->department_id,
+            'job_category' => $job_category,
+            'effective_date' => Carbon::createFromFormat("Y-m-d H:i:s", $spongeheader->effective_date)->format('d/m/Y'),
+            'details' => $details,
+        ];
+
+        return view('reports.report_detail', $data);
     }
 }
