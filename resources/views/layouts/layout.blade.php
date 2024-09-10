@@ -170,10 +170,8 @@
                                 <li><a href="{{ route('masters/department/index') }}">Data Departemen</a></li>
                                 <li><a href="{{ route('masters/job/index') }}">Data Pekerjaan</a></li>
                                 <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
-                                <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a>
-                                </li>
-                                {{-- <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a>
-                        </li> --}}
+                                <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a></li>
+                                <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a></li>
                     </ul>
                     </li>
                     </ul>

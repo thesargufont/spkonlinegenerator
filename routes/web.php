@@ -174,3 +174,10 @@ Route::get('masters/device-category/detail-data/{id}', [DeviceCategoryController
 
 // otorisasi
 Route::get('masters/autorisation/index', [AutorisationController::class, 'index'])->name('masters/autorisation/index')->middleware('auth');
+Route::post('masters/autorisation/dashboard-data', [AutorisationController::class, 'data'])->name('masters/autorisation/dashboard-data')->middleware('auth');
+Route::get('masters/autorisation/create-new', [AutorisationController::class, 'createNew'])->name('masters/autorisation/create-new')->middleware('auth');
+Route::post('masters/autorisation/create-new/create', [AutorisationController::class, 'submitData'])->name('masters/autorisation/create-new/create')->middleware('auth');
+Route::post('masters/autorisation/delete-data', [AutorisationController::class, 'deleteData'])->name('masters/autorisation/delete-data')->middleware('auth');
+Route::get('masters/autorisation/detail-data/{id}', [AutorisationController::class, 'detailData'])->name('masters/autorisation/detail-data')->middleware('auth');
+// Route::get('masters/autorisation/edit-data/{id}', [AutorisationController::class, 'editData'])->name('masters/autorisation/edit-data')->middleware('auth');
+// Route::post('masters/autorisation/update-data', [AutorisationController::class, 'updateData'])->name('masters.autorisation.update-data')->middleware('auth');

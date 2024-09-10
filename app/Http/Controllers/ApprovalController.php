@@ -680,6 +680,7 @@ class ApprovalController extends Controller
         $get_engineers = User::select('users.*')
             ->leftJoin('roles', 'users.id', '=', 'roles.user_id')
             ->where('users.active', 1)
+            ->where('roles.active', 1)
             ->where('roles.role', 'ENGINEER')
             ->orderBy('users.name')
             ->get();
@@ -695,6 +696,7 @@ class ApprovalController extends Controller
         $get_spvs = User::select('users.*')
             ->leftJoin('roles', 'users.id', '=', 'roles.user_id')
             ->where('users.active', 1)
+            ->where('roles.active', 1)
             ->where('roles.role', 'SPV')
             ->orderBy('users.name')
             ->get();
@@ -787,7 +789,7 @@ class ApprovalController extends Controller
 
         //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
         //get number
-        $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
+        $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('updated_at', 'desc')->first();
         $number = 0;
         if ($cek_number) {
             $number = intval(substr($cek_number->spk_number, 0, 5));
@@ -839,7 +841,7 @@ class ApprovalController extends Controller
 
             //dd('%SPKI/UP2BJTD/FASOP/' . '/' . $dept_code . '/' .  $year);
             //get number
-            $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('created_at', 'desc')->first();
+            $cek_number = SpongeHeader::where('spk_number', 'like', '%SPKI/UP2BJTD/FASOP' . '/' . $dept_code . '/' .  $year)->orderBy('updated_at', 'desc')->first();
             $number = 0;
             if ($cek_number) {
                 $number = intval(substr($cek_number->spk_number, 0, 5));
