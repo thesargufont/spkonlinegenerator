@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Tambah Data Lokasi</h4>
+<h4 class="pull-left page-title">Tambah Data Pengguna</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Tambah Data Lokasi</li>
+    <li class="active">Tambah Data Pengguna</li>
 </ol>
 <div class="clearfix"></div>
 @endsection

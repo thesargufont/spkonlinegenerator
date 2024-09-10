@@ -1,10 +1,10 @@
 @extends('layouts.layout')
 
 @section('auth')
-<h4 class="pull-left page-title">Tambah Data Departemen</h4>
+<h4 class="pull-left page-title">Tambah Data Kategori Peralatan</h4>
 <ol class="breadcrumb pull-right">
     <li><a href="#">{{Auth::user()->name}}</a></li>
-    <li class="active">Tambah Data Departemen</li>
+    <li class="active">Tambah Data Kategori Peralatan</li>
 </ol>
 <div class="clearfix"></div>
 @endsection
@@ -27,7 +27,7 @@
             <form id="formUpload" enctype="multipart/form-data" method="POST">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Upload Data Departemen</h3>
+                        <h3 class="panel-title">Upload Data Kategori Peralatan</h3>
                     </div>
                 
 
@@ -36,12 +36,9 @@
                         
                         {{-- FILE --}}
                         <div class="row mb-2">
-                            {{-- <div class="col col-md-2" style="max-width:150px; flex:0px">{!!Form::label(Str::title(__('FILE')))!!}</div> --}}
                             <div class="col-sm-8">
                                 <div class="col-md-6 custom-file">
-                                    {{-- <input required id="department_name" type="file" class="form-control" name="department_name" title="NAMA BAGIAN" placeholder="NAMA BAGIAN"> --}}
                                     <input type="file" class="form-control" id="validatedCustomFile" name="validatedCustomFile" title="{{__('file select input, for upload file')}} ({{__('required')}})" required>
-                                    {{-- <label class="custom-file-label" for="validatedCustomFile">{{__('choose')}} {{__('file')}}...</label> --}}
                                 </div>
                             </div>
                             @csrf
@@ -59,16 +56,15 @@
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Preview Data Departemen</h3>
+                    <h3 class="panel-title">Preview Data Kategori Peralatan</h3>
                 </div>
                 <div class="panel-body">
                     <table  id="main-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Departemen</th>
-                                <th>Kode Departemen</th>
-                                <th>Deskripsi</th>
+                                <th>Kategori Alat</th>
+                                <th>Kategori Gangguan</th>
                                 <th>Keterangan</th>
                             </tr>
                         </thead>
@@ -109,7 +105,7 @@
                 infoEmpty:      ""
             },
             ajax: {
-                'url': '{!! route('masters/department/display-upload') !!}',
+                'url': '{!! route('masters/device-category/display-upload') !!}',
                 'type': 'POST',
                 'headers': {
                     'X-CSRF-TOKEN': '{!! csrf_token() !!}'
@@ -120,10 +116,9 @@
             }, 
             columns: [
                 { targets: 0, data: null, orderable: false, searchable: false , className: 'text-right'},
-                {data: 'department' ,         name: 'department'      },
-                {data: 'code' ,               name: 'code'            },
-                {data: 'description' ,        name: 'description'     },
-                {data: 'remark' ,             name: 'remark'          },
+                {data: 'category' ,                name: 'category'                 },
+                {data: 'disturbance_category' ,    name: 'disturbance_category'            },
+                {data: 'remark' ,                  name: 'remark'                         },
             ],
             // order: [5, 'desc'],
             rowCallback: function( row, data, iDisplayIndex ) {
@@ -141,7 +136,7 @@
     $('#template_department').click(function(){
         html = '';
         $('#form_result').html(html);
-        var uri = encodeURI("{{url('/masters/department/download-template')}}");
+        var uri = encodeURI("{{url('/masters/device-category/download-template')}}");
         window.open(uri,'_blank');
     });
 
@@ -164,7 +159,7 @@
         
         $.ajax({
             method: 'POST', // Type of response and matches what we said in the route
-            url: '{!! route('masters/department/upload') !!}', // This is the url we gave in the route
+            url: '{!! route('masters/device-category/upload') !!}', // This is the url we gave in the route
             headers: {
                 'X-CSRF-TOKEN': '{!!csrf_token()!!}'
             },
@@ -204,7 +199,7 @@
         artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
             $.ajax({
                 type: 'POST',
-                url: '{!! route('masters/department/save-upload') !!}', 
+                url: '{!! route('masters/device-category/save-upload') !!}', 
                 headers: {
                     'X-CSRF-TOKEN': '{!!csrf_token()!!}'
                 },
@@ -247,7 +242,7 @@
     }
 
     function doBack(){
-        setTimeout(function(){ window.location.href = '{{url('masters/department/index')}}'; }, 100);
+        setTimeout(function(){ window.location.href = '{{url('masters/device-category/index')}}'; }, 100);
     }
 </script>
 @endsection

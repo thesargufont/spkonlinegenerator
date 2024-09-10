@@ -29,266 +29,269 @@
 </head>
 
 <body class="fixed-left">
-    <!-- Begin page -->
-    <div id="wrapper">
+<!-- Begin page -->
+<div id="wrapper">
 
-        <!-- Top Bar Start -->
-        <div class="topbar">
-            <!-- LOGO -->
-            <div class="topbar-left">
-                <div class="text-center">
-                    <a href="{{ asset('home') }}" class="logo"><img src="{{ asset('images/sponge_logo.png') }}" height="28"></a>
-                    <a href="{{ asset('home') }}" class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}" height="36"></a>
-                </div>
-            </div>
-            <!-- Button mobile view to collapse sidebar menu -->
-            <div class="navbar navbar-default" role="navigation">
-                <div class="container">
-                    <div class="">
-                        <div class="pull-left">
-                            <button type="button" class="button-menu-mobile open-left waves-effect waves-light">
-                                <i class="ion-navicon"></i>
-                            </button>
-                            <span class="clearfix"></span>
-                        </div>
-                        <form class="navbar-form pull-left" role="search">
-                            <div class="form-group">
-                                {{-- <input type="text" class="form-control search-bar" placeholder="Search..."> --}}
-                            </div>
-                            <button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
-                        </form>
-
-                        <ul class="nav navbar-nav navbar-right pull-right">
-                            <li class="dropdown hidden-xs">
-                                <a href="{{ route('notifications') }}" class="waves-effect waves-light">
-                                    <i class="fa fa-bell"></i><span class="badge badge-xs badge-danger" id="span_notif"></span>
-                                </a>
-                            </li>
-                            <li class="hidden-xs">
-                                <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="fa fa-crosshairs"></i></a>
-                            </li>
-
-                            <li class="hidden-xs">
-                                <a href="{{ route('profile-user') }}" id="btn-profile" class="waves-effect waves-light"><i class="fa fa-user"></i></a>
-                            </li>
-
-                            <li class="hidden-xs">
-                                <a href="{{ route('actionlogout') }}" id="btn-logout" class="waves-effect waves-light"><i class="fa fa-sign-out"></i></a>
-                            </li>
-
-                            <li class="dropdown">
-                                {{-- <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('images/users/avatar-1.jpg') }}"
-                                alt="user-img" class="img-circle"> </a> --}}
-                                <ul class="dropdown-menu">
-                                    <li><a href="javascript:void(0)"> Profile</a></li>
-                                    <li><a href="javascript:void(0)"><span class="badge badge-success pull-right">5</span> Settings </a></li>
-                                    <li><a href="javascript:void(0)"> Lock screen</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="javascript:void(0)"> Logout</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <!--/.nav-collapse -->
-                </div>
+    <!-- Top Bar Start -->
+    <div class="topbar">
+        <!-- LOGO -->
+        <div class="topbar-left">
+            <div class="text-center">
+                <a href="{{ asset('home') }}" class="logo"><img src="{{ asset('images/sponge_logo.png') }}" height="28"></a>
+                <a href="{{ asset('home') }}" class="logo-sm"><img src="{{ asset('images/pln_logo.png') }}" height="36"></a>
             </div>
         </div>
-        <!-- Top Bar End -->
-
-
-        <!-- ========== Left Sidebar Start ========== -->
-
-        <div class="left side-menu">
-            <div class="sidebar-inner slimscrollleft">
-                <div class="user-details">
-                    <div class="text-center">
-                        {{-- <img src="{{ asset('images/users/avatar-1.jpg') }}" alt="" class="img-circle"> --}}
+        <!-- Button mobile view to collapse sidebar menu -->
+        <div class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="">
+                    <div class="pull-left">
+                        <button type="button" class="button-menu-mobile open-left waves-effect waves-light">
+                            <i class="ion-navicon"></i>
+                        </button>
+                        <span class="clearfix"></span>
                     </div>
-                    <div class="user-info">
-                        <div class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{Auth::user()->name}}</a>
+                    <form class="navbar-form pull-left" role="search">
+                        <div class="form-group">
+                            {{-- <input type="text" class="form-control search-bar" placeholder="Search..."> --}}
+                        </div>
+                        <button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+                    </form>
+
+                    <ul class="nav navbar-nav navbar-right pull-right">
+                        <li class="dropdown hidden-xs">
+                            <a href="{{ route('notifications') }}" class="waves-effect waves-light">
+                                <i class="fa fa-bell"></i><span class="badge badge-xs badge-danger" id="span_notif"></span>
+                            </a>
+                        </li>
+                        <li class="hidden-xs">
+                            <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="fa fa-crosshairs"></i></a>
+                        </li>
+
+                        <li class="hidden-xs">
+                            <a href="{{ route('profile-user') }}" id="btn-profile" class="waves-effect waves-light"><i class="fa fa-user"></i></a>
+                        </li>
+
+                        <li class="hidden-xs">
+                            <a href="{{ route('actionlogout') }}" id="btn-logout" class="waves-effect waves-light"><i class="fa fa-sign-out"></i></a>
+                        </li>
+
+                        <li class="dropdown">
+                            {{-- <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('images/users/avatar-1.jpg') }}"
+                            alt="user-img" class="img-circle"> </a> --}}
                             <ul class="dropdown-menu">
                                 <li><a href="javascript:void(0)"> Profile</a></li>
-                                <li><a href="javascript:void(0)"> Settings</a></li>
+                                <li><a href="javascript:void(0)"><span class="badge badge-success pull-right">5</span> Settings </a></li>
                                 <li><a href="javascript:void(0)"> Lock screen</a></li>
                                 <li class="divider"></li>
                                 <li><a href="javascript:void(0)"> Logout</a></li>
                             </ul>
-                        </div>
-
-                        <p class="text-muted m-0"><i class="fa fa-dot-circle-o text-success"></i> Online</p>
-                    </div>
-                </div>
-                <!--- Divider -->
-                <div id="sidebar-menu">
-                    <ul>
-                        <li>
-                            <a href="{{ route('home') }}" class="waves-effect"><i class="ti-home"></i><span> Dashboard
-                                </span></a>
                         </li>
-
-                        <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-write"></i><span> Forms
-                                </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
-                            <ul class="list-unstyled">
-                                <li><a href="{{ route('form-input.working-order.index') }}">Pelaporan</a></li>
-                                <li><a href="{{ route('form-input.approval.index') }}">Approval</a></li>
-                                <li><a href="{{ route('form-input.engineer.index') }}">Engineer</a></li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <a href="#" class="waves-effect"><i class="ti-agenda"></i><span> Laporan
-                                </span></a>
-                        </li>
-
-                        <!-- <li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-agenda"></i> <span> Laporan
-                                </span> <span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
-                            <ul class="list-unstyled">
-                                <li><a href="#">Working Order</a></li>
-                                <li><a href="#">Surat Perintah Kerja</a></li>
-                                <li><a href="#">Berita Acara</a></li>
-                            </ul>
-                        </li> -->
-
-                        <li>
-                            <a class="waves-effect"><i class="ti-calendar"></i><span> Schdule <span class="badge badge-primary pull-right">NEW</span></span></a>
-                        </li>
-
-                        <li id="master_nav_non_editable" class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
-                                    Data </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
-                        </li>
-                        <li id="master_nav_editable" class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
-                                    Data </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
-                            <ul class="list-unstyled">
-                                <li><a href="{{ route('masters/employee/index') }}">Data Pengguna</a></li>
-                                <li><a href="{{ route('masters/location/index') }}">Data Lokasi</a></li>
-                                <li><a href="{{ route('masters/basecamp/index') }}">Data Basecamp</a></li>
-                                <li><a href="{{ route('masters/department/index') }}">Data Departemen</a></li>
-                                <li><a href="{{ route('masters/job/index') }}">Data Pekerjaan</a></li>
-                                <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
-                                <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a>
-                                </li>
-                                {{-- <li><a href="{{ route('masters/autorisation/index') }}">Data Otorisasi</a>
-                        </li> --}}
-                    </ul>
-                    </li>
                     </ul>
                 </div>
-                <div class="clearfix"></div>
-            </div> <!-- end sidebarinner -->
+                <!--/.nav-collapse -->
+            </div>
         </div>
-        <!-- Left Sidebar End -->
-
-        <!-- Start right Content here -->
-
-        <div class="content-page">
-            <!-- Start content -->
-            <div class="content">
-                <div class="container">
-
-                    <!-- Page-Title -->
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="page-header-title">
-                                @yield('auth')
-                            </div>
-                        </div>
-                    </div>
-                </div> <!-- container -->
-                @yield('content')
-            </div> <!-- content -->
-            <footer class="footer">
-                SPONGE - Surat Perintah Online Generator PLN Ungaran
-            </footer>
-        </div>
-        <!-- End Right content here -->
     </div>
-    <!-- END wrapper -->
+    <!-- Top Bar End -->
 
 
-    <!-- jQuery  -->
+    <!-- ========== Left Sidebar Start ========== -->
 
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/modernizr.min.js') }}"></script>
-    <script src="{{ asset('js/detect.js') }}"></script>
-    <script src="{{ asset('js/fastclick.js') }}"></script>
-    <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
-    <script src="{{ asset('js/jquery.blockUI.js') }}"></script>
-    <script src="{{ asset('js/waves.js') }}"></script>
-    <script src="{{ asset('js/wow.min.js') }}"></script>
-    <script src="{{ asset('js/jquery.nicescroll.js') }}"></script>
-    <script src="{{ asset('js/jquery.scrollTo.min.js') }}"></script>
+    <div class="left side-menu">
+        <div class="sidebar-inner slimscrollleft">
+            <div class="user-details">
+                <div class="text-center">
+                    {{-- <img src="{{ asset('images/users/avatar-1.jpg') }}" alt="" class="img-circle"> --}}
+                </div>
+                <div class="user-info">
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{Auth::user()->name}}</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:void(0)"> Profile</a></li>
+                            <li><a href="javascript:void(0)"> Settings</a></li>
+                            <li><a href="javascript:void(0)"> Lock screen</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:void(0)"> Logout</a></li>
+                        </ul>
+                    </div>
 
-    <!-- <script src="{{ asset('js/app.js') }}"></script> -->
-    <script src="{{ asset('plugins/jquery-sparkline/jquery.sparkline.min.js') }}"></script>
-    @yield('script')
+                    <p class="text-muted m-0"><i class="fa fa-dot-circle-o text-success"></i> Online</p>
+                </div>
+            </div>
+            <!--- Divider -->
+            <div id="sidebar-menu">
+                <ul>
+                    <li>
+                        <a href="{{ route('home') }}" class="waves-effect"><i class="ti-home"></i><span> Dashboard
+                                </span></a>
+                    </li>
 
-    <!-- Datatables-->
-    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/dataTables.bootstrap.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/responsive.bootstrap.min.js') }}"></script>
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="ti-write"></i><span> Forms
+                                </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{ route('form-input.working-order.index') }}">Pelaporan</a></li>
+                            <li><a href="{{ route('form-input.approval.index') }}">Approval</a></li>
+                            <li><a href="{{ route('form-input.engineer.index') }}">Engineer</a></li>
+                        </ul>
+                    </li>
 
-    <script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" href="{{ route('reports.index') }}" class="waves-effect"><i class="ti-write"></i><span> Laporan
+                                </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{ route('reports.index') }}">Data Transaksi</a></li>
+                        </ul>
+                    </li>
 
-    <script src="{{ asset('pages/dashborad.js') }}"></script>
-    <script src="{{ asset('js/app2.js') }}"></script>
+                    <!-- <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="ti-agenda"></i> <span> Laporan
+                            </span> <span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Working Order</a></li>
+                            <li><a href="#">Surat Perintah Kerja</a></li>
+                            <li><a href="#">Berita Acara</a></li>
+                        </ul>
+                    </li> -->
+
+                   <!-- <li>
+                        <a class="waves-effect"><i class="ti-calendar"></i><span> Schedule <span class="badge badge-primary pull-right">NEW</span></span></a>
+                    </li> -->
+
+                    <li id="master_nav_non_editable" class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
+                                    Data </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                    </li>
+                    <li id="master_nav_editable" class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="ti-files"></i><span> Master
+                                    Data </span><span class="pull-right"><i class="mdi mdi-plus"></i></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{ route('masters/employee/index') }}">Data Pengguna</a></li>
+                            <li><a href="{{ route('masters/location/index') }}">Data Lokasi</a></li>
+                            <li><a href="{{ route('masters/basecamp/index') }}">Data Basecamp</a></li>
+                            <li><a href="{{ route('masters/department/index') }}">Data Departemen</a></li>
+                            <li><a href="{{ route('masters/job/index') }}">Data Pekerjaan</a></li>
+                            <li><a href="{{ route('masters/device/index') }}">Data Peralatan</a></li>
+                            <li><a href="{{ route('masters/device-category/index') }}">Data Kategori Peralatan</a>
+                            </li>
+                            <li><a href="{{ route('masters/autorisation/index') }}">Data Autorisasi</a>
+                    		</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="clearfix"></div>
+        </div> <!-- end sidebarinner -->
+    </div>
+    <!-- Left Sidebar End -->
+
+    <!-- Start right Content here -->
+
+    <div class="content-page">
+        <!-- Start content -->
+        <div class="content">
+            <div class="container">
+
+                <!-- Page-Title -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="page-header-title">
+                            @yield('auth')
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- container -->
+            @yield('content')
+        </div> <!-- content -->
+        <footer class="footer">
+            SPONGE - Surat Perintah Online Generator PLN Ungaran
+        </footer>
+    </div>
+    <!-- End Right content here -->
+</div>
+<!-- END wrapper -->
+
+
+<!-- jQuery  -->
+
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('js/modernizr.min.js') }}"></script>
+<script src="{{ asset('js/detect.js') }}"></script>
+<script src="{{ asset('js/fastclick.js') }}"></script>
+<script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
+<script src="{{ asset('js/jquery.blockUI.js') }}"></script>
+<script src="{{ asset('js/waves.js') }}"></script>
+<script src="{{ asset('js/wow.min.js') }}"></script>
+<script src="{{ asset('js/jquery.nicescroll.js') }}"></script>
+<script src="{{ asset('js/jquery.scrollTo.min.js') }}"></script>
+
+<!-- <script src="{{ asset('js/app.js') }}"></script> -->
+<script src="{{ asset('plugins/jquery-sparkline/jquery.sparkline.min.js') }}"></script>
+@yield('script')
+
+<!-- Datatables-->
+<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.bootstrap.js') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/responsive.bootstrap.min.js') }}"></script>
+
+<script src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+
+<script src="{{ asset('pages/dashborad.js') }}"></script>
+<script src="{{ asset('js/app2.js') }}"></script>
 </body>
 
 <body class="hold-transition sidebar-collapse">
-    <div class="wrapper">
-        <!-- modal for loading dialog -->
-        <div class="modal fade" id="divArtLoadingDialog" tabindex="-1" role="dialog" aria-labelledby="divArtLoadingDialogTitle" aria-hidden="true">
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <div id="divArtLoadingDialogModal" class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
-                <div class="breadcrumb modal-content">
-                    <div id="artLoadingDialogBody" class="modal-body">
-                        <div class="text-center">
-                            <div class="loading-spinner text-primary" style="width: 5rem; height: 5rem;" role="status" title="spinner for unmeasurable processes">
-                                <span class="sr-only">loading...</span>
-                            </div>
-                            <div id="artLoadingDialogText">please wait while we process your request..</div>
+<div class="wrapper">
+    <!-- modal for loading dialog -->
+    <div class="modal fade" id="divArtLoadingDialog" tabindex="-1" role="dialog" aria-labelledby="divArtLoadingDialogTitle" aria-hidden="true">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div id="divArtLoadingDialogModal" class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
+            <div class="breadcrumb modal-content">
+                <div id="artLoadingDialogBody" class="modal-body">
+                    <div class="text-center">
+                        <div class="loading-spinner text-primary" style="width: 5rem; height: 5rem;" role="status" title="spinner for unmeasurable processes">
+                            <span class="sr-only">loading...</span>
                         </div>
+                        <div id="artLoadingDialogText">please wait while we process your request..</div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- modal for artemis confirmation dialog -->
-            <div class="modal fade" id="divArtConfirmation" tabindex="-1" role="dialog" aria-labelledby="divArtConfirmationTitle" aria-hidden="true">
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <div id="divArtConfirmationModal" class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-warning">
-                            <h5 class="modal-title" id="artConfirmationTitle">Artemis</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="{{ucwords(__('close'))}}">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div id="artConfirmationBody" class="modal-body">
-                            {{ucfirst(__('Are you sure to do this action?'))}}
-                        </div>
-                        <div class="modal-footer">
-                            <button id="artConfirmationBtnOk" type="button" class="btn btn-secondary">{{ucwords(__('OK'))}}</button>
-                            <button id="artConfirmationBtnCancel" type="button" class="btn btn-secondary" data-dismiss="modal">{{ucwords(__('cancel'))}}</button>
-                        </div>
+        <!-- modal for artemis confirmation dialog -->
+        <div class="modal fade" id="divArtConfirmation" tabindex="-1" role="dialog" aria-labelledby="divArtConfirmationTitle" aria-hidden="true">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div id="divArtConfirmationModal" class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title" id="artConfirmationTitle">Artemis</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{ucwords(__('close'))}}">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="artConfirmationBody" class="modal-body">
+                        {{ucfirst(__('Are you sure to do this action?'))}}
+                    </div>
+                    <div class="modal-footer">
+                        <button id="artConfirmationBtnOk" type="button" class="btn btn-secondary">{{ucwords(__('OK'))}}</button>
+                        <button id="artConfirmationBtnCancel" type="button" class="btn btn-secondary" data-dismiss="modal">{{ucwords(__('cancel'))}}</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 <style>
     .loading-spinner {
@@ -302,64 +305,64 @@
     }
 
 
-    .modal-container { 
-        display: none; 
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100%; 
-        background: rgba(0, 0, 0, 0.5); 
-        align-items: center; 
-        justify-content: center; 
-        z-index: 1; 
-    } 
+    .modal-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
 
-    .modal-content { 
-        background-color: #fff; 
-        border-radius: 8px; 
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-        max-width: 400px; 
-        width: 100%; 
-        padding: 20px; 
-        text-align: center; 
-    } 
+    .modal-content {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+    }
 
-    button { 
-        border: none; 
-    } 
+    button {
+        border: none;
+    }
 
-    h2 { 
-        color: #515151; 
-    } 
+    h2 {
+        color: #515151;
+    }
 
-    .confirmation-message { 
-        margin-bottom: 20px; 
-    } 
+    .confirmation-message {
+        margin-bottom: 20px;
+    }
 
-    .button-container { 
-        display: flex; 
-        justify-content: space-around; 
-    } 
+    .button-container {
+        display: flex;
+        justify-content: space-around;
+    }
 
-    .button { 
-        padding: 10px 20px; 
-        font-size: 16px; 
-        text-align: center; 
-        text-decoration: none; 
-        border-radius: 5px; 
-        cursor: pointer; 
-    } 
+    .button {
+        padding: 10px 20px;
+        font-size: 16px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-    .cancel-button { 
-        background-color: #ccc; 
-        color: #535353; 
-    } 
+    .cancel-button {
+        background-color: #ccc;
+        color: #535353;
+    }
 
-    .delete-button { 
-        background-color: #e74c3c; 
-        color: #fff; 
-    } 
+    .delete-button {
+        background-color: #e74c3c;
+        color: #fff;
+    }
 
     @keyframes loadingspinner {
         0% {
