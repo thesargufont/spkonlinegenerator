@@ -680,6 +680,7 @@ class ApprovalController extends Controller
         $get_engineers = User::select('users.*')
             ->leftJoin('roles', 'users.id', '=', 'roles.user_id')
             ->where('users.active', 1)
+            ->where('roles.active', 1)
             ->where('roles.role', 'ENGINEER')
             ->orderBy('users.name')
             ->get();
@@ -695,6 +696,7 @@ class ApprovalController extends Controller
         $get_spvs = User::select('users.*')
             ->leftJoin('roles', 'users.id', '=', 'roles.user_id')
             ->where('users.active', 1)
+            ->where('roles.active', 1)
             ->where('roles.role', 'SPV')
             ->orderBy('users.name')
             ->get();

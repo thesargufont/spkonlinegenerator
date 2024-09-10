@@ -236,8 +236,6 @@
             <br>
             <br>
             <br>
-            <br>
-            <br>
         </div>
 
         <table class="signatures">
@@ -250,7 +248,7 @@
                 <td class="fontBold">Mengetahui</td>
             </tr>
             <tr>
-                <td style="text-align: center; width: 50%;">
+                <td style="text-align: center; width: 40%;">
                     @if($data['executor_signature_path'] != '')
                     @php
                     $imagePath = storage_path($data['executor_signature_path'] ?? '');
@@ -273,7 +271,7 @@
                     @endif
                     <!--                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/images/pln_logo.png'))) }}" alt="tidak ditemukan..." width="125%" style="filter: grayscale(100%);">-->
                 </td>
-                <td style="text-align: center; width: 50%;">
+                <td style="text-align: center; width: 40%;">
                     @if($data['supervisor_signature_path'] != '')
                         @php
                         $imagePath = storage_path($data['supervisor_signature_path'] ?? '');
