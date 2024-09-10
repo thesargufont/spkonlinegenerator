@@ -57,7 +57,7 @@ class ReportExport extends DefaultValueBinder implements WithCustomValueBinder,F
                 $event->sheet->mergeCells('C2:F2');
                 $event->sheet->mergeCells('A3:B3');
                 $event->sheet->mergeCells('C3:F3');
-                $event->sheet->getStyle('A4:Y' . $countdata)->applyFromArray([
+                $event->sheet->getStyle('A4:Z' . $countdata)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,'color' => ['argb' => '000000'],
@@ -105,12 +105,13 @@ class ReportExport extends DefaultValueBinder implements WithCustomValueBinder,F
                     'wo_number'                 => $data->wo_number ?? '',
                     'spk_number'                => $data->spk_number ?? '',
                     'ba_number'                 => $detail->cr_number ?? '',
+                    'wp_number'                 => $detail->wp_number ?? '',
                     'department'                => $departmentName,
                     'wo_type'                   => $data->wo_category ?? '',
                     'job_category'              => $data->job_category ?? '',
                     'location'                  => $location,
                     'device_name'               => $deviceName,
-                    'disturbance_category'      => $detail->disturbance_category ?? '',
+                    'disturbance_category'      => $detail->disturbance_category !== 'null' ? $detail->disturbance_category : '',
                     'wo_description'            => $detail->wo_description ?? '',
                     'job_description'           => $detail->job_description ?? '',
                     'engineer'                  => $engineer,

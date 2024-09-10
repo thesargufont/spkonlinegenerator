@@ -1,7 +1,9 @@
 <?php
-  
+
 namespace App\Http\Controllers;
-  
+
+use App\Models\DeviceCategory;
+use App\Models\SpongeDetail;
 use Carbon\Carbon;
 use App\Models\Department;
 use App\Models\Notification;
@@ -9,13 +11,15 @@ use App\Models\SpongeHeader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
-  
+
 class HomeController extends Controller
 {
     public function index()
     {
-        $spongeDatas = SpongeHeader::where('status', '!=', 'NOT APPROVE');
-        
+//        $spongeDatas = SpongeHeader::where('status', '!=', 'NOT APPROVE');
+        $spongeDatas = SpongeHeader::where('status', '!=', 'CANCEL')
+                        ->where('status', '!=', 'CLOSED');
+
         $totalReport         = clone $spongeDatas;
         $totalReportJob      = clone $spongeDatas;
         $totalReportProblem  = clone $spongeDatas;
@@ -62,7 +66,7 @@ class HomeController extends Controller
         $jobDspc   = $jobDspc->where('department_id', $deptDis->id)->count();
 
         $jobCount = [$jobTlkm, $jobScd, $jobPsis, $jobUpt, $jobDspc];
-        
+
         $problemTlkm  = clone $ReportProblem;
         $problemScd   = clone $ReportProblem;
         $problemPsis  = clone $ReportProblem;
@@ -77,12 +81,17 @@ class HomeController extends Controller
 
         $problemCount = [$problemTlkm, $problemScd, $problemPsis, $problemUpt, $problemDspc];
 
+        $dataDashboardStatus = $this->getDataDashboardStatus();
+        $dataDashboardInput = $this->getDataDashboardInput();
+        $dataDashboardGangguan = $this->getDataDashboardGangguan();
+        $dataDashboardPekerjaan = $this->getDataDashboardPekerjaan();
+
         return view('home', [
             'totalReport' => $totalReport,
             'totalReportJob' => $totalReportJob,
             'totalReportProblem' => $totalReportProblem,
-            'jobPercentage' => $jobPercentage,
-            'problemPercentage' => $problemPercentage,
+            'jobPercentage' => floor($jobPercentage),
+            'problemPercentage' => floor($problemPercentage),
             'jobCount' => $jobCount,
             'jobTlkm' => $jobTlkm,
             'jobScd' => $jobScd,
@@ -95,6 +104,10 @@ class HomeController extends Controller
             'problemPsis' => $problemPsis,
             'problemUpt' => $problemUpt,
             'problemDspc' => $problemDspc,
+            'dataDashboardStatus' => $dataDashboardStatus,
+            'dataDashboardInput' => $dataDashboardInput,
+            'dataDashboardGangguan' => $dataDashboardGangguan,
+            'dataDashboardPekerjaan' => $dataDashboardPekerjaan,
         ]);
     }
 
@@ -111,60 +124,188 @@ class HomeController extends Controller
             ->filter(function($instance) use ($request) {
                 return true;
             });
-        
+
         $datatables = $datatables
-        ->addColumn('department', function ($item) {
-            return optional($item->department)->department;
-        })
-        ->editColumn('job_category', function ($item) {
-            if($item->job_category == 'null'){
-                return '-';
-            } else {
-                return $item->job_category;
-            }
-        })
-        ->editColumn('effective_date', function ($item) {
-            return $item->effective_date != '' ?  Carbon::createFromFormat("Y-m-d H:i:s", $item->effective_date)->format('d/m/Y') : '-';
-        })
-        ->addColumn('created_by', function ($item) {
-            return optional($item->createdBy)->name;
-        })
-        ->editColumn('created_at', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
-        })
-        ->addColumn('updated_by', function ($item) {
-            return optional($item->updatedBy)->name;
-        })
-        ->editColumn('updated_at', function ($item) {
-            return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
-        });
-        
+            ->addColumn('department', function ($item) {
+                return optional($item->department)->department;
+            })
+            ->editColumn('job_category', function ($item) {
+                if($item->job_category == 'null'){
+                    return '-';
+                } else {
+                    return $item->job_category;
+                }
+            })
+            ->editColumn('effective_date', function ($item) {
+                return $item->effective_date != '' ?  Carbon::createFromFormat("Y-m-d H:i:s", $item->effective_date)->format('d/m/Y') : '-';
+            })
+            ->addColumn('created_by', function ($item) {
+                return optional($item->createdBy)->name;
+            })
+            ->editColumn('created_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at)->format('d/m/Y H:i:s');
+            })
+            ->addColumn('updated_by', function ($item) {
+                return optional($item->updatedBy)->name;
+            })
+            ->editColumn('updated_at', function ($item) {
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y H:i:s');
+            });
+
         return $datatables->make(TRUE);
     }
 
     public function getNotif(Request $request){
         $notificationAvailable = Notification::where('user_id', Auth::user()->id)
-                                           ->where('read', 0)
-                                           ->count();
-        
+            ->where('read', 0)
+            ->count();
+
         if(Auth::user()->name == 'SUPERADMIN'){
             $master = true;
         } else {
             $master = false;
         }
-        
+
         if($notificationAvailable != 0){
             return response()->json([
-                        'success' => true,
-                        'master' => $master,
-                        "message"=> '<div class="alert alert-danger">You have new notifications</div>'
-                    ]); 
+                'success' => true,
+                'master' => $master,
+                "message"=> '<div class="alert alert-danger">You have new notifications</div>'
+            ]);
         } else {
             return response()->json([
-                        'errors' => true, 
-                        'master' => $master,
-                        "message"=> '<div class="alert alert-danger">Notifications not found</div>'
-                    ]); 
+                'errors' => true,
+                'master' => $master,
+                "message"=> '<div class="alert alert-danger">Notifications not found</div>'
+            ]);
+        }
+    }
+
+    public function getDataDashboardStatus() {
+        try {
+            $statusNotApprove = SpongeHeader::where('status', 'NOT APPROVE')
+                            ->count();
+
+            $statusOnGoing = SpongeHeader::where('status', 'ONGOING')
+                            ->count();
+
+            $statusDone = SpongeHeader::where('status', 'DONE')
+                            ->count();
+
+            $statusClosed = SpongeHeader::where('status', 'CLOSED')
+                            ->count();
+
+            $statusCancel = SpongeHeader::where('status', 'CANCEL')
+                            ->count();
+
+            return [
+                'success'           => true,
+                'statusNotApprove'  => $statusNotApprove,
+                'statusOnGoing'     => $statusOnGoing,
+                'statusDone'        => $statusDone,
+                'statusClosed'      => $statusClosed,
+                'statusCancel'      => $statusCancel,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function getDataDashboardInput() {
+        try {
+            $inputGangguan = SpongeHeader::where('wo_category', 'LAPORAN GANGGUAN')
+                                ->count();
+
+            $inputPekerjaan = SpongeHeader::where('wo_category', 'PEKERJAAN')
+                                ->count();
+
+            return [
+                'success'            => true,
+                'inputGangguan'      => $inputGangguan,
+                'inputPekerjaan'     => $inputPekerjaan,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function getDataDashboardGangguan() {
+        try {
+            $array = [];
+            $findSpongeDetail = SpongeDetail::where('disturbance_category', '!=', 'null')
+                                ->get();
+
+            foreach ($findSpongeDetail as $detail) {
+                $findDeviceCategory = DeviceCategory::where('id', $detail->disturbance_category)
+                                        ->first();
+
+                $array[] = $findDeviceCategory->disturbance_category;
+            }
+
+            $countedValues = array_count_values($array);
+
+            $result2 = [
+                'success'           => true,
+            ];
+
+            $result = array_merge($result2, $countedValues);
+
+            return $result;
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function getDataDashboardPekerjaan() {
+        try {
+            $inputPekerjaanPemasangan = SpongeHeader::where('wo_category', 'PEKERJAAN')
+                ->where('job_category', 'PEMASANGAN')
+                ->count();
+
+            $inputPekerjaanSurvey = SpongeHeader::where('wo_category', 'PEKERJAAN')
+                ->where('job_category', 'SURVEY')
+                ->count();
+
+            $inputPekerjaanResetting = SpongeHeader::where('wo_category', 'PEKERJAAN')
+                ->where('job_category', 'RESETTING')
+                ->count();
+
+            $inputPekerjaanCommisioning = SpongeHeader::where('wo_category', 'PEKERJAAN')
+                ->where('job_category', 'COMMISIONING')
+                ->count();
+
+            $inputPekerjaanInvestigasi = SpongeHeader::where('wo_category', 'PEKERJAAN')
+                ->where('job_category', 'INVESTIGASI')
+                ->count();
+
+            $inputPekerjaanSupervisi = SpongeHeader::where('wo_category', 'PEKERJAAN')
+                ->where('job_category', 'SUPERVISI')
+                ->count();
+
+            return [
+                'success'               => true,
+                'pemasangan'            => $inputPekerjaanPemasangan,
+                'survey'                => $inputPekerjaanSurvey,
+                'resetting'             => $inputPekerjaanResetting,
+                'commisioning'          => $inputPekerjaanCommisioning,
+                'investigasi'           => $inputPekerjaanInvestigasi,
+                'supervisi'             => $inputPekerjaanSupervisi,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
         }
     }
 }

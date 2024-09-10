@@ -20,6 +20,7 @@
         <th>Nomor WO</th>
         <th>Nomor SPK</th>
         <th>Nomor BA</th>
+        <th>Nomor WP</th>
         <th>Departemen</th>
         <th>Kategori WO</th>
         <th>Kategori Pekerjaan</th>
@@ -50,6 +51,7 @@
             <td>{{$row['wo_number']}}</td>
             <td>{{$row['spk_number']}}</td>
             <td>{{$row['ba_number']}}</td>
+            <td>{{$row['wp_number']}}</td>
             <td>{{$row['department']}}</td>
             <td>{{$row['wo_type']}}</td>
             <td>{{$row['job_category']}}</td>

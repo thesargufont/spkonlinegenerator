@@ -107,220 +107,247 @@ class ReportController extends Controller {
             $findLocationId = Location::where('location', $location)
                                 ->first()->id ?? '';
 
-            $spongeheader = SpongeHeader::join('sponge_details', 'sponge_headers.id', 'sponge_details.wo_number_id')
-                ->select(
-                    'sponge_headers.*',
-                    'sponge_details.wo_number_id',
-                    'sponge_details.cr_number',
-//                    'sponge_details.wp_number',
-                    'sponge_details.location_id',
-                    'sponge_details.device_id',
-                    'sponge_details.disturbance_category',
-                    'sponge_details.wo_description',
-                    'sponge_details.job_description',
-                    'sponge_details.job_executor',
-                    'sponge_details.job_supervisor',
-                    'sponge_details.job_aid',
-                    'sponge_details.executor_progress',
-                    'sponge_details.executor_desc',
-                    'sponge_details.wo_attachment1',
-                    'sponge_details.wo_attachment2',
-                    'sponge_details.job_attachment1',
-                    'sponge_details.job_attachment2',
-                    'sponge_details.job_attachment3',
-                    'sponge_details.start_at',
-                    'sponge_details.estimated_end',
-                    'sponge_details.close_at',
-                    'sponge_details.canceled_at'
-                )
-                ->orderBy('sponge_headers.created_at','desc');
+//            $spongeheader = SpongeHeader::join('sponge_details', 'sponge_headers.id', 'sponge_details.wo_number_id')
+//                ->select(
+//                    'sponge_headers.*',
+//                    'sponge_details.wo_number_id',
+//                    'sponge_details.cr_number',
+////                    'sponge_details.wp_number',
+//                    'sponge_details.location_id',
+//                    'sponge_details.device_id',
+//                    'sponge_details.disturbance_category',
+//                    'sponge_details.wo_description',
+//                    'sponge_details.job_description',
+//                    'sponge_details.job_executor',
+//                    'sponge_details.job_supervisor',
+//                    'sponge_details.job_aid',
+//                    'sponge_details.executor_progress',
+//                    'sponge_details.executor_desc',
+//                    'sponge_details.wo_attachment1',
+//                    'sponge_details.wo_attachment2',
+//                    'sponge_details.job_attachment1',
+//                    'sponge_details.job_attachment2',
+//                    'sponge_details.job_attachment3',
+//                    'sponge_details.start_at',
+//                    'sponge_details.estimated_end',
+//                    'sponge_details.close_at',
+//                    'sponge_details.canceled_at'
+//                )
+//                ->orderBy('sponge_headers.created_at','desc');
+
+            $spongeheader = SpongeHeader::query();
 
 //            if (in_array($user_login, $users)){
-            if($userRole->role === 'SUPERADMIN') {
+//            if($userRole->role === 'SUPERADMIN') {
                 if($wo_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%");
+                    $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
                 }
 
                 if($wo_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%");
+                    $spongeheader = $spongeheader->where('wo_category', 'LIKE',  "%{$wo_category}%");
                 }
 
                 if($spk_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%");
+                    $spongeheader = $spongeheader->where('spk_number', 'LIKE',  "%{$spk_number}%");
                 }
 
                 if($job_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%");
+                    $spongeheader = $spongeheader->where('job_category', 'LIKE',  "%{$job_category}%");
                 }
 
-                if($findDepartmentId) {
-                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findDepartmentId}%");
-                }
-
-                if($wo_status) {
-                    $spongeheader = $spongeheader->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%");
-                }
-
-                if($location) {
-                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
-                }
-
-                if($engineer_status) {
-                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
-                }
-
-                if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
-                } else if (!empty($effective_date_start2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
-                } else if (!empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
-                }
-
-            } else if ($userRole->role === 'SPV') {
-//                dd('SPV');
-//                $spongeheader = SpongeHeader::orderBy('created_at','desc');
-
-                if($wo_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%");
-                }
-
-                if($wo_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%");
-                }
-
-                if($spk_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%");
-                }
-
-                if($job_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%");
-                }
-
-                if($findDepartmentId) {
-                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findDepartmentId}%");
-                } else {
-                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findUserDepartmentId}%");
+                if($findDepartmentId === '') {
+                    $spongeheader = $spongeheader->where('department_id', 'LIKE',  "%{$findDepartmentId}%");
                 }
 
                 if($wo_status) {
-                    $spongeheader = $spongeheader->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%");
+                    $spongeheader = $spongeheader->where('status', 'LIKE',  "%{$wo_status}%");
                 }
 
-                if($location) {
-                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
-                }
-
-                if($engineer_status) {
-                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
-                }
-
-                if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
-                } else if (!empty($effective_date_start2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
-                } else if (!empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
-                }
-            } else if($userRole->role === 'ENGINEER') {
-//                $spongeheader = SpongeHeader::orderBy('created_at','desc');
-
-//                dd('ENGINEER');
-
-                if($user) {
-                    $spongeheader = $spongeheader->where('sponge_details.job_executor', $user);
-                }
-
-                if($wo_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%");
-                }
-
-                if($wo_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%");
-                }
-
-                if($spk_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%");
-                }
-
-                if($job_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%");
-                }
-
-                if($findDepartmentId) {
-                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findDepartmentId}%");
-                }
-
-                if($wo_status) {
-                    $spongeheader = $spongeheader->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%");
-                }
-
-                if($location) {
-                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
-                }
-
-                if($engineer_status) {
-                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
-                }
+//                if($location) {
+//                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
+//                }
+//
+//                if($engineer_status) {
+//                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
+//                }
 
                 if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
+                    $spongeheader = $spongeheader->whereBetween('effective_date', [$effective_date_start2, $effective_date_end2]);
                 } else if (!empty($effective_date_start2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
+                    $spongeheader = $spongeheader->whereDate('effective_date', '>=', $effective_date_start2);
                 } else if (!empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
-                }
-            } else if($userRole->role === 'USER') {
-//                dd('USER');
-
-//                $spongeheader = SpongeHeader::orderBy('created_at','desc')
-//                                ->where('created_by', $user);
-                if($user) {
-                    $spongeheader = $spongeheader->where('sponge_headers.created_by', $user);
+                    $spongeheader = $spongeheader->whereDate('effective_date', '<=', $effective_date_end2);
                 }
 
-                if($wo_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%");
-                }
-
-                if($wo_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%");
-                }
-
-                if($spk_number) {
-                    $spongeheader = $spongeheader->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%");
-                }
-
-                if($job_category) {
-                    $spongeheader = $spongeheader->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%");
-                }
-
-                if($findDepartmentId) {
-                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findDepartmentId}%");
-                }
-
-                if($wo_status) {
-                    $spongeheader = $spongeheader->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%");
-                }
-
-                if($location) {
-                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
-                }
-
-                if($engineer_status) {
-                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
-                }
-
-                if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
-                } else if (!empty($effective_date_start2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
-                } else if (!empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
-                }
-            } else {
-                dd('Role not found');
-            }
+//            }
+//            else if ($userRole->role === 'SPV') {
+////                dd('SPV');
+////                $spongeheader = SpongeHeader::orderBy('created_at','desc');
+//
+//                if($wo_number) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%");
+//                }
+//
+//                if($wo_category) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%");
+//                }
+//
+//                if($spk_number) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%");
+//                }
+//
+//                if($job_category) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%");
+//                }
+//
+//                if($findDepartmentId === '') {
+//                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findDepartmentId}%");
+//                } else {
+//                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findUserDepartmentId}%");
+//                }
+//
+//                if($wo_status) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%");
+//                }
+//
+////                if($location) {
+////                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
+////                }
+////
+////                if($engineer_status) {
+////                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
+////                }
+//
+//                if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
+//                    $spongeheader = $spongeheader->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
+//                } else if (!empty($effective_date_start2)) {
+//                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
+//                } else if (!empty($effective_date_end2)) {
+//                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
+//                }
+//            } else if($userRole->role === 'ENGINEER') {
+//                $spongeHeaderEngineer = SpongeHeader::join('sponge_details', 'sponge_headers.id', 'sponge_details.wo_number_id')
+//                    ->select(
+//                        'sponge_headers.*',
+//                        'sponge_details.wo_number_id',
+//                        'sponge_details.cr_number',
+//    //                    'sponge_details.wp_number',
+//                        'sponge_details.location_id',
+//                        'sponge_details.device_id',
+//                        'sponge_details.disturbance_category',
+//                        'sponge_details.wo_description',
+//                        'sponge_details.job_description',
+//                        'sponge_details.job_executor',
+//                        'sponge_details.job_supervisor',
+//                        'sponge_details.job_aid',
+//                        'sponge_details.executor_progress',
+//                        'sponge_details.executor_desc',
+//                        'sponge_details.wo_attachment1',
+//                        'sponge_details.wo_attachment2',
+//                        'sponge_details.job_attachment1',
+//                        'sponge_details.job_attachment2',
+//                        'sponge_details.job_attachment3',
+//                        'sponge_details.start_at',
+//                        'sponge_details.estimated_end',
+//                        'sponge_details.close_at',
+//                        'sponge_details.canceled_at'
+//                    )
+//                    ->orderBy('sponge_headers.created_at','desc');
+//
+//                if($user) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->where('sponge_details.job_executor', $user);
+//                }
+//
+//                if($wo_number) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%");
+//                }
+//
+//                if($wo_category) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%");
+//                }
+//
+//                if($spk_number) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%");
+//                }
+//
+//                if($job_category) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%");
+//                }
+//
+//                if($findDepartmentId === '') {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->where('sponge_headers.department_id', 'LIKE',  "%{$findDepartmentId}%");
+//                }
+//
+//                if($wo_status) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%");
+//                }
+//
+////                if($location) {
+////                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
+////                }
+////
+////                if($engineer_status) {
+////                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
+////                }
+//
+//                if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
+//                } else if (!empty($effective_date_start2)) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
+//                } else if (!empty($effective_date_end2)) {
+//                    $spongeHeaderEngineer = $spongeHeaderEngineer->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
+//                }
+//            } else if($userRole->role === 'USER') {
+////                dd('USER');
+//
+////                $spongeheader = SpongeHeader::orderBy('created_at','desc')
+////                                ->where('created_by', $user);
+//                if($user) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.created_by', $user);
+//                }
+//
+//                if($wo_number) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%");
+//                }
+//
+//                if($wo_category) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%");
+//                }
+//
+//                if($spk_number) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%");
+//                }
+//
+//                if($job_category) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%");
+//                }
+//
+//                if($findDepartmentId === '') {
+//                    $spongeheader = $spongeheader->where('sponge_headers.department_id', 'LIKE',  "%{$findDepartmentId}%");
+//                }
+//
+//                if($wo_status) {
+//                    $spongeheader = $spongeheader->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%");
+//                }
+//
+////                if($location) {
+////                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
+////                }
+////
+////                if($engineer_status) {
+////                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
+////                }
+//
+//                if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
+//                    $spongeheader = $spongeheader->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
+//                } else if (!empty($effective_date_start2)) {
+//                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
+//                } else if (!empty($effective_date_end2)) {
+//                    $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
+//                }
+//            } else {
+//                dd('Role not found');
+//            }
 
 //            } else {
 //                $spongeheader_ongoing = SpongeHeader::whereIn('created_by', $user_login)->where('status','=','ONGOING')->orderBy('created_at','desc')
@@ -345,8 +372,11 @@ class ReportController extends Controller {
 //            }
 
 //            dd(json_encode($spongeheader->get()->toArray()));
-
-            return $spongeheader;
+//            if($userRole->role === 'ENGINEER') {
+//                return $spongeHeaderEngineer;
+//            } else {
+                return $spongeheader;
+//            }
         } catch (\Exception $e) {
             return $e->getMessage();
         }

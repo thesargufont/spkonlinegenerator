@@ -30,11 +30,12 @@
                 <form method="POST" id="search-form" class="form" role="form">
                     <div class="panel panel-primary">
                         <div class="panel-body">
-                            <div class="col-md-12">
+{{--                            <div class="row">--}}
+                            <div class="row mb-6">
                                 {{-- NOMOR WORK ORDER --}}
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="wo_number">NOMOR WORK ORDER</label>
-                                    <div class="col-md-6">
+                                    <div class="col-md-10">
                                         <select title="WO Number" id="wo_number" class="form-control">
                                             <option selected value=""></option>
                                             @foreach($woNumber as $wo)
@@ -45,35 +46,42 @@
                                 </div>
 
                                 {{-- NOMOR SPK --}}
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="spk_number">NOMOR SPK</label>
-                                    <div class="col-md-6">
+                                    <div class="col-md-10">
                                         <select title="SPK Number" id="spk_number" class="form-control">
                                             <option selected value=""></option>
                                             @foreach($spkNumber as $spk)
                                                 <option value="{{$spk}}">{{$spk}}</option>
                                             @endforeach
-                                        </select>                                    </div>
+                                        </select>
+                                    </div>
                                 </div>
-
-                                {{-- TANGGAL EFEKTIF --}}
-                                <div class="col-md-6">
-                                    <label class="col-md-1" for="effective_date">TANGGAL EFEKTIF</label>
-                                    <div class="col-md-1"></div>
-                                    <label class="col-md-1" for="effective_date_start">DARI</label>
-                                    <div class="col-md-4">
+                            </div>
+                            <br>
+                            <div class="row mb-6">
+                                {{-- TANGGAL EFEKTIF DARI --}}
+                                <div class="col-md-6 mb-3">
+                                    <label class="col-md-2" for="effective_date_start">TANGGAL EFEKTIF DARI</label>
+                                    <div class="col-md-10">
                                         <input name="effective_date_start" id='effective_date_start' type="text" class="form-control doStartDate" readonly value="">
                                     </div>
-                                    <label class="col-md-1" for="effective_date_end">KE</label>
-                                    <div class="col-md-4">
+                                </div>
+
+                                {{-- TANGGAL EFEKTIF KE --}}
+                                <div class="col-md-6 mb-3">
+                                    <label class="col-md-2" for="effective_date_end">TANGGAL EFEKTIF KE</label>
+                                    <div class="col-md-10">
                                         <input name="effective_date_end" id='effective_date_end' type="text" class="form-control doEndDate" readonly value="">
                                     </div>
                                 </div>
-
+                            </div>
+                            <br>
+                            <div class="row mb-6">
                                 {{-- KATEGORI WORK ORDER --}}
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="wo_category">KATEGORI WORK ORDER</label>
-                                    <div class="col-md-6">
+                                    <div class="col-md-10">
                                         <select title="WO Category" id="wo_category" name="wo_category" class="form-control">
                                             <option selected value=""></option>
                                             @foreach($woCategory as $woCategory)
@@ -84,19 +92,21 @@
                                 </div>
 
                                 {{-- KATEGORI PEKERJAAN --}}
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="job_category">KATEGORI PEKERJAAN</label>
-                                    <div class="col-md-6">
+                                    <div class="col-md-10">
                                         <select title="Job Category" id="job_category" name="job_category" class="form-control">
                                             <option value="" selected></option>
                                         </select>
                                     </div>
                                 </div>
-
+                            </div>
+                            <br>
+                            <div class="row mb-6">
                                 {{-- DEPARTMENT --}}
-                                <div class="col-md-6">
-                                    <label class="col-md-2" for="department">DEPARTMENT</label>
-                                    <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
+                                    <label class="col-md-2" for="department">DEPARTEMEN</label>
+                                    <div class="col-md-10">
                                         <select title="DEPARTMENT" id="department" name="department" class="form-control">
                                             <option selected value=""></option>
                                             @if (!empty($department) && is_array($department))
@@ -105,17 +115,15 @@
                                                         {{ $dept['department_code'] }} - {{ $dept['department'] }}
                                                     </option>
                                                 @endforeach
-                                            @else
-{{--                                                <option value="">No departments found</option>--}}
                                             @endif
                                         </select>
                                     </div>
                                 </div>
 
                                 {{-- LOKASI --}}
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="location">LOKASI</label>
-                                    <div class="col-md-6">
+                                    <div class="col-md-10">
                                         <select title="LOKASI" id="location" name="location" class="form-control">
                                             <option selected value=""></option>
                                             @if (!empty($location) && is_array($location))
@@ -124,17 +132,17 @@
                                                         {{ $loc['location'] }} - {{ $loc['location_type'] }}
                                                     </option>
                                                 @endforeach
-                                            @else
-{{--                                                <option value="">No locations found</option>--}}
                                             @endif
                                         </select>
                                     </div>
                                 </div>
-
+                            </div>
+                            <br>
+                            <div class="row mb-6">
                                 {{-- STATUS WORK ORDER --}}
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="wo_status">STATUS WORK ORDER</label>
-                                    <div class="col-md-6">
+                                    <div class="col-md-10">
                                         <select title="WO Status" id="wo_status" name="wo_status" class="form-control">
                                             <option selected value=""></option>
                                             @foreach($workOrderStatus as $workOrderStatus)
@@ -145,9 +153,9 @@
                                 </div>
 
                                 {{-- STATUS ENGINEER --}}
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="engineer_status">STATUS ENGINEER</label>
-                                    <div class="col-md-6">
+                                    <div class="col-md-10">
                                         <select title="Engineering Status" id="engineer_status" name="engineer_status" class="form-control">
                                             <option selected value=""></option>
                                             @foreach($engineerStatus as $engineerStatus)
@@ -156,12 +164,16 @@
                                         </select>
                                     </div>
                                 </div>
-
                             </div>
-
+{{--                            </div>--}}
+                            <br>
                             {{-- SEARCH --}}
                             <div class="row">
-                                <div class="col col-md-3"><button type="submit" class="btn btn-primary" title="search"><i class="fa fa-search"></i> {{ucwords(__('search'))}}</button> </div>
+                                <div class="col col-md-3">
+                                    <button type="submit" class="btn btn-primary" title="search">
+                                        <i class="fa fa-search"></i> {{ucwords(__('search'))}}
+                                    </button>
+                                </div>
                             </div>
                         </div> <!-- panel-body -->
                     </div> <!-- panel -->
