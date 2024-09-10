@@ -59,7 +59,7 @@
 
                         {{-- AUTHORITY --}}
                         <div class="row mb-2">
-                            <label class="col-md-2">OTORITAS *</label>
+                            <label class="col-md-2">AUTORISASI *</label>
                             <div class="col-md-6">
                                 <select title="authority" id="authority" class="form-control">
                                     <option value="" selected hidden disabled>PILIH SALAH SATU</option>
