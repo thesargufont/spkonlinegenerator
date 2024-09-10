@@ -31,12 +31,12 @@
                     <div class="panel panel-primary">
                         <div class="panel-body">
                             <div class="col-md-12">
-                                {{-- KATEGORI WORK ORDER --}}
+                                {{-- NOMOR WORK ORDER --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="wo_category">NOMOR WORK ORDER</label>
+                                    <label class="col-md-2" for="wo_number">NOMOR WORK ORDER</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option selected value="">-</option>
+                                        <select title="WO Number" id="wo_number" class="form-control">
+                                            <option selected value=""></option>
                                             @foreach($woNumber as $wo)
                                                 <option value="{{$wo}}">{{$wo}}</option>
                                             @endforeach
@@ -48,8 +48,8 @@
                                 <div class="col-md-6">
                                     <label class="col-md-2" for="spk_number">NOMOR SPK</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option selected value="">-</option>
+                                        <select title="SPK Number" id="spk_number" class="form-control">
+                                            <option selected value=""></option>
                                             @foreach($spkNumber as $spk)
                                                 <option value="{{$spk}}">{{$spk}}</option>
                                             @endforeach
@@ -59,13 +59,13 @@
                                 {{-- TANGGAL EFEKTIF --}}
                                 <div class="col-md-6">
                                     <label class="col-md-1" for="effective_date">TANGGAL EFEKTIF</label>
-                                    <div class="col-md-3"></div>
-                                    <label class="col-md-1" for="effective_date">DARI</label>
-                                    <div class="col-md-3">
+                                    <div class="col-md-1"></div>
+                                    <label class="col-md-1" for="effective_date_start">DARI</label>
+                                    <div class="col-md-4">
                                         <input name="effective_date_start" id='effective_date_start' type="text" class="form-control doStartDate" readonly value="">
                                     </div>
-                                    <label class="col-md-1" for="effective_date">KE</label>
-                                    <div class="col-md-3">
+                                    <label class="col-md-1" for="effective_date_end">KE</label>
+                                    <div class="col-md-4">
                                         <input name="effective_date_end" id='effective_date_end' type="text" class="form-control doEndDate" readonly value="">
                                     </div>
                                 </div>
@@ -74,10 +74,10 @@
                                 <div class="col-md-6">
                                     <label class="col-md-2" for="wo_category">KATEGORI WORK ORDER</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option selected value="">-</option>
-                                            @foreach($woCategory as $department)
-                                                <option value="{{$department}}">{{$department}}</option>
+                                        <select title="WO Category" id="wo_category" name="wo_category" class="form-control">
+                                            <option selected value=""></option>
+                                            @foreach($woCategory as $woCategory)
+                                                <option value="{{$woCategory}}">{{$woCategory}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -85,22 +85,20 @@
 
                                 {{-- KATEGORI PEKERJAAN --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="wo_category">KATEGORI PEKERJAAN</label>
+                                    <label class="col-md-2" for="job_category">KATEGORI PEKERJAAN</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option value="" selected>SEMUA KATEGORI</option>
-                                            <option value="LAPORAN GANGGUAN">LAPORAN GANGGUAN</option>
-                                            <option value="PEKERJAAN">PEKERJAAN</option>
+                                        <select title="Job Category" id="job_category" name="job_category" class="form-control">
+                                            <option value="" selected></option>
                                         </select>
                                     </div>
                                 </div>
 
                                 {{-- DEPARTMENT --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="department_select">DEPARTMENT</label>
+                                    <label class="col-md-2" for="department">DEPARTMENT</label>
                                     <div class="col-md-6">
-                                        <select title="DEPARTMENT" id="department_select" class="form-control">
-                                            <option selected value="">-</option>
+                                        <select title="DEPARTMENT" id="department" name="department" class="form-control">
+                                            <option selected value=""></option>
                                             @if (!empty($department) && is_array($department))
                                                 @foreach ($department as $dept)
                                                     <option value="{{ $dept['department_code'] }}">
@@ -108,7 +106,7 @@
                                                     </option>
                                                 @endforeach
                                             @else
-                                                <option value="">No departments found</option>
+{{--                                                <option value="">No departments found</option>--}}
                                             @endif
                                         </select>
                                     </div>
@@ -116,10 +114,10 @@
 
                                 {{-- LOKASI --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="location_select">LOKASI</label>
+                                    <label class="col-md-2" for="location">LOKASI</label>
                                     <div class="col-md-6">
-                                        <select title="LOKASI" id="location_select" class="form-control">
-                                            <option selected value="">-</option>
+                                        <select title="LOKASI" id="location" name="location" class="form-control">
+                                            <option selected value=""></option>
                                             @if (!empty($location) && is_array($location))
                                                 @foreach ($location as $loc)
                                                     <option value="{{ $loc['location'] }}">
@@ -127,7 +125,7 @@
                                                     </option>
                                                 @endforeach
                                             @else
-                                                <option value="">No locations found</option>
+{{--                                                <option value="">No locations found</option>--}}
                                             @endif
                                         </select>
                                     </div>
@@ -135,10 +133,10 @@
 
                                 {{-- STATUS WORK ORDER --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="wo_category">STATUS WORK ORDER</label>
+                                    <label class="col-md-2" for="wo_status">STATUS WORK ORDER</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option selected value="">-</option>
+                                        <select title="WO Status" id="wo_status" name="wo_status" class="form-control">
+                                            <option selected value=""></option>
                                             @foreach($workOrderStatus as $workOrderStatus)
                                                 <option value="{{$workOrderStatus}}">{{$workOrderStatus}}</option>
                                             @endforeach
@@ -148,10 +146,10 @@
 
                                 {{-- STATUS ENGINEER --}}
                                 <div class="col-md-6">
-                                    <label class="col-md-2" for="wo_category">STATUS ENGINEER</label>
+                                    <label class="col-md-2" for="engineer_status">STATUS ENGINEER</label>
                                     <div class="col-md-6">
-                                        <select title="STATUS" id="wo_category" class="form-control">
-                                            <option selected value="">-</option>
+                                        <select title="Engineering Status" id="engineer_status" name="engineer_status" class="form-control">
+                                            <option selected value=""></option>
                                             @foreach($engineerStatus as $engineerStatus)
                                                 <option value="{{$engineerStatus}}">{{$engineerStatus}}</option>
                                             @endforeach
@@ -265,6 +263,15 @@
                     },
                     'data': function(d) {
                         d.wo_number = $('#wo_number').val();
+                        d.spk_number = $('#spk_number').val();
+                        d.effective_date_start = $('#effective_date_start').val();
+                        d.effective_date_end = $('#effective_date_end').val();
+                        d.wo_category = $('#wo_category').val();
+                        d.job_category = $('#job_category').val();
+                        d.department = $('#department').val();
+                        d.location = $('#location').val();
+                        d.wo_status = $('#wo_status').val();
+                        d.engineer_status = $('#engineer_status').val();
                     }
                 },
                 columns: [{
