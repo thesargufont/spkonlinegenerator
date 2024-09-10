@@ -23,7 +23,7 @@ class ReportController extends Controller {
     public function index() {
         $user_id = Auth::user()->id;
         $roles = Role::where('user_id', $user_id)->where('active', 1)->distinct()->pluck('role')->toArray();
-//        $access_right = array('SUPERADMIN', 'SPV');
+        $access_right = array('SUPERADMIN', 'SPV', 'ENGINEER', 'USER');
 
         $getDataFilter = $this->getDataFilter();
 
@@ -35,9 +35,9 @@ class ReportController extends Controller {
         $workOrderStatus    = $getDataFilter['workOrderStatus'];
         $engineerStatus     = $getDataFilter['engineerStatus'];
 
-//        if (count(array_intersect($roles, $access_right)) == 0) {
-//            return redirect()->route('home');
-//        }
+        if (count(array_intersect($roles, $access_right)) == 0) {
+            return redirect()->route('home');
+        }
 
         $array = [
             'woNumber'          => $woNumber,
@@ -178,7 +178,7 @@ class ReportController extends Controller {
                 }
 
             } else if ($userRole->role === 'SPV') {
-                dd('SPV');
+//                dd('SPV');
 //                $spongeheader = SpongeHeader::orderBy('created_at','desc');
 
                 if($wo_number) {
@@ -225,7 +225,7 @@ class ReportController extends Controller {
             } else if($userRole->role === 'ENGINEER') {
 //                $spongeheader = SpongeHeader::orderBy('created_at','desc');
 
-                dd('ENGINEER');
+//                dd('ENGINEER');
 
                 if($user) {
                     $spongeheader = $spongeheader->where('sponge_details.job_executor', $user);
@@ -271,7 +271,7 @@ class ReportController extends Controller {
                     $spongeheader = $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
                 }
             } else if($userRole->role === 'USER') {
-                dd('USER');
+//                dd('USER');
 
 //                $spongeheader = SpongeHeader::orderBy('created_at','desc')
 //                                ->where('created_by', $user);
