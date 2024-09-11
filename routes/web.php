@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
@@ -19,6 +18,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\WorkingOrderController;
 use App\Http\Controllers\DeviceCategoryController;
 use App\Http\Controllers\ReportController;
+
 
 /*
 |--------------------------------------------------------------------------
