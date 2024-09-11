@@ -2,12 +2,14 @@
 
 namespace App\Exports;
 
-use App\Models\Department;
+use App\User;
+use Carbon\Carbon;
 use App\Models\Device;
 use App\Models\Location;
+use App\Models\Department;
 use App\Models\SpongeDetail;
-use App\User;
 use Illuminate\Http\Request;
+use App\Models\DeviceCategory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -22,7 +24,6 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
-use Carbon\Carbon;
 
 class ReportExport extends DefaultValueBinder implements WithCustomValueBinder,FromView, ShouldAutoSize, WithTitle, WithEvents
 {
@@ -99,6 +100,10 @@ class ReportExport extends DefaultValueBinder implements WithCustomValueBinder,F
                 $engineer = $findUserJobExecutor ? $findUserJobExecutor->name : '';
                 $supervisor = $findUserJobSupervisor ? $findUserJobSupervisor->name : '';
 
+                $findUserApproveBy = User::find($data->approve_by);
+
+                $disturbanceCategory = DeviceCategory::find($detail->disturbance_category);
+
                 // Prepare the item for the list
                 $item = [
                     'no'                        => ++$counter,
@@ -111,7 +116,7 @@ class ReportExport extends DefaultValueBinder implements WithCustomValueBinder,F
                     'job_category'              => $data->job_category ?? '',
                     'location'                  => $location,
                     'device_name'               => $deviceName,
-                    'disturbance_category'      => $detail->disturbance_category !== 'null' ? $detail->disturbance_category : '',
+                    'disturbance_category'      => $disturbanceCategory->disturbance_category ?? '',
                     'wo_description'            => $detail->wo_description ?? '',
                     'job_description'           => $detail->job_description ?? '',
                     'engineer'                  => $engineer,
@@ -121,14 +126,14 @@ class ReportExport extends DefaultValueBinder implements WithCustomValueBinder,F
                     'status'                    => $data->status ?? '',
                     'created_by'                => $userCreatedName,
                     'effective_date'            => $data->effective_date ? Carbon::createFromFormat('Y-m-d H:i:s', $data->effective_date)->format('d/m/Y H:i:s') : '',
-                    'approve_by'                => $data->approve_by ?? '',
+                    'approve_by'                => $findUserApproveBy->name ?? '',
                     'approve_at'                => $data->approve_at ? Carbon::createFromFormat('Y-m-d H:i:s', $data->approve_at)->format('d/m/Y H:i:s') : '',
                     'start_at'                  => $detail->start_at ? Carbon::createFromFormat('Y-m-d H:i:s', $detail->start_at)->format('d/m/Y H:i:s') : '',
                     'estimated_end'             => $detail->estimated_end ? Carbon::createFromFormat('Y-m-d H:i:s', $detail->estimated_end)->format('d/m/Y H:i:s') : '',
                     'close_at'                  => $detail->close_at ? Carbon::createFromFormat('Y-m-d H:i:s', $detail->close_at)->format('d/m/Y H:i:s') : '',
                     'cancelled_at'              => $detail->canceled_at ? Carbon::createFromFormat('Y-m-d H:i:s', $detail->canceled_at)->format('d/m/Y H:i:s') : '',
                 ];
-
+                // dd($item);
                 $items[] = $item;
             }
         }
@@ -136,7 +141,8 @@ class ReportExport extends DefaultValueBinder implements WithCustomValueBinder,F
         // Prepare view data
         $data = collect($items);
         $auth = Auth::user();
-        $datetimenow = date('d/m/Y H:i:s');
+        // $datetimenow = date('d/m/Y H:i:s');
+        $datetimenow = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now()->timezone('Asia/Jakarta'))->format('d/m/Y H:i:s');
         $this->countdata = count($items);
 
         return view('reports.export.export', [

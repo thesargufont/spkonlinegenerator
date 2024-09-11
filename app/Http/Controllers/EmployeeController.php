@@ -219,9 +219,10 @@ class EmployeeController extends Controller
         try {
             DB::beginTransaction();
             if ($user) {
-                $user->active      = 0;
-                $user->updated_by  = Auth::user()->id;
-                $user->updated_at  = Carbon::now()->timezone('Asia/Jakarta');
+                $user->active         = 0;
+                $user->end_effective  = Carbon::now()->timezone('Asia/Jakarta');
+                $user->updated_by     = Auth::user()->id;
+                $user->updated_at     = Carbon::now()->timezone('Asia/Jakarta');
                 $user->save();
 
                 DB::commit();
@@ -585,6 +586,7 @@ class EmployeeController extends Controller
                             'updated_by'      => Auth::user()->id,
                             'updated_at'      => Carbon::now()->timezone('Asia/Jakarta'),
                         ]);
+                        $insertUser->save();
                     } else {
                         DB::rollback();
 

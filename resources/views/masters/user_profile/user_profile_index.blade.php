@@ -302,6 +302,7 @@
                 }
             }
         });
+        return false;
     }
 
     function doSubmitPassword() {
@@ -351,6 +352,7 @@
                 }
             }
         });
+        return false;
     }
 
     function onlyNumberKey(evt) {
@@ -416,7 +418,7 @@
                     $('#description').val('');
                     setTimeout(function() {
                         window.location.href = "{{url('masters/employee/index')}}";
-                    }, 1500);
+                    }, 100);
                 }
             },
             error: function(data) {
