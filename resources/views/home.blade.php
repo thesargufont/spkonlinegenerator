@@ -182,26 +182,26 @@
             "#0004ff",
         ];
 
-        var xValuesGangguan = ["COMUNICATION DOWN", "SEND ALARM", "SDH MAJOR ALARM", "SDH FO CUT"];
-        var yValuesGangguan = ['{{ $dataDashboardGangguan['COMUNICATION DOWN'] }}', '{{ $dataDashboardGangguan['SEND ALARM'] }}', '{{ $dataDashboardGangguan['SDH MAJOR ALARM'] }}', '{{ $dataDashboardGangguan['SDH FO CUT'] }}'];
-        var barColorsGangguan = [
-            "#ff4400",
-            "#008aee",
-            "#00f821",
-            "#ffc300",
-            "#a100ff",
-        ];
+        // var xValuesGangguan = ["COMUNICATION DOWN", "SEND ALARM", "SDH MAJOR ALARM", "SDH FO CUT"];
+        // var yValuesGangguan = ['{{ $dataDashboardGangguan['COMUNICATION DOWN'] }}', '{{ $dataDashboardGangguan['SEND ALARM'] }}', '{{ $dataDashboardGangguan['SDH MAJOR ALARM'] }}', '{{ $dataDashboardGangguan['SDH FO CUT'] }}'];
+        // var barColorsGangguan = [
+        //     "#ff4400",
+        //     "#008aee",
+        //     "#00f821",
+        //     "#ffc300",
+        //     "#a100ff",
+        // ];
 
-        var xValuesPekerjaan = ["PEMASANGAN", "SURVEY", "RESETTING", "COMMISIONING", "INVESTIGASI", "SUPERVISI"];
-        var yValuesPekerjaan = ['{{ $dataDashboardPekerjaan['pemasangan'] }}', '{{ $dataDashboardPekerjaan['survey'] }}', '{{ $dataDashboardPekerjaan['resetting'] }}', '{{ $dataDashboardPekerjaan['commisioning'] }}', '{{ $dataDashboardPekerjaan['investigasi'] }}', '{{ $dataDashboardPekerjaan['supervisi'] }}'];
-        var barColorsPekerjaan = [
-            "#ff4400",
-            "#008aee",
-            "#00f821",
-            "#ffc300",
-            "#a100ff",
-            "#00fcc0",
-        ];
+        // var xValuesPekerjaan = ["PEMASANGAN", "SURVEY", "RESETTING", "COMMISIONING", "INVESTIGASI", "SUPERVISI"];
+        // var yValuesPekerjaan = ['{{ $dataDashboardPekerjaan['pemasangan'] }}', '{{ $dataDashboardPekerjaan['survey'] }}', '{{ $dataDashboardPekerjaan['resetting'] }}', '{{ $dataDashboardPekerjaan['commisioning'] }}', '{{ $dataDashboardPekerjaan['investigasi'] }}', '{{ $dataDashboardPekerjaan['supervisi'] }}'];
+        // var barColorsPekerjaan = [
+        //     "#ff4400",
+        //     "#008aee",
+        //     "#00f821",
+        //     "#ffc300",
+        //     "#a100ff",
+        //     "#00fcc0",
+        // ];
 
         new Chart("statusChart", {
             type: "doughnut",
