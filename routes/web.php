@@ -19,7 +19,6 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\WorkingOrderController;
 use App\Http\Controllers\DeviceCategoryController;
 use App\Http\Controllers\ReportController;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
