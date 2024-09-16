@@ -1,12 +1,12 @@
 @extends('layouts.layout')
 
 @section('auth')
-    {{--    <h4 class="pull-left page-title">Dashboard</h4>--}}
-    {{--    <ol class="breadcrumb pull-right">--}}
-    {{--        <li><a href="#">{{Auth::user()->name}}</a></li>--}}
-    {{--        <li class="active">Dashboard</li>--}}
-    {{--    </ol>--}}
-    {{--    <div class="clearfix"></div>--}}
+    <!--    {{--    <h4 class="pull-left page-title">Dashboard</h4>--}}-->
+    <!--    {{--    <ol class="breadcrumb pull-right">--}}-->
+    <!--    {{--        <li><a href="#">{{Auth::user()->name}}</a></li>--}}-->
+    <!--    {{--        <li class="active">Dashboard</li>--}}-->
+    <!--    {{--    </ol>--}}-->
+    <!--    {{--    <div class="clearfix"></div>--}}-->
 @endsection
 @section('content')
     <div class="container" style="overflow:scroll; height:100%;">
@@ -17,13 +17,13 @@
                         <div class="col-sm-15">
                             <div class="panel panel-primary text-center larger-panel">
                                 <div class="panel-heading">
-                                    <h4 class="panel-title">Total Laporan</h4>
+                                    <h4 class="panel-title">TOTAL LAPORAN</h4>
                                 </div>
                                 <div class="panel-body">
                                     <h3 class="">
                                         <b><p class="text-muted"><b></b></p>{{ $totalReport }}</b>
                                     </h3>
-                                    <p class="text-muted"><b></b>Laporan periode 2024</p>
+                                    <p class="text-muted"><b></b>Laporan periode {{$year}}</p>
                                 </div>
                             </div>
                         </div>
@@ -31,7 +31,7 @@
                         <div class="col-sm-15">
                             <div class="panel panel-primary text-center larger-panel">
                                 <div class="panel-heading">
-                                    <h4 class="panel-title">Total Laporan Gangguan</h4>
+                                    <h4 class="panel-title">TOTAL LAPORAN GANGGUAN</h4>
                                 </div>
                                 <div class="panel-body">
                                     <h3 class=""><b>{{ $totalReportProblem }}</b></h3>
@@ -43,7 +43,7 @@
                         <div class="col-sm-15">
                             <div class="panel panel-primary text-center larger-panel">
                                 <div class="panel-heading">
-                                    <h4 class="panel-title">Total Pekerjaan</h4>
+                                    <h4 class="panel-title">TOTAL PEKERJAAN</h4>
                                 </div>
                                 <div class="panel-body">
                                     <h3 class=""><b>{{ $totalReportJob }}</b></h3>
@@ -86,7 +86,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="chart-container">
-                                    <canvas id="gangguanChart" style="height: 300px"></canvas>
+                                    <canvas id="gangguanChart" style="height: 1000px; width: 600px;"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="chart-container">
-                                    <canvas id="pekerjaanChart" style="height: 300px"></canvas>
+                                    <canvas id="pekerjaanChart" style="height: 1000px; width: 600px"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -108,55 +108,51 @@
             </div>
         </div>
 
-        {{--        <div class="row">--}}
-        {{--            <div class="col-md-12">--}}
-        {{--                <div class="panel panel-primary">--}}
-        {{--                    <div class="panel-heading">--}}
-        {{--                        <h3 class="panel-title">Data Pekerjaan</h3>--}}
-        {{--                    </div>--}}
-        {{--                    <div class="panel-body">--}}
-        {{--                        <span id="form_result"></span>--}}
-        {{--                        <table  id="main-table" class="table table-striped table-bordered dt-responsive" cellspacing="0" width="100%">--}}
-        {{--                            <thead>--}}
-        {{--                            <tr>--}}
-        {{--                                <th>Nomor WO</th>--}}
-        {{--                                <th>Tipe WO</th>--}}
-        {{--                                <th>Nomor SPK</th>--}}
-        {{--                                <th>Nomor WP</th>--}}
-        {{--                                <th>Kategori Pekerjaan</th>--}}
-        {{--                                <th>Departemen</th>--}}
-        {{--                                <th>Status</th>--}}
-        {{--                                <th>Tanggal Effective</th>--}}
-        {{--                                <th>Dibuat Oleh</th>--}}
-        {{--                                <th>Dibuat Pada</th>--}}
-        {{--                                <th>Diubah Oleh</th>--}}
-        {{--                                <th>Diubah Pada</th>--}}
-        {{--                            </tr>--}}
-        {{--                            </thead>--}}
-        {{--                        </table>--}}
-        {{--                    </div>--}}
-        {{--                </div>--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
+        <!--        {{--        <div class="row">--}}-->
+        <!--        {{--            <div class="col-md-12">--}}-->
+        <!--        {{--                <div class="panel panel-primary">--}}-->
+        <!--        {{--                    <div class="panel-heading">--}}-->
+        <!--        {{--                        <h3 class="panel-title">Data Pekerjaan</h3>--}}-->
+        <!--        {{--                    </div>--}}-->
+        <!--        {{--                    <div class="panel-body">--}}-->
+        <!--        {{--                        <span id="form_result"></span>--}}-->
+        <!--        {{--                        <table  id="main-table" class="table table-striped table-bordered dt-responsive" cellspacing="0" width="100%">--}}-->
+        <!--        {{--                            <thead>--}}-->
+        <!--        {{--                            <tr>--}}-->
+        <!--        {{--                                <th>Nomor WO</th>--}}-->
+        <!--        {{--                                <th>Tipe WO</th>--}}-->
+        <!--        {{--                                <th>Nomor SPK</th>--}}-->
+        <!--        {{--                                <th>Nomor WP</th>--}}-->
+        <!--        {{--                                <th>Kategori Pekerjaan</th>--}}-->
+        <!--        {{--                                <th>Departemen</th>--}}-->
+        <!--        {{--                                <th>Status</th>--}}-->
+        <!--        {{--                                <th>Tanggal Effective</th>--}}-->
+        <!--        {{--                                <th>Dibuat Oleh</th>--}}-->
+        <!--        {{--                                <th>Dibuat Pada</th>--}}-->
+        <!--        {{--                                <th>Diubah Oleh</th>--}}-->
+        <!--        {{--                                <th>Diubah Pada</th>--}}-->
+        <!--        {{--                            </tr>--}}-->
+        <!--        {{--                            </thead>--}}-->
+        <!--        {{--                        </table>--}}-->
+        <!--        {{--                    </div>--}}-->
+        <!--        {{--                </div>--}}-->
+        <!--        {{--            </div>--}}-->
+        <!--        {{--        </div>--}}-->
     </div>
 
     <link rel="stylesheet" href="{{ asset ('plugins/morris/morris.css') }}">
-    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>--}}
+    <!--    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>--}}-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/0.7.0/chartjs-plugin-datalabels.min.js"></script>
-    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/1.0.0/chartjs-plugin-datalabels.min.js" integrity="sha512-XulchVN83YTvsOaBGjLeApZuasKd8F4ZZ28/aMHevKjzrrjG0lor+T4VU248fWYMNki3Eimk+uwdlQS+uZmu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>--}}
+    <!--    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/1.0.0/chartjs-plugin-datalabels.min.js" integrity="sha512-XulchVN83YTvsOaBGjLeApZuasKd8F4ZZ28/aMHevKjzrrjG0lor+T4VU248fWYMNki3Eimk+uwdlQS+uZmu8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>--}}-->
 
     <style>
         .chart-container {
-            height: 300px; /* Adjust based on your needs */
+            width: 100%;
+            height: 280px; /* Set a fixed height for scrolling */
             overflow-y: scroll;
-            overflow-x: hidden; /* Optional: Hide horizontal overflow if not needed */
+            overflow-x: scroll; /* Optional: Hide horizontal overflow if not needed */
         }
-        /*.chart-container {*/
-        /*    height: 500px; !* Adjust based on your needs *!*/
-        /*    width: 100%; !* Ensure the width is set properly *!*/
-        /*    overflow: auto; !* Allows both horizontal and vertical scrolling *!*/
-        /*}*/
         .larger-panel {
             min-height: 225px; /* Increase height */
             padding: 10px; /* Add more padding */
@@ -177,7 +173,7 @@
             "#ff0000", // Red
             "#00ff00", // Green
             "#0000ff", // Blue
-            "#ffff00", // Yellow
+            "#ffcc00", // Yellow
             "#ff00ff", // Magenta
             "#00ffff"  // Cyan
         ];
@@ -265,8 +261,8 @@
         var yValuesStatus = Object.values(statusCounts);
 
         // var xValuesStatus = ["OUTS APPROVE", "ONGOING", "DONE", "NOT APPROVED","CANCEL"];
-        {{--var xValuesStatus = ["NOT APPROVED", "ONGOING", "DONE", "CLOSED","CANCEL"];--}}
-        {{--var yValuesStatus = ['{{ $dataDashboardStatus['statusNotApprove'] }}', '{{ $dataDashboardStatus['statusOnGoing'] }}', '{{ $dataDashboardStatus['statusDone'] }}', '{{ $dataDashboardStatus['statusClosed'] }}', '{{ $dataDashboardStatus['statusCancel'] }}'];--}}
+        // {{--var xValuesStatus = ["NOT APPROVED", "ONGOING", "DONE", "CLOSED","CANCEL"];--}}
+        // {{--var yValuesStatus = ['{{ $dataDashboardStatus['statusNotApprove'] }}', '{{ $dataDashboardStatus['statusOnGoing'] }}', '{{ $dataDashboardStatus['statusDone'] }}', '{{ $dataDashboardStatus['statusClosed'] }}', '{{ $dataDashboardStatus['statusCancel'] }}'];--}}
         // var barColorsStatus = [
         //     // "#ff4400",
         //     "#31ec23",
@@ -291,10 +287,10 @@
         var xValuesInput = Object.keys(inputCounts);
         var yValuesInput = Object.values(inputCounts);
 
-        {{--var xValuesInput = ["LAPORAN GANGGUAN", "PEKERJAAN"];--}}
-        {{--var yValuesInput = ['{{ $dataDashboardInput['inputGangguan'] }}', '{{ $dataDashboardInput['inputPekerjaan'] }}'];--}}
+        // {{--var xValuesInput = ["LAPORAN GANGGUAN", "PEKERJAAN"];--}}
+        // {{--var yValuesInput = ['{{ $dataDashboardInput['inputGangguan'] }}', '{{ $dataDashboardInput['inputPekerjaan'] }}'];--}}
         var barColorsInput = [
-            "#ff4400",
+        "#ff4400",
             "#31ec23",
         ];
 
@@ -322,8 +318,8 @@
         var xValuesGangguan = Object.keys(gangguanCounts);
         var yValuesGangguan = Object.values(gangguanCounts);
 
-        {{--var xValuesGangguan = ["COMUNICATION DOWN", "SEND ALARM", "SDH MAJOR ALARM", "SDH FO CUT"];--}}
-        {{--var yValuesGangguan = ['{{ $dataDashboardGangguan['COMUNICATION DOWN'] }}', '{{ $dataDashboardGangguan['SEND ALARM'] }}', '{{ $dataDashboardGangguan['SDH MAJOR ALARM'] }}', '{{ $dataDashboardGangguan['SDH FO CUT'] }}'];--}}
+        // {{--var xValuesGangguan = ["COMUNICATION DOWN", "SEND ALARM", "SDH MAJOR ALARM", "SDH FO CUT"];--}}
+        // {{--var yValuesGangguan = ['{{ $dataDashboardGangguan['COMUNICATION DOWN'] }}', '{{ $dataDashboardGangguan['SEND ALARM'] }}', '{{ $dataDashboardGangguan['SDH MAJOR ALARM'] }}', '{{ $dataDashboardGangguan['SDH FO CUT'] }}'];--}}
         var barColorsGangguan = [];
 
         for (let i = 0; i < xValuesGangguan.length; i++) {
@@ -340,8 +336,8 @@
         var xValuesPekerjaan = Object.keys(jobCounts);
         var yValuesPekerjaan = Object.values(jobCounts);
 
-        {{--var xValuesPekerjaan = ["PEMASANGAN", "SURVEY", "RESETTING", "COMMISIONING", "INVESTIGASI", "SUPERVISI"];--}}
-        {{--var yValuesPekerjaan = ['{{ $dataDashboardPekerjaan['pemasangan'] }}', '{{ $dataDashboardPekerjaan['survey'] }}', '{{ $dataDashboardPekerjaan['resetting'] }}', '{{ $dataDashboardPekerjaan['commisioning'] }}', '{{ $dataDashboardPekerjaan['investigasi'] }}', '{{ $dataDashboardPekerjaan['supervisi'] }}'];--}}
+        // {{--var xValuesPekerjaan = ["PEMASANGAN", "SURVEY", "RESETTING", "COMMISIONING", "INVESTIGASI", "SUPERVISI"];--}}
+        // {{--var yValuesPekerjaan = ['{{ $dataDashboardPekerjaan['pemasangan'] }}', '{{ $dataDashboardPekerjaan['survey'] }}', '{{ $dataDashboardPekerjaan['resetting'] }}', '{{ $dataDashboardPekerjaan['commisioning'] }}', '{{ $dataDashboardPekerjaan['investigasi'] }}', '{{ $dataDashboardPekerjaan['supervisi'] }}'];--}}
 
         // Dynamically set bar colors with predefined colors and random ones if needed
         var barColorsPekerjaan = [];
@@ -354,6 +350,8 @@
                 barColorsPekerjaan.push(getRandomPastelColor());
             }
         }
+
+        var workingOrderRoute = "{{ route('form-input.working-order.show', ['label' => ':label', 'label_type' => ':label_type']) }}";
 
         new Chart("statusChart", {
             type: "pie",
@@ -403,6 +401,22 @@
                             return percentage;
                         }
                     }
+                },
+                onClick: function(event, elements) {
+                    // Ensure there is a clicked element
+                    if (elements.length > 0) {
+                        console.log("Clicked slice:", elements[0]._view.label);
+                        var clickedLabel =  elements[0]._view.label;
+                        const labelType = 'status';  // Replace this with how you obtain the label_type
+
+                        // Replace the placeholder ':label' in the route with the actual clicked label
+                        const routeWithLabel = workingOrderRoute
+                            .replace(':label_type', labelType)
+                            .replace(':label', clickedLabel);
+
+                        // Redirect to the Laravel route
+                        window.location.href = routeWithLabel;
+                    }
                 }
             }
         });
@@ -449,6 +463,12 @@
                             return percentage;
                         }
                     }
+                },
+                onClick: function(event, elements) {
+                    // Ensure there is a clicked element
+                    if (elements.length > 0) {
+                        console.log("Clicked slice:", elements[0]._view.label);
+                    }
                 }
             }
         });
@@ -471,12 +491,12 @@
                     display: false, // Disable if you don’t need a legend for a single dataset
                     position: 'right' // Legend position if needed
                 },
-                responsive: true, // Makes the chart responsive,
+                responsive: false, // Makes the chart responsive,
                 scales: {
                     xAxes: [{
                         ticks: {
                             beginAtZero: true,
-                            stepSize: 1
+                            stepSize: 1,
                         }
                     }]
                 },
@@ -514,7 +534,7 @@
                     display: false, // Disable if you don’t need a legend for a single dataset
                     position: 'right' // Legend position if needed
                 },
-                responsive: true, // Makes the chart responsive
+                responsive: false, // Makes the chart responsive
                 scales: {
                     xAxes: [{
                         ticks: {
