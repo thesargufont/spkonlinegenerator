@@ -86,6 +86,8 @@ class HomeController extends Controller
         $dataDashboardGangguan = $this->getDataDashboardGangguan();
         $dataDashboardPekerjaan = $this->getDataDashboardPekerjaan();
 
+        $nowYear = Carbon::now()->format('Y');
+
         return view('home', [
             'totalReport' => $totalReport,
             'totalReportJob' => $totalReportJob,
@@ -108,6 +110,7 @@ class HomeController extends Controller
             'dataDashboardInput' => $dataDashboardInput,
             'dataDashboardGangguan' => $dataDashboardGangguan,
             'dataDashboardPekerjaan' => $dataDashboardPekerjaan,
+            'year' => $nowYear,
         ]);
     }
 
