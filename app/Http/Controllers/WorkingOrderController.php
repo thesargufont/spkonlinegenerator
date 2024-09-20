@@ -52,6 +52,35 @@ class WorkingOrderController extends Controller
         ]);
     }
 
+    public function show($label, $label_type)
+    {
+        dd($label, $label_type);
+        $user_id = Auth::user()->id;
+        $roles = Role::where('user_id', $user_id)->where('active', 1)->distinct()->pluck('role')->toArray();
+        $access_right = array('SUPERADMIN', 'USER');
+        if (count(array_intersect($roles, $access_right)) == 0) {
+            $access = false;
+            return redirect()->route('home');
+        } else {
+            $access = true;
+        }
+
+        $locations        = Location::where('active', 1)->get();
+        $departments      = Department::where('active', 1)->get();
+        $wo_status        = GeneralCode::where('section','SPONGE')->where('label','STATUS_HEADER')->where('end_effective',null)->get();
+
+        return view('forms.working_order.working_order_index', [
+            'hidden_status' => 'hidden',
+            'return_msg' => '',
+            'access' => $access,
+            'locations' => $locations,
+            'departments' => $departments,
+            'wo_status' => $wo_status,
+            'label_type' => $label_type,
+            'label' => $label,
+        ]);
+    }
+
     public function getData($request, $isExcel = '')
     {
         if ($isExcel == "") {
@@ -76,45 +105,45 @@ class WorkingOrderController extends Controller
 
         $user = Auth::user()->id;
         $spongeheader_ongoing = SpongeHeader::where('created_by', $user)->where('status','=','ONGOING')->orderBy('created_at','desc')
-                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-                                ->where('department_id', 'LIKE',  "%{$department}%")
-                                ->where('status', 'LIKE',  "%{$wo_status}%")
-                                ;
+            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+            ->where('department_id', 'LIKE',  "%{$department}%")
+            ->where('status', 'LIKE',  "%{$wo_status}%")
+        ;
         $spongeheader_done = SpongeHeader::where('created_by', $user)->where('status','=','DONE')->orderBy('created_at','desc')
-                            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-                            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-                            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-                            ->where('department_id', 'LIKE',  "%{$department}%")
-                            ->where('status', 'LIKE',  "%{$wo_status}%")
-                            ;
+            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+            ->where('department_id', 'LIKE',  "%{$department}%")
+            ->where('status', 'LIKE',  "%{$wo_status}%")
+        ;
         $spongeheader_closed = SpongeHeader::where('created_by', $user)->where('status','=','CLOSED')->orderBy('created_at','desc')
-                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-                                ->where('department_id', 'LIKE',  "%{$department}%")
-                                ->where('status', 'LIKE',  "%{$wo_status}%")
-                                ;
+            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+            ->where('department_id', 'LIKE',  "%{$department}%")
+            ->where('status', 'LIKE',  "%{$wo_status}%")
+        ;
         $spongeheader_cancel = SpongeHeader::where('created_by', $user)->where('status','=','CANCEL')->orderBy('created_at','desc')
-                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-                                ->where('department_id', 'LIKE',  "%{$department}%")
-                                ->where('status', 'LIKE',  "%{$wo_status}%")
-                                ;
+            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+            ->where('department_id', 'LIKE',  "%{$department}%")
+            ->where('status', 'LIKE',  "%{$wo_status}%")
+        ;
         $spongeheader = SpongeHeader::where('created_by', $user)->where('status','NOT APPROVE')
-                        ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-                        ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-                        ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-                        ->where('department_id', 'LIKE',  "%{$department}%")
-                        ->where('status', 'LIKE',  "%{$wo_status}%")
-                        ->orderBy('created_at','desc')
-                        ->union($spongeheader_ongoing)
-                        ->union($spongeheader_done)
-                        ->union($spongeheader_closed)
-                        ->union($spongeheader_cancel)
-                        ;
+            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+            ->where('department_id', 'LIKE',  "%{$department}%")
+            ->where('status', 'LIKE',  "%{$wo_status}%")
+            ->orderBy('created_at','desc')
+            ->union($spongeheader_ongoing)
+            ->union($spongeheader_done)
+            ->union($spongeheader_closed)
+            ->union($spongeheader_cancel)
+        ;
 
         // if ($wo_number != '') {
         //     $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
@@ -337,10 +366,17 @@ class WorkingOrderController extends Controller
             $dept_code = Department::where('id', $request->department_id)->first()->department_code;
 
             //get number
-            $cek_number = SpongeHeader::where('wo_number', 'like', '%WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('updated_at', 'desc')->first();
+            // $cek_number = SpongeHeader::where('wo_number', 'like', '%WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->orderBy('updated_at', 'desc')->first();
+            $cek_number = SpongeHeader::where('wo_number', 'like', '%WO' . '/' . $dept_code . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/' . $year)->pluck('wo_number')->toArray();
             $number = 0;
-            if ($cek_number) {
-                $number = intval(substr($cek_number->wo_number, 0, 5));
+            if (!empty($cek_number)) {
+                // $number = intval(substr($cek_number->wo_number, 0, 5));
+                foreach($cek_number as $wo_number){
+                    $cek = intval(substr($wo_number, 0, 5));
+                    if($number < $cek){
+                        $number = $cek;
+                    }
+                }
             }
             $number++;
 
@@ -440,7 +476,7 @@ class WorkingOrderController extends Controller
             // dd($wo_number_cek);
             return response()->json([
                 'errors' => true,
-                "message" => '<div class="alert alert-danger">Nomor WO sudah terpakai. Mohon muat ulang halaman.</div>'
+                "message" => '<div class="alert alert-danger">Nomor WO sudah terpakai. Mohon klik tombol refresh nomor WO.</div>'
             ]);
         }
         if ($request->wo_category == '' || $request->wo_category == null || $request->wo_category == 'null') {
@@ -467,7 +503,7 @@ class WorkingOrderController extends Controller
                 "message" => '<div class="alert alert-danger">Tanggal efektif belum diisi. Mohon cek kembali.</div>'
             ]);
         }
-        
+
         //HEADER VALIDATION - VERIFY DEPARTMENT ID
         $department_cek = Department::find($request->department);
         if (!$department_cek) {
@@ -637,7 +673,7 @@ class WorkingOrderController extends Controller
                 //     $closeAt = null;
                 // }
                 $closeAt = null;
-                
+
                 $newFilename1 = '';
                 $newFilename2 = '';
                 $newFilename3 = '';

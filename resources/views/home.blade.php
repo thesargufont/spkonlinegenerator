@@ -23,7 +23,7 @@
                                     <h3 class="">
                                         <b><p class="text-muted"><b></b></p>{{ $totalReport }}</b>
                                     </h3>
-                                    <p class="text-muted"><b></b>Laporan periode {{$year}}</p>
+                                    <p class="text-muted"><b></b>LAPORAN PERIODE {{$year}}</p>
                                 </div>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                                 </div>
                                 <div class="panel-body">
                                     <h3 class=""><b>{{ $totalReportProblem }}</b></h3>
-                                    <p class="text-muted"><b>{{ $problemPercentage }}%</b> Total laporan</p>
+                                    <p class="text-muted"><b>{{ $problemPercentage }}%</b> TOTAL LAPORAN</p>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="panel-body">
                                     <h3 class=""><b>{{ $totalReportJob }}</b></h3>
-                                    <p class="text-muted"><b>{{ $jobPercentage }}%</b> Total laporan</p>
+                                    <p class="text-muted"><b>{{ $jobPercentage }}%</b> TOTAL LAPORAN</p>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +86,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="chart-container">
-                                    <canvas id="gangguanChart" style="height: 1000px; width: 600px;"></canvas>
+                                    <canvas id="gangguanChart" style="height: 850px; width: 600px;"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -148,7 +148,7 @@
 
     <style>
         .chart-container {
-            width: 100%;
+            width: auto;
             height: 280px; /* Set a fixed height for scrolling */
             overflow-y: scroll;
             overflow-x: scroll; /* Optional: Hide horizontal overflow if not needed */
@@ -164,10 +164,6 @@
     </style>
 
     <script>
-        $(document).ready(function () {
-            // $('#total_laporan').val('asdasd');
-        });
-
         // Predefined colors starting with red, green, blue, yellow, etc.
         const predefinedColors = [
             "#ff0000", // Red
@@ -289,8 +285,9 @@
 
         // {{--var xValuesInput = ["LAPORAN GANGGUAN", "PEKERJAAN"];--}}
         // {{--var yValuesInput = ['{{ $dataDashboardInput['inputGangguan'] }}', '{{ $dataDashboardInput['inputPekerjaan'] }}'];--}}
+
         var barColorsInput = [
-        "#ff4400",
+            "#ff4400",
             "#31ec23",
         ];
 
@@ -351,7 +348,7 @@
             }
         }
 
-        var workingOrderRoute = "{{ route('form-input.working-order.show', ['label' => ':label', 'label_type' => ':label_type']) }}";
+        var detailDashboardRoute = "{{ route('detail_chart.index', ['label' => ':label', 'label_type' => ':label_type']) }}";
 
         new Chart("statusChart", {
             type: "pie",
@@ -410,7 +407,7 @@
                         const labelType = 'status';  // Replace this with how you obtain the label_type
 
                         // Replace the placeholder ':label' in the route with the actual clicked label
-                        const routeWithLabel = workingOrderRoute
+                        const routeWithLabel = detailDashboardRoute
                             .replace(':label_type', labelType)
                             .replace(':label', clickedLabel);
 
@@ -468,10 +465,24 @@
                     // Ensure there is a clicked element
                     if (elements.length > 0) {
                         console.log("Clicked slice:", elements[0]._view.label);
+                        var clickedLabel =  elements[0]._view.label;
+                        const labelType = 'input';  // Replace this with how you obtain the label_type
+
+                        // Replace the placeholder ':label' in the route with the actual clicked label
+                        const routeWithLabel = detailDashboardRoute
+                            .replace(':label_type', labelType)
+                            .replace(':label', clickedLabel);
+
+                        // Redirect to the Laravel route
+                        window.location.href = routeWithLabel;
                     }
                 }
             }
         });
+
+        const canvas = document.getElementById("gangguanChart");
+        const dynamicHeight = xValuesGangguan.length * 50; // Atur tinggi berdasarkan jumlah data, misalnya 40px per item
+        canvas.height = dynamicHeight;
 
         new Chart("gangguanChart", {
             type: "horizontalBar", // Use 'horizontalBar' for horizontal bars
@@ -491,16 +502,26 @@
                     display: false, // Disable if you don’t need a legend for a single dataset
                     position: 'right' // Legend position if needed
                 },
-                responsive: false, // Makes the chart responsive,
+                responsive: true, // Makes the chart responsive,
                 scales: {
                     xAxes: [{
                         ticks: {
                             beginAtZero: true,
                             stepSize: 1,
+                        },
+                        gridLines: {
+                            offsetGridLines: true // Menghindari potongan grid di label
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            fontSize: 8, // Atur ukuran huruf (misalnya 10px)
+                            // padding: 10, // Memberi jarak antara label dan chart
+                            autoSkip: false // Hindari label terpotong dengan menghindari auto-skip
                         }
                     }]
                 },
-                maintainAspectRatio: false, // Allows the chart to be resized without maintaining aspect ratio
+                maintainAspectRatio: true, // Allows the chart to be resized without maintaining aspect ratio
                 plugins: {
                     datalabels: {
                         color: 'white',
@@ -512,9 +533,29 @@
                             return context.chart.data.datasets[context.data];
                         }
                     }
+                },
+                onClick: function(event, elements) {
+                    // Ensure there is a clicked element
+                    if (elements.length > 0) {
+                        console.log("Clicked slice:", elements[0]._view.label);
+                        var clickedLabel =  elements[0]._view.label;
+                        const labelType = 'gangguan';  // Replace this with how you obtain the label_type
+
+                        // Replace the placeholder ':label' in the route with the actual clicked label
+                        const routeWithLabel = detailDashboardRoute
+                            .replace(':label_type', labelType)
+                            .replace(':label', clickedLabel);
+
+                        // Redirect to the Laravel route
+                        window.location.href = routeWithLabel;
+                    }
                 }
             }
         });
+
+        const canvas2 = document.getElementById("pekerjaanChart");
+        const dynamicHeight2 = xValuesPekerjaan.length * 50; // Atur tinggi berdasarkan jumlah data, misalnya 40px per item
+        canvas2.height = dynamicHeight2;
 
         new Chart("pekerjaanChart", {
             type: "horizontalBar", // Use 'horizontalBar' for horizontal bars
@@ -534,16 +575,26 @@
                     display: false, // Disable if you don’t need a legend for a single dataset
                     position: 'right' // Legend position if needed
                 },
-                responsive: false, // Makes the chart responsive
+                responsive: true, // Makes the chart responsive
                 scales: {
                     xAxes: [{
                         ticks: {
                             beginAtZero: true,
-                            stepSize: 1
+                            stepSize: 1,
+                        },
+                        gridLines: {
+                            offsetGridLines: true // Menghindari potongan grid di label
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            fontSize: 8, // Atur ukuran huruf (misalnya 10px)
+                            // padding: 10, // Memberi jarak antara label dan chart
+                            autoSkip: false // Hindari label terpotong dengan menghindari auto-skip
                         }
                     }]
                 },
-                maintainAspectRatio: false, // Allows the chart to be resized without maintaining aspect ratio
+                maintainAspectRatio: true, // Allows the chart to be resized without maintaining aspect ratio
                 plugins: {
                     datalabels: {
                         color: 'white',
@@ -554,6 +605,22 @@
                         formatter: function(value, context) {
                             return context.chart.data.datasets[context.data];
                         }
+                    }
+                },
+                onClick: function(event, elements) {
+                    // Ensure there is a clicked element
+                    if (elements.length > 0) {
+                        console.log("Clicked slice:", elements[0]._view.label);
+                        var clickedLabel =  elements[0]._view.label;
+                        const labelType = 'pekerjaan';  // Replace this with how you obtain the label_type
+
+                        // Replace the placeholder ':label' in the route with the actual clicked label
+                        const routeWithLabel = detailDashboardRoute
+                            .replace(':label_type', labelType)
+                            .replace(':label', clickedLabel);
+
+                        // Redirect to the Laravel route
+                        window.location.href = routeWithLabel;
                     }
                 }
             }

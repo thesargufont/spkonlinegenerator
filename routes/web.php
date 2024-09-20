@@ -18,7 +18,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\WorkingOrderController;
 use App\Http\Controllers\DeviceCategoryController;
 use App\Http\Controllers\ReportController;
-
+use App\Http\Controllers\DetailChartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -204,3 +204,10 @@ Route::post('reports/getDataTable', [ReportController::class, 'dataTable'])->nam
 Route::get('report/export', [ReportController::class, 'downloadXLSX'])->name('report.export');
 Route::get('report/cekdetail/{id}', [ReportController::class, 'checkDetail'])->name('report.cekdetail')->middleware('auth');
 Route::get('report/detail/{id}', [ReportController::class, 'detail'])->name('report.detail')->middleware('auth');
+
+// DASHBOARD TO WORKING ORDER
+Route::get('form-input/working-order/show/{label}/{label_type}', [WorkingOrderController::class, 'show'])->name('form-input.working-order.show')->middleware('auth');
+
+// DETAIL CHART
+Route::get('detail_chart/index/{label}/{label_type}', [DetailChartController::class, 'index'])->name('detail_chart.index')->middleware('auth');
+Route::post('detail_chart/dashboard-data', [DetailChartController::class, 'data'])->name('detail_chart.dashboard-data')->middleware('auth');
