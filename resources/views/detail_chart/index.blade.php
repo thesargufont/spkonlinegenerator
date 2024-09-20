@@ -17,8 +17,10 @@
             <div class="alert alert-danger" {{$hidden_status}}>{{$return_msg}}</div>
             <div class="btn-group" role="group">
                 <div class="form-group">
-                    <button title="back" id="back-button" name="back-button" type="button" class="btn btn-primary" onclick="window.history.back();"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>
-{{--                    <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>--}}
+{{--                    <button title="back" id="back-button" name="back-button" type="button" class="btn btn-primary" onclick="window.history.back();"><i class="fa fa-fw fa-arrow-left"></i> {{ucwords(__('Kembali'))}}</button>--}}
+                    <button title="back" id="back-button" name="back-button" type="button" class="btn btn-primary" onclick="window.location.href='{{ route('home') }}'">
+                        <i class="fa fa-fw fa-arrow-left"></i> {{ ucwords(__('Kembali')) }}
+                    </button>                    {{--                    <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>--}}
 {{--                    @if($access)--}}
 {{--                        <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('form-input/working-order/create')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>--}}
 {{--                    @endif--}}

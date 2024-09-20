@@ -11,7 +11,7 @@
 @section('content')
     <div class="container" style="overflow:scroll; height:100%;">
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <form method="POST" id="search-form" class="form" role="form">
                     <div class="row">
                         <div class="col-sm-15">
@@ -55,7 +55,7 @@
                 </form>
             </div>
 
-            <div class="col-sm-9">
+            <div class="col-sm-10">
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="panel panel-border panel-primary">
@@ -287,7 +287,7 @@
         // {{--var yValuesInput = ['{{ $dataDashboardInput['inputGangguan'] }}', '{{ $dataDashboardInput['inputPekerjaan'] }}'];--}}
 
         var barColorsInput = [
-            "#ff4400",
+        "#ff4400",
             "#31ec23",
         ];
 
@@ -381,7 +381,8 @@
                         align: 'center', // Align labels to the center of the pie slices
                         anchor: 'center', // Anchor labels to the center of the pie slices
                         font: {
-                            weight: 'bold' // Make the labels bold
+                            weight: 'bold', // Make the labels bold
+                            size: 8
                         },
                         formatter: function(value, context) {
                             const total = {{ $dataDashboardStatus['totalData'] }};
@@ -389,11 +390,11 @@
                             let percentage = (value / total) * 100;
 
                             // Check if the percentage is less than 6 and return an empty string if so
-                            if (percentage < 7) {
+                            if (percentage < 8) {
                                 return "";
                             }
 
-                            percentage = percentage.toFixed(0) + "%";
+                            percentage = percentage.toFixed(1) + "%";
 
                             return percentage;
                         }
