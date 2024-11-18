@@ -16,8 +16,8 @@
             <div class="form-group">
                 <button title="show/hide data filter options" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#main-table-data-filter" aria-expanded="false" aria-controls="main-table-data-filter">{{ucfirst(__('data filter'))}}..</button>
                 <button type="button" name="create_new" id="create_new" class="btn btn-secondary" onclick="location.replace('{{url('masters/department/create-new')}}');"><i class="fa fa-plus"></i> {{ucwords(__('Tambah Baru'))}}</button>
-                {{-- <button type="button" name="download" id="btn_download_xlsx" class="btn btn-secondary"><i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}</button> --}}
-                <button type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button>
+                {{-- <button type="button" name="download" id="btn_download_xlsx" class="btn btn-secondary"><i class="fa fa-fw fa-file-excel-o"></i> {{ucwords(__('Download'))}}</button>
+                <button type="button" name="upload" id="btn_upload_xlsx" class="btn btn-secondary"><i class="fa fa-upload"></i> {{ucwords(__('Upload'))}}</button> --}}
             </div>
         </div>
     </div>
@@ -32,7 +32,7 @@
                             <label class="col-md-2">NAMA BAGIAN</label>
                             <div class="col-md-6">
                                 <input id="department_name" type="text" class="text-uppercase form-control" name="department_name" title="NAMA BAGIAN" placeholder="NAMA BAGIAN">
-                                <input name="department_name_id" id="department_name_id" type="hidden"/>
+                                <input name="detail_id" id="detail_id" type="hidden"/>
                             </div>
                         </div>
                         <br>
@@ -89,6 +89,30 @@
     </div> <!-- End Row -->
 </div>
 
+<body>
+    <div id="modal" class="modal-container"> 
+        <div class="modal-content"> 
+  
+            <h2>Konfirmasi</h2> 
+            <p class="confirmation-message"> 
+                Anda yakin akan menghapus? 
+            </p> 
+  
+            <div class="button-container"> 
+                <button id="cancelBtn" class="btn btn-secondary"> Batal </button> 
+                <button id="actionBtn" class="btn btn-primary"> Ya </button> 
+            </div> 
+        </div> 
+    </div> 
+</body>
+
+<style>
+    .signature-canvas {
+        border: 2px solid #000;
+        margin-bottom: 10px;
+    }
+</style>
+
 <!-- Plugins js -->
 <script src="{{ asset('plugins/timepicker/bootstrap-timepicker.js') }}"></script>
 <script src="{{ asset('plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js') }}"></script>
@@ -115,7 +139,7 @@
                   next: "<i class='fa fa-caret-right'></i>",
                   previous: "<i class='fa fa-caret-left'></i>"
                 },
-                lengthMenu:     "<div class=\"input-group\">_MENU_ &nbsp; / page</div>",
+                // lengthMenu:     "<div class=\"input-group\">_MENU_ &nbsp; / page</div>",
                 info:           "_START_ to _END_ of _TOTAL_ item(s)",
                 infoEmpty:      ""
             },
@@ -171,10 +195,12 @@
         location.replace('{{ url('masters/department/import-excel') }}');
     });
 
-    function deleteItem(id) {
+    function doDelete() {
+        var id = $('#detail_id').val();
+        hideModal();
         $('#form_result').html('');
 
-        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
+        artLoadingDialogDo("Please wait, we process your request..",function(){
             $.ajax({
                 url : '{!! route('masters/department/delete-data') !!}',
                 type: 'POST',
@@ -212,6 +238,21 @@
             });
         });
     }
+
+    function deleteItem(id) { 
+        modal.style.display = 'flex'; 
+        $('#detail_id').val(id);
+        var cek = $('#detail_id').val();
+        console.log(cek);
+    } 
+
+    // Hide modal function 
+    function hideModal() { 
+        modal.style.display = 'none'; 
+    } 
+
+    cancelBtn.addEventListener('click', hideModal); 
+    actionBtn.addEventListener('click', doDelete);
 
     function showItem(id) {
         location.replace('{{ url('masters/department/detail-data') }}/' + id);

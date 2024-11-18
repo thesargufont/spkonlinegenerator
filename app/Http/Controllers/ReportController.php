@@ -30,6 +30,7 @@ class ReportController extends Controller {
         $woNumber           = $getDataFilter['woNumber'];
         $spkNumber          = $getDataFilter['spkNumber'];
         $woCategory         = $getDataFilter['woCategory'];
+        $jobCategory         = $getDataFilter['jobCategory'];
         $department         = $getDataFilter['department'];
         $location           = $getDataFilter['location'];
         $workOrderStatus    = $getDataFilter['workOrderStatus'];
@@ -43,6 +44,7 @@ class ReportController extends Controller {
             'woNumber'          => $woNumber,
             'spkNumber'         => $spkNumber,
             'woCategory'        => $woCategory,
+            'jobCategory'        => $jobCategory,
             'department'        => $department,
             'location'          => $location,
             'workOrderStatus'   => $workOrderStatus,
@@ -72,8 +74,10 @@ class ReportController extends Controller {
 
             $wo_number              = session('report' . '.wo_number') != '' ? session('report' . '.wo_number') : '';
             $spk_number             = session('report' . '.spk_number') != '' ? session('report' . '.spk_number') : '';
-            $effective_date_start   = session('report' . '.effective_date_start') != '' ? session('report' . '.effective_date_start') : '';
-            $effective_date_end     = session('report' . '.effective_date_end') != '' ? session('report' . '.effective_date_end') : '';
+            //$effective_date_start   = session('report' . '.effective_date_start') != '' ? session('report' . '.effective_date_start') : '';
+            //$effective_date_end     = session('report' . '.effective_date_end') != '' ? session('report' . '.effective_date_end') : '';
+            $effective_date_start = session('report'.'.effective_date_start')!=''?Carbon::createFromFormat('d/m/Y',session('report'.'.effective_date_start'))->format('Y-m-d'):'1900-01-01';
+            $effective_date_end = session('report'.'.effective_date_end')!=''?Carbon::createFromFormat('d/m/Y',session('report'.'.effective_date_end'))->format('Y-m-d'):'9999-12-31';
             $wo_category            = session('report' . '.wo_category') != '' ? session('report' . '.wo_category') : '';
             $job_category           = session('report' . '.job_category') != '' ? session('report' . '.job_category') : '';
             $department             = session('report' . '.department') != '' ? session('report' . '.department') : '';
@@ -81,17 +85,17 @@ class ReportController extends Controller {
             $wo_status              = session('report' . '.wo_status') != '' ? session('report' . '.wo_status') : '';
             $engineer_status        = session('report' . '.engineer_status') != '' ? session('report' . '.engineer_status') : '';
 
-            if($effective_date_start) {
-                $effective_date_start2 = Carbon::parse($effective_date_start)->format('Y-m-d h:i:s');
+            /*if($effective_date_start) {
+                $effective_date_start2 = Carbon::parse($effective_date_start)->format('Y-m-d');
             } else {
                 $effective_date_start2 = '';
             }
 
             if($effective_date_end) {
-                $effective_date_end2 = Carbon::parse($effective_date_end)->format('Y-m-d h:i:s');
+                $effective_date_end2 = Carbon::parse($effective_date_end)->format('Y-m-d');
             } else {
                 $effective_date_end2 = '';
-            }
+            }*/
 
             $user = Auth::user()->id;
 
@@ -135,10 +139,12 @@ class ReportController extends Controller {
 //                )
 //                ->orderBy('sponge_headers.created_at','desc');
 
-            $spongeheader = SpongeHeader::query();
+        //    $spongeheader = SpongeHeader::query(); closed by stefan
 
 //            if (in_array($user_login, $users)){
 //            if($userRole->role === 'SUPERADMIN') {
+      
+    /* closed by stefan -start 
                 if($wo_number) {
                     $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
                 }
@@ -163,6 +169,8 @@ class ReportController extends Controller {
                     $spongeheader = $spongeheader->where('status', 'LIKE',  "%{$wo_status}%");
                 }
 
+    closed by stefan - end*/
+
 //                if($location) {
 //                    $spongeheader = $spongeheader->where('sponge_details.location_id', 'LIKE',  "%{$findLocationId}%");
 //                }
@@ -171,13 +179,49 @@ class ReportController extends Controller {
 //                    $spongeheader = $spongeheader->where('sponge_details.executor_progress', 'LIKE',  "%{$engineer_status}%");
 //                }
 
-                if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereBetween('effective_date', [$effective_date_start2, $effective_date_end2]);
-                } else if (!empty($effective_date_start2)) {
-                    $spongeheader = $spongeheader->whereDate('effective_date', '>=', $effective_date_start2);
-                } else if (!empty($effective_date_end2)) {
-                    $spongeheader = $spongeheader->whereDate('effective_date', '<=', $effective_date_end2);
-                }
+            //additional codes - stefan
+            $spongeheader = SpongeHeader::select('sponge_headers.*')
+                ->distinct('sponge_headers.wo_number')
+                ->leftJoin('sponge_details', 'sponge_headers.id', '=', 'sponge_details.wo_number_id')
+                ->where('sponge_headers.wo_number', 'LIKE',  "%{$wo_number}%")
+                ->where('sponge_headers.spk_number', 'LIKE',  "%{$spk_number}%")
+                ->where('sponge_headers.wo_category', 'LIKE',  "%{$wo_category}%")
+                ->where('sponge_headers.job_category', 'LIKE',  "%{$job_category}%")
+                ->where('sponge_headers.status', 'LIKE',  "%{$wo_status}%")
+                ->whereBetween('sponge_headers.effective_date', [$effective_date_start, $effective_date_end]);
+                ;
+
+            if($department != ''){
+                $spongeheader->where('sponge_headers.department_id',$department);
+            }
+
+            if($location != ''){
+                $spongeheader->where('sponge_details.location_id',$location);
+            }
+
+            /*
+            if (!empty($effective_date_start2)) {
+                //dd($effective_date_start2,$effective_date_end2,'a');
+               $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
+            }
+            if (!empty($effective_date_end2)) {
+                //dd($effective_date_start2,$effective_date_end2,'b');
+               $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
+            }
+            */
+            
+            // if (!empty($effective_date_start2) && !empty($effective_date_end2)) {
+            //     dd($effective_date_start2,$effective_date_end2);
+            //    $spongeheader->whereBetween('sponge_headers.effective_date', [$effective_date_start2, $effective_date_end2]);
+            // } else if (!empty($effective_date_start2)) {
+            //     dd($effective_date_start2,$effective_date_end2,'a');
+            //    $spongeheader->whereDate('sponge_headers.effective_date', '>=', $effective_date_start2);
+            // } else if (!empty($effective_date_end2)) {
+            //     dd($effective_date_start2,$effective_date_end2,'b');
+            //    $spongeheader->whereDate('sponge_headers.effective_date', '<=', $effective_date_end2);
+            // }
+
+            $spongeheader->orderBy('updated_at','desc');
 
 //            }
 //            else if ($userRole->role === 'SPV') {
@@ -446,13 +490,13 @@ class ReportController extends Controller {
             })
             ->editColumn('approve_at', function ($item) {
                 if ($item->approve_at != '' || $item->approve_at != null) {
-                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y');
+                    return Carbon::createFromFormat("Y-m-d H:i:s", $item->approve_at)->format('d/m/Y H:i:s');
                 } else {
                     return '-';
                 }
             })
             ->editColumn('effective_date', function ($item) {
-                return Carbon::createFromFormat("Y-m-d H:i:s", $item->updated_at)->format('d/m/Y');
+                return Carbon::createFromFormat("Y-m-d H:i:s", $item->effective_date)->format('d/m/Y H:i:s');
             });
         return $dataHeaderTable->make(TRUE);
     }
@@ -473,18 +517,24 @@ class ReportController extends Controller {
                 ->pluck('wo_category')
                 ->unique()
                 ->toArray();
+                
+            $jobCategory = SpongeHeader::where('job_category','!=','')
+                ->orderBy('id', 'ASC')
+                ->pluck('job_category')
+                ->unique()
+                ->toArray();
 
             $department = Department::where('active', 1)
                 ->whereNull('end_effective')
                 ->orderBy('id', 'ASC')
-                ->select('department_code', 'department')
+                ->select('id','department_code', 'department')
                 ->get()
                 ->toArray() ?: [];
 
             $location = Location::where('active', 1)
                 ->orderBy('id', 'ASC')
                 ->whereNull('end_effective')
-                ->select('location','location_type')
+                ->select('id','location','location_type')
                 ->get()
                 ->toArray() ?: [];
 
@@ -508,6 +558,7 @@ class ReportController extends Controller {
                 'woNumber'          => $woNumber ?? [],
                 'spkNumber'         => $spkNumber ?? [],
                 'woCategory'        => $woCategory ?? [],
+                'jobCategory'       => $jobCategory ?? [],
                 'department'        => $department ?? [],
                 'location'          => $location ?? [],
                 'workOrderStatus'   => $workOrderStatus ?? [],

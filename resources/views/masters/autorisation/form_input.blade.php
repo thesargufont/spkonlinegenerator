@@ -96,7 +96,7 @@
         var role      = $('#role').val();
         var authority            = $('#authority').val();
         
-        artLoadingDialogDo("Please wait, we process your request..",function(){
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
             $.ajax({
                 url : '{!! route('masters/autorisation/create-new/create') !!}',
                 type: 'POST',

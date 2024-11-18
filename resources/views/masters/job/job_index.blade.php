@@ -189,7 +189,7 @@
     function deleteItem(id) {
         $('#form_result').html('');
 
-        artLoadingDialogDo("Please wait, we process your request..",function(){
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
             $.ajax({
                 url : '{!! route('masters/job/delete-data') !!}',
                 type: 'POST',

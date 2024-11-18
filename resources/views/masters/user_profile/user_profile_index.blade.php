@@ -266,41 +266,43 @@
 
         var image = component.getImage();
 
-        $.ajax({
-            url: "{!! route('masters/profile-user/signature') !!}",
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{!!csrf_token()!!}'
-            },
-            dataType: "json",
-            data: {
-                'image': image,
-            },
-            success: function(data) {
-                if (data.errors) {
-                    $('#form_result_signature').html(data.message);
-                }
-                if (data.success) {
-                    $('#form_result_signature').html(data.message);
-                    resetCanvas.addEventListener("click", () => {
-                        component.value = [];
-                    });
-                }
-            },
-            error: function(data) {
-                console.log(data);
-                html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                $('#form_result_signature').html(html);
-                if (data.responseJSON.message) {
-                    var target = data.responseJSON.errors;
-                    for (var k in target) {
-                        if (!Array.isArray(target[k]['0'])) {
-                            var msg = target[k]['0'];
-                            artCreateFlashMsg(msg, "danger", true);
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
+            $.ajax({
+                url: "{!! route('masters/profile-user/signature') !!}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{!!csrf_token()!!}'
+                },
+                dataType: "json",
+                data: {
+                    'image': image,
+                },
+                success: function(data) {
+                    if (data.errors) {
+                        $('#form_result_signature').html(data.message);
+                    }
+                    if (data.success) {
+                        $('#form_result_signature').html(data.message);
+                        resetCanvas.addEventListener("click", () => {
+                            component.value = [];
+                        });
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result_signature').html(html);
+                    if (data.responseJSON.message) {
+                        var target = data.responseJSON.errors;
+                        for (var k in target) {
+                            if (!Array.isArray(target[k]['0'])) {
+                                var msg = target[k]['0'];
+                                artCreateFlashMsg(msg, "danger", true);
+                            }
                         }
                     }
                 }
-            }
+            });
         });
         return false;
     }
@@ -314,43 +316,45 @@
         var new_password = $('#new_password').val();
         var confirm_password = $('#confirm_password').val();
 
-        $.ajax({
-            url: "{!! route('masters/profile-user/password') !!}",
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{!!csrf_token()!!}'
-            },
-            dataType: "json",
-            data: {
-                'password': password,
-                'new_password': new_password,
-                'confirm_password': confirm_password,
-            },
-            success: function(data) {
-                if (data.errors) {
-                    $('#form_result_password').html(data.message);
-                }
-                if (data.success) {
-                    $('#form_result_password').html(data.message);
-                    $('#password').val('');
-                    $('#new_password').val('');
-                    $('#confirm_password').val('');
-                }
-            },
-            error: function(data) {
-                console.log(data);
-                html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                $('#form_result_password').html(html);
-                if (data.responseJSON.message) {
-                    var target = data.responseJSON.errors;
-                    for (var k in target) {
-                        if (!Array.isArray(target[k]['0'])) {
-                            var msg = target[k]['0'];
-                            artCreateFlashMsg(msg, "danger", true);
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
+            $.ajax({
+                url: "{!! route('masters/profile-user/password') !!}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{!!csrf_token()!!}'
+                },
+                dataType: "json",
+                data: {
+                    'password': password,
+                    'new_password': new_password,
+                    'confirm_password': confirm_password,
+                },
+                success: function(data) {
+                    if (data.errors) {
+                        $('#form_result_password').html(data.message);
+                    }
+                    if (data.success) {
+                        $('#form_result_password').html(data.message);
+                        $('#password').val('');
+                        $('#new_password').val('');
+                        $('#confirm_password').val('');
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result_password').html(html);
+                    if (data.responseJSON.message) {
+                        var target = data.responseJSON.errors;
+                        for (var k in target) {
+                            if (!Array.isArray(target[k]['0'])) {
+                                var msg = target[k]['0'];
+                                artCreateFlashMsg(msg, "danger", true);
+                            }
                         }
                     }
                 }
-            }
+            });
         });
         return false;
     }

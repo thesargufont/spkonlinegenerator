@@ -204,9 +204,8 @@ class DepartmentController extends Controller
         Schema::create('temp', function (Blueprint $table) {
             $table->increments('id');
             $table->string('department', 50)->nullable();
-            $table->string('code', 5)->nullable();
             $table->string('description', 255)->nullable();
-            $table->text('remark')->default('');
+            $table->string('remark', 50)->nullable();
             $table->temporary();
         });
     }
@@ -241,38 +240,21 @@ class DepartmentController extends Controller
             $name = "Department" . "_" . Auth::user()->id . "." . $extension;
             $request->file('validatedCustomFile')->move(storage_path() . '/app/uploads/', $name);
             $attachments = storage_path() . '/app/uploads/' . $name;
-            
+
             $data = (new FastExcel)->import($attachments);
 
             foreach ($data as $row) {
                 $error = 0;
 
                 $department              = trim(strtoupper($row['Nama Bidang']), ' ');
-                $department_code         = trim(strtoupper($row['Kode Bidang']), ' ');
                 $department_description  = trim(strtoupper($row['Deskripsi']), ' ');
 
-                if($department == '' && $department_code == '' && $department_description == ''){
-                    continue;
-                }
-
                 $checkDuplicateData = Department::where('department', $department)
-                                                ->where('active', 1)
-                                                ->first();
+                    ->where('active', 1)
+                    ->first();
 
                 if ($checkDuplicateData) {
                     $error++;
-                }
-
-                if ($department_code == '') {
-                    $error++;
-                } else {
-                    $checkDuplicateCode = Department::where('department_code', $department_code)
-                                                    ->where('active', 1)
-                                                    ->first();
-
-                    if ($checkDuplicateCode) {
-                        $error++;
-                    }
                 }
 
                 if ($department_description == '') {
@@ -293,7 +275,7 @@ class DepartmentController extends Controller
             }
 
             return response()->json([
-                'filename'  => $attachments,
+                'filename'  => $filename,
                 'success'  => $success,
                 'message'  => $message,
             ]);
@@ -311,75 +293,15 @@ class DepartmentController extends Controller
     {
         $this->dropTempTable();
         $this->makeTempTable();
-        
-        if ($request->fileName != "" || $request->fileName != null) {
+        if ($request->fileName != "") {
             $attachments = $request->fileName;
+            dd((new FastExcel)->import($attachments));
             $data = (new FastExcel)->import($attachments);
 
-            $countError = 0;
-            $tempData = [];
-            foreach ($data as $row) {
-                $remark = [];
-
-                $department              = trim(strtoupper($row['Nama Bidang']), ' ');
-                $department_code         = trim(strtoupper($row['Kode Bidang']), ' ');
-                $department_description  = trim(strtoupper($row['Deskripsi']), ' ');
-
-                if($department == '' && $department_code == '' && $department_description == ''){
-                    continue;
-                }
-
-                $checkDuplicateData = Department::where('department', $department)
-                                                ->where('active', 1)
-                                                ->first();
-
-                if ($checkDuplicateData) {
-                    $remark [] = 'Terdapat Departemen '.$department.' yang masih aktif';
-                }
-
-                if ($department_code == '') {
-                    $remark [] = 'Kode Departemen tidak boleh kosong';
-                } else {
-                    $checkDuplicateCode = Department::where('department_code', $department_code)
-                                                    ->where('active', 1)
-                                                    ->first();
-
-                    if ($checkDuplicateCode) {
-                        $remark [] = 'Terdapat Kode Departemen '.$department_code.' yang masih aktif';
-                    }
-                }
-
-                if ($department_description == '') {
-                    $remark [] = 'Deskripsi tidak boleh kosong';
-                }
-
-                if (count($remark) > 0) {
-                    $countError++;
-                }
-
-                $tempOutput = [
-                    'department'     => $department,
-                    'code'           => $department_code,
-                    'description'    => $department_description,
-                    'remark'         => implode(', ', $remark)
-                ];
-                DB::table('temp')->insert($tempOutput);
-                $tempData = DB::table('temp')->get();
-            }
-            if(count($tempData) == 0){
-                $tempOutput = [
-                    'department'     => '',
-                    'code'           => '',
-                    'description'    => '',
-                    'remark'         => ''
-                ];
-                DB::table('temp')->insert($tempOutput);
-                $tempData = DB::table('temp')->get();
-            }
+            dd($data);
         } else {
             $tempOutput = [
                 'department'     => '',
-                'code'           => '',
                 'description'    => '',
                 'remark'         => ''
             ];
@@ -393,119 +315,6 @@ class DepartmentController extends Controller
             });
 
         return $datatables->make(TRUE);
-    }
-
-    public function saveUpload(Request $request)
-    {
-        if($request->fileData != "")
-        {
-            $attachments = $request->fileData;  
-            $data = (new FastExcel)->import($attachments);
-            
-            try {
-                DB::beginTransaction();
-                foreach ($data as $row) {
-                    $error = false;
-
-                    $department              = trim(strtoupper($row['Nama Bidang']), ' ');
-                    $department_code         = trim(strtoupper($row['Kode Bidang']), ' ');
-                    $department_description  = trim(strtoupper($row['Deskripsi']), ' ');
-
-                    if($department == '' && $department_code == '' && $department_description == ''){
-                        continue;
-                    }
-
-                    $checkDuplicateData = Department::where('department', $department)
-                                                ->where('active', 1)
-                                                ->first();
-
-                    if ($checkDuplicateData) {
-                        $error = true;
-                    }
-
-                    if ($department_code == '') {
-                        $error = true;
-                    } else {
-                        $checkDuplicateCode = Department::where('department_code', $department_code)
-                                                        ->where('active', 1)
-                                                        ->first();
-
-                        if ($checkDuplicateCode) {
-                            $error = true;
-                        }
-                    }
-
-                    if ($department_description == '') {
-                        $error = true;
-                    }
-
-                    if (!$error){
-                        $insertDepartment = new Department([
-                            'department'              => $department,
-                            'department_code'         => $department_code,
-                            'department_description'  => $department_description,
-                            'active'                  => 1,
-                            'start_effective'         => Carbon::now()->timezone('Asia/Jakarta'),
-                            'end_effective'           => null,
-                            'created_by'              => Auth::user()->id,
-                            'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                            'updated_by'              => Auth::user()->id,
-                            'updated_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                        ]);
-                        $insertDepartment->save();
-            
-                        $insertDepartmentHist = new DepartmentHist([
-                            'department_id'           => $insertDepartment->id,
-                            'department'              => $insertDepartment->department,
-                            'department_code'         => $insertDepartment->department_code,
-                            'department_description'  => $insertDepartment->department_description,
-                            'active'                  => $insertDepartment->active,
-                            'start_effective'         => $insertDepartment->start_effective,
-                            'end_effective'           => $insertDepartment->end_effective,
-                            'action'                  => 'CREATE',
-                            'created_by'              => Auth::user()->id,
-                            'created_at'              => Carbon::now()->timezone('Asia/Jakarta'),
-                        ]);
-                        $insertDepartmentHist->save();
-                    } else {
-                        DB::rollback();
-
-                        $success   = false;
-                        $message   = '<div class="alert alert-danger">Terdapat data error, harap periksa kembali file</div>';
-
-                        return response()->json([
-                            'success'  => $success,
-                            'message'  => $message,
-                        ]);
-                    }
-                }
-                DB::commit();
-
-                $success   = true;
-                $message   = '<div class="alert alert-success">File berhasil diproses</div>';
-                return response()->json([
-                    'success'  => $success,
-                    'message'  => $message,
-                ]);
-            } catch(\Exception $e){
-                DB::rollback();
-                $success   = false;
-                $message   = '<div class="alert alert-danger">Terdapat kesalahn, harap proses kembali</div>';
-
-                return response()->json([
-                    'success'  => $success,
-                    'message'  => $message,
-                ]);
-            }
-        } else {
-            $success   = false;
-            $message   = '<div class="alert alert-danger">File tidak ditemukan, harap periksa kembali</div>';
-
-            return response()->json([
-                'success'  => $success,
-                'message'  => $message,
-            ]);
-        }
     }
 
     public function downloadDepartmentTemplate()

@@ -81,7 +81,7 @@
                                 <div class="form-group">
                                     <label class="col-sm-3" for="effective_date">TANGGAL EFEKTIF</label>
                                     <div class="col-md-7">
-                                        <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="effective_date" name="effective_date" value="{{$effective_date}}">
+                                        <input type="text" class="form-control doEffectiveDate" placeholder="mm/dd/yyyy" id="effective_date" name="effective_date" value="{{$effective_date}}">
 {{--                                        <span class="input-group-addon bg-custom b-0"><i class="mdi mdi-calendar text-white"></i></span>--}}
                                     </div><!-- input-group -->
                                 </div>

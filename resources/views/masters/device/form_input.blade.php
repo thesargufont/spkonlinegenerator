@@ -141,7 +141,7 @@
         var serial_number    = $('#serial_number').val();
         var activa_number    = $('#activa_number').val();
         
-        artLoadingDialogDo("Please wait, we process your request..",function(){
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
             $.ajax({
                 url : '{!! route('masters/device/create-new/create') !!}',
                 type: 'POST',

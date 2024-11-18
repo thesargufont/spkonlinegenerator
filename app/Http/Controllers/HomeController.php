@@ -18,7 +18,7 @@ class HomeController extends Controller
     {
 //        $spongeDatas = SpongeHeader::where('status', '!=', 'NOT APPROVE');
         $spongeDatas = SpongeHeader::where('status', '!=', 'CANCEL')
-                        ->where('status', '!=', 'CLOSED');
+            ->where('status', '!=', 'CLOSED');
 
         $totalReport         = clone $spongeDatas;
         $totalReportJob      = clone $spongeDatas;
@@ -86,12 +86,14 @@ class HomeController extends Controller
         $dataDashboardGangguan = $this->getDataDashboardGangguan();
         $dataDashboardPekerjaan = $this->getDataDashboardPekerjaan();
 
+        $nowYear = Carbon::now()->format('Y');
+
         return view('home', [
             'totalReport' => $totalReport,
             'totalReportJob' => $totalReportJob,
             'totalReportProblem' => $totalReportProblem,
-            'jobPercentage' => floor($jobPercentage),
-            'problemPercentage' => floor($problemPercentage),
+            'jobPercentage' => round($jobPercentage,0),
+            'problemPercentage' => round($problemPercentage,0),
             'jobCount' => $jobCount,
             'jobTlkm' => $jobTlkm,
             'jobScd' => $jobScd,
@@ -108,6 +110,7 @@ class HomeController extends Controller
             'dataDashboardInput' => $dataDashboardInput,
             'dataDashboardGangguan' => $dataDashboardGangguan,
             'dataDashboardPekerjaan' => $dataDashboardPekerjaan,
+            'year' => $nowYear,
         ]);
     }
 
@@ -183,29 +186,49 @@ class HomeController extends Controller
 
     public function getDataDashboardStatus() {
         try {
-            $statusNotApprove = SpongeHeader::where('status', 'NOT APPROVE')
-                            ->count();
+            $totalData = SpongeHeader::count();
 
-            $statusOnGoing = SpongeHeader::where('status', 'ONGOING')
-                            ->count();
+            $listStatus = SpongeHeader::distinct()->pluck('status');
 
-            $statusDone = SpongeHeader::where('status', 'DONE')
-                            ->count();
+//            $statusNotApprove = SpongeHeader::where('status', 'NOT APPROVE')
+//                ->count();
+//
+//            $statusOnGoing = SpongeHeader::where('status', 'ONGOING')
+//                ->count();
+//
+//            $statusDone = SpongeHeader::where('status', 'DONE')
+//                ->count();
+//
+//            $statusClosed = SpongeHeader::where('status', 'CLOSED')
+//                ->count();
+//
+//            $statusCancel = SpongeHeader::where('status', 'CANCEL')
+//                ->count();
+//
+//
+//            return [
+//                'success'           => true,
+//                'statusNotApprove'  => $statusNotApprove,
+//                'statusOnGoing'     => $statusOnGoing,
+//                'statusDone'        => $statusDone,
+//                'statusClosed'      => $statusClosed,
+//                'statusCancel'      => $statusCancel,
+//                'totalData'         => $totalData,
+//            ];
 
-            $statusClosed = SpongeHeader::where('status', 'CLOSED')
-                            ->count();
+            $statusCounts = [];
 
-            $statusCancel = SpongeHeader::where('status', 'CANCEL')
-                            ->count();
+            foreach ($listStatus as $status) {
+                $statusCounts[$status] = SpongeHeader::where('status', $status)->count();
+            }
 
-            return [
-                'success'           => true,
-                'statusNotApprove'  => $statusNotApprove,
-                'statusOnGoing'     => $statusOnGoing,
-                'statusDone'        => $statusDone,
-                'statusClosed'      => $statusClosed,
-                'statusCancel'      => $statusCancel,
+            $data = [
+                'success'       => true,
+                'totalData'     => $totalData,
+                'statusCounts'  => $statusCounts, // Return dynamic status counts
             ];
+
+            return $data;
         } catch (\Exception $e) {
             return [
                 'success' => false,
@@ -216,17 +239,31 @@ class HomeController extends Controller
 
     public function getDataDashboardInput() {
         try {
-            $inputGangguan = SpongeHeader::where('wo_category', 'LAPORAN GANGGUAN')
-                                ->count();
+            $listInput = SpongeHeader::distinct()->pluck('wo_category');
 
-            $inputPekerjaan = SpongeHeader::where('wo_category', 'PEKERJAAN')
-                                ->count();
+//            $inputGangguan = SpongeHeader::where('wo_category', 'LAPORAN GANGGUAN')
+//                ->count();
+//
+//            $inputPekerjaan = SpongeHeader::where('wo_category', 'PEKERJAAN')
+//                ->count();
 
-            return [
-                'success'            => true,
-                'inputGangguan'      => $inputGangguan,
-                'inputPekerjaan'     => $inputPekerjaan,
+            $totalData = SpongeHeader::count();
+
+            $inputCounts = [];
+
+            foreach ($listInput as $input) {
+                $inputCounts[$input] = SpongeHeader::where('wo_category', $input)->count();
+            }
+
+            $data = [
+                'success'               => true,
+//                'inputGangguan'      => $inputGangguan,
+//                'inputPekerjaan'     => $inputPekerjaan,
+                'totalData'             => $totalData,
+                'inputCounts'           => $inputCounts, // Return dynamic input counts
             ];
+
+            return $data;
         } catch (\Exception $e) {
             return [
                 'success' => false,
@@ -239,24 +276,29 @@ class HomeController extends Controller
         try {
             $array = [];
             $findSpongeDetail = SpongeDetail::where('disturbance_category', '!=', 'null')
-                                ->get();
+                ->get();
+
+            $findSpongeDetailCount = SpongeDetail::where('disturbance_category', '!=', 'null')
+                ->count();
 
             foreach ($findSpongeDetail as $detail) {
                 $findDeviceCategory = DeviceCategory::where('id', $detail->disturbance_category)
-                                        ->first();
+                    ->first();
 
                 $array[] = $findDeviceCategory->disturbance_category;
             }
 
             $countedValues = array_count_values($array);
 
-            $result2 = [
+            $data = [
                 'success'           => true,
+                'totalData'         => $findSpongeDetailCount,
+                'gangguanCounts'    => $countedValues,
             ];
 
-            $result = array_merge($result2, $countedValues);
+//            $result = array_merge($result2, $countedValues);
 
-            return $result;
+            return $data;
 
         } catch (\Exception $e) {
             return [
@@ -268,38 +310,50 @@ class HomeController extends Controller
 
     public function getDataDashboardPekerjaan() {
         try {
-            $inputPekerjaanPemasangan = SpongeHeader::where('wo_category', 'PEKERJAAN')
-                ->where('job_category', 'PEMASANGAN')
-                ->count();
+            $listJob = SpongeHeader::where('job_category','!=' ,'')->distinct()->pluck('job_category');
 
-            $inputPekerjaanSurvey = SpongeHeader::where('wo_category', 'PEKERJAAN')
-                ->where('job_category', 'SURVEY')
-                ->count();
+//            $inputPekerjaanPemasangan = SpongeHeader::where('wo_category', 'PEKERJAAN')
+//                ->where('job_category', 'PEMASANGAN')
+//                ->count();
+//
+//            $inputPekerjaanSurvey = SpongeHeader::where('wo_category', 'PEKERJAAN')
+//                ->where('job_category', 'SURVEY')
+//                ->count();
+//
+//            $inputPekerjaanResetting = SpongeHeader::where('wo_category', 'PEKERJAAN')
+//                ->where('job_category', 'RESETTING')
+//                ->count();
+//
+//            $inputPekerjaanCommisioning = SpongeHeader::where('wo_category', 'PEKERJAAN')
+//                ->where('job_category', 'COMMISIONING')
+//                ->count();
+//
+//            $inputPekerjaanInvestigasi = SpongeHeader::where('wo_category', 'PEKERJAAN')
+//                ->where('job_category', 'INVESTIGASI')
+//                ->count();
+//
+//            $inputPekerjaanSupervisi = SpongeHeader::where('wo_category', 'PEKERJAAN')
+//                ->where('job_category', 'SUPERVISI')
+//                ->count();
 
-            $inputPekerjaanResetting = SpongeHeader::where('wo_category', 'PEKERJAAN')
-                ->where('job_category', 'RESETTING')
-                ->count();
+            $totalData = SpongeHeader::count();
 
-            $inputPekerjaanCommisioning = SpongeHeader::where('wo_category', 'PEKERJAAN')
-                ->where('job_category', 'COMMISIONING')
-                ->count();
+            $jobCounts = [];
 
-            $inputPekerjaanInvestigasi = SpongeHeader::where('wo_category', 'PEKERJAAN')
-                ->where('job_category', 'INVESTIGASI')
-                ->count();
-
-            $inputPekerjaanSupervisi = SpongeHeader::where('wo_category', 'PEKERJAAN')
-                ->where('job_category', 'SUPERVISI')
-                ->count();
+            foreach ($listJob as $job) {
+                $jobCounts[$job] = SpongeHeader::where('job_category', $job)->count();
+            }
 
             return [
                 'success'               => true,
-                'pemasangan'            => $inputPekerjaanPemasangan,
-                'survey'                => $inputPekerjaanSurvey,
-                'resetting'             => $inputPekerjaanResetting,
-                'commisioning'          => $inputPekerjaanCommisioning,
-                'investigasi'           => $inputPekerjaanInvestigasi,
-                'supervisi'             => $inputPekerjaanSupervisi,
+                'totalData'             => $totalData,
+                'jobCounts'             => $jobCounts,
+//                'pemasangan'            => $inputPekerjaanPemasangan,
+//                'survey'                => $inputPekerjaanSurvey,
+//                'resetting'             => $inputPekerjaanResetting,
+//                'commisioning'          => $inputPekerjaanCommisioning,
+//                'investigasi'           => $inputPekerjaanInvestigasi,
+//                'supervisi'             => $inputPekerjaanSupervisi,
             ];
         } catch (\Exception $e) {
             return [
