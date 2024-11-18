@@ -154,49 +154,51 @@
         var email        = $('#email').val();
         var phone_number = $('#phone_number').val();
 
-        $.ajax({
-            url: "{!! route('masters/employee/create-new/create') !!}",
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{!!csrf_token()!!}'
-            },
-            dataType: "json",
-            data: {
-                'name': name,
-                'nik': nik,
-                'department': department,
-                'gender': gender,
-                'email': email,
-                'phone_number': phone_number,
-            },
-            success: function(data) {
-                if (data.errors) {
-                    $('#form_result').html(data.message);
-                }
-                if (data.success) {
-                    $('#form_result').html(data.message);
-                    $('#department_name').val('');
-                    $('#description').val('');
-                    setTimeout(function() {
-                        window.location.href = "{{url('masters/employee/index')}}";
-                    }, 1500);
-                }
-            },
-            error: function(data) {
-                console.log(data);
-                html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
-                $('#form_result').html(html);
-                if (data.responseJSON.message) {
-                    var target = data.responseJSON.errors;
-                    for (var k in target) {
-                        if (!Array.isArray(target[k]['0'])) {
-                            var msg = target[k]['0'];
-                            artCreateFlashMsg(msg, "danger", true);
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
+            $.ajax({
+                url: "{!! route('masters/employee/create-new/create') !!}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{!!csrf_token()!!}'
+                },
+                dataType: "json",
+                data: {
+                    'name': name,
+                    'nik': nik,
+                    'department': department,
+                    'gender': gender,
+                    'email': email,
+                    'phone_number': phone_number,
+                },
+                success: function(data) {
+                    if (data.errors) {
+                        $('#form_result').html(data.message);
+                    }
+                    if (data.success) {
+                        $('#form_result').html(data.message);
+                        $('#department_name').val('');
+                        $('#description').val('');
+                        setTimeout(function() {
+                            window.location.href = "{{url('masters/employee/index')}}";
+                        }, 1500);
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    html = '<div class="alert alert-danger">Terjadi kesalahan</div>';
+                    $('#form_result').html(html);
+                    if (data.responseJSON.message) {
+                        var target = data.responseJSON.errors;
+                        for (var k in target) {
+                            if (!Array.isArray(target[k]['0'])) {
+                                var msg = target[k]['0'];
+                                artCreateFlashMsg(msg, "danger", true);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }); 
         return false;
     }
 

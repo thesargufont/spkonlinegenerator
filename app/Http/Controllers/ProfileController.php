@@ -108,15 +108,20 @@ class ProfileController extends Controller
 
             $imageData = str_replace('data:image/png;base64,', '', $request->image);
 
+            $now = Carbon::now();
+            $minute = $now->minute;
+            $second = $now->second;
+
             $decodedImage = base64_decode($imageData);
             $disk = Storage::disk('local');
-            $filenameWithExtension = str_replace(" ","",Auth::user()->name).'.png';
+            $filenameWithExtension = str_replace(" ","",Auth::user()->name). '_' . $minute . $second . '.png';
 
             $filePath = storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'signature'.DIRECTORY_SEPARATOR.$filenameWithExtension);
             $exists = Storage::exists('public'.DIRECTORY_SEPARATOR.'signature'.DIRECTORY_SEPARATOR.$filenameWithExtension);
 
 
             if($exists) {
+                //unlink($filePath);
                 File::delete($filePath);
             }
             

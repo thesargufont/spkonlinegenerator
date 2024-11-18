@@ -36,12 +36,13 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="wo_number">NOMOR WORK ORDER</label>
                                     <div class="col-md-10">
-                                        <select title="WO Number" id="wo_number" class="form-control">
+                                        <input maxlength="50" id="wo_number" type="text" class="text-uppercase form-control" name="wo_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
+                                        <!-- <select title="WO Number" id="wo_number" class="form-control">
                                             <option selected value=""></option>
                                             @foreach($woNumber as $wo)
                                                 <option value="{{$wo}}">{{$wo}}</option>
                                             @endforeach
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>
 
@@ -49,12 +50,13 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="spk_number">NOMOR SPK</label>
                                     <div class="col-md-10">
-                                        <select title="SPK Number" id="spk_number" class="form-control">
+                                        <input maxlength="50" id="spk_number" type="text" class="text-uppercase form-control" name="spk_number" title="NOMOR WORK ORDER" placeholder="NOMOR WORK ORDER">
+                                        <!-- <select title="SPK Number" id="spk_number" class="form-control">
                                             <option selected value=""></option>
                                             @foreach($spkNumber as $spk)
                                                 <option value="{{$spk}}">{{$spk}}</option>
                                             @endforeach
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>
                             </div>
@@ -64,7 +66,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="effective_date_start">TANGGAL EFEKTIF DARI</label>
                                     <div class="col-md-10">
-                                        <input name="effective_date_start" id='effective_date_start' type="text" class="form-control doStartDate" readonly value="">
+                                        <input name="effective_date_start" id='effective_date_start' type="text" class="form-control doStartDate" value="">
                                     </div>
                                 </div>
 
@@ -72,7 +74,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="effective_date_end">TANGGAL EFEKTIF KE</label>
                                     <div class="col-md-10">
-                                        <input name="effective_date_end" id='effective_date_end' type="text" class="form-control doEndDate" readonly value="">
+                                        <input name="effective_date_end" id='effective_date_end' type="text" class="form-control doEndDate" value="">
                                     </div>
                                 </div>
                             </div>
@@ -82,7 +84,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="wo_category">KATEGORI WORK ORDER</label>
                                     <div class="col-md-10">
-                                        <select title="WO Category" id="wo_category" name="wo_category" class="form-control">
+                                        <select title="WO Category" id="wo_category" name="wo_category" class="form-control" onchange="validateJobCategory()">
                                             <option selected value=""></option>
                                             @foreach($woCategory as $woCategory)
                                                 <option value="{{$woCategory}}">{{$woCategory}}</option>
@@ -97,6 +99,9 @@
                                     <div class="col-md-10">
                                         <select title="Job Category" id="job_category" name="job_category" class="form-control">
                                             <option value="" selected></option>
+                                            @foreach($jobCategory as $jobCategory)
+                                                <option value="{{$jobCategory}}">{{$jobCategory}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -111,7 +116,7 @@
                                             <option selected value=""></option>
                                             @if (!empty($department) && is_array($department))
                                                 @foreach ($department as $dept)
-                                                    <option value="{{ $dept['department_code'] }}">
+                                                    <option value="{{ $dept['id'] }}">
                                                         {{ $dept['department_code'] }} - {{ $dept['department'] }}
                                                     </option>
                                                 @endforeach
@@ -128,7 +133,7 @@
                                             <option selected value=""></option>
                                             @if (!empty($location) && is_array($location))
                                                 @foreach ($location as $loc)
-                                                    <option value="{{ $loc['location'] }}">
+                                                    <option value="{{ $loc['id'] }}">
                                                         {{ $loc['location'] }} - {{ $loc['location_type'] }}
                                                     </option>
                                                 @endforeach
@@ -153,7 +158,7 @@
                                 </div>
 
                                 {{-- STATUS ENGINEER --}}
-                                <div class="col-md-6 mb-3">
+                                <!-- <div class="col-md-6 mb-3">
                                     <label class="col-md-2" for="engineer_status">STATUS ENGINEER</label>
                                     <div class="col-md-10">
                                         <select title="Engineering Status" id="engineer_status" name="engineer_status" class="form-control">
@@ -163,7 +168,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 {{--                            </div>--}}
                             <br>
@@ -243,7 +248,7 @@
                 autoclose: true,
             });
 
-
+            validateJobCategory();
         });
 
         $(function() {
@@ -254,7 +259,7 @@
                 // deferLoading: 0, //disable auto load
                 stateSave: false,
                 // scrollY: 500,
-                // scrollX: true,
+                scrollX: true,
                 ordering: false,
                 language: {
                     paginate: {
@@ -283,7 +288,7 @@
                         d.department = $('#department').val();
                         d.location = $('#location').val();
                         d.wo_status = $('#wo_status').val();
-                        d.engineer_status = $('#engineer_status').val();
+                        // d.engineer_status = $('#engineer_status').val();
                     }
                 },
                 columns: [{
@@ -384,6 +389,17 @@
                     }
                 });
                 // window.location.href = url;
+            }
+        }
+
+        function validateJobCategory() {
+            var wo = $('#wo_category').val();
+            if (wo == 'PEKERJAAN') {
+                $('#job_category').prop("disabled", false);
+            }
+            else {
+                $('#job_category').val('');
+                $('#job_category').prop("disabled", true);
             }
         }
 

@@ -112,7 +112,7 @@
                                 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <h4 class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</h4>
+                                        <h4 class="col-sm-2" style="font-style: italic;">#1 DETAIL PELAPORAN</h4>
                                     </div>
                                 </div>
 
@@ -194,7 +194,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <h4 class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</h4>
+                                        <h4 class="col-sm-2" style="font-style: italic;">#2 DETAIL PENUGASAN</h4>
                                     </div>
                                 </div>
 
@@ -253,7 +253,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <h4 class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</h4>
+                                        <h4 class="col-sm-2" style="font-style: italic;">#3 DETAIL PENGERJAAN</h4>
                                     </div>
                                 </div>
 
@@ -290,7 +290,7 @@
                                         </div>
                                         <label class="col-sm-1" >DESKRIPSI ENGINEER</label>
                                         <div class="col-sm-3">
-                                            <input name="detail[{{ $detail['index'] }}][desc_engineer]" id="detail[{{ $detail['index'] }}][desc_engineer]" type="text" class="form-control" value="{{ $detail['executor_desc'] }}" @if($detail['engineer_status']=='DONE' ) disabled @endif>
+                                            <input maxlength="255" name="detail[{{ $detail['index'] }}][desc_engineer]" id="detail[{{ $detail['index'] }}][desc_engineer]" type="text" class="form-control" value="{{ $detail['executor_desc'] }}" @if($detail['engineer_status']=='DONE' ) disabled @endif>
                                         </div>
                                         <label class="col-sm-1" style="color: red;" for="detail[{{ $detail['index'] }}][wp_number]">NOMOR WP*</label>
                                         <div class="col-sm-3">

@@ -21,12 +21,12 @@
             /*margin-bottom: 40px;*/
             font-family: Arial, sans-serif;
             font-size: 24px;
-            border: 2px solid black;
+            border-bottom: 2px solid black;
             padding: 15px;
         }
 
         .bodyBorder {
-            border: 2px solid black;
+            /* border: 2px solid black; */
             padding: 50px;
             /*padding-top: 50px;*/
             /*padding-bottom: 50px;*/
@@ -57,6 +57,7 @@
             width: 100%;
             margin-top: 30px;
             text-align: center;
+            position: absolute;
         }
 
         .signatures td {
@@ -65,6 +66,11 @@
 
         .footer {
             margin-top: 50px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
         .page-break {
@@ -219,12 +225,40 @@
                 <td>8.</td>
                 <td>Keterangan</td>
                 <td style="width: 10px">:</td>
-                <td></td>
+                <td> ........................................................................................</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="width: 10px">&nbsp;</td>
+                <td> ........................................................................................</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="width: 10px">&nbsp;</td>
+                <td> ........................................................................................</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="width: 10px"></td>
+                <td> ........................................................................................</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="width: 10px"></td>
+                <td> ........................................................................................</td>
             </tr>
 
         </table>
 
-        <div>
+        <!-- <div>
             <br>
             <br>
             <br>
@@ -236,9 +270,9 @@
             <br>
             <br>
             <br>
-        </div>
+        </div> -->
 
-        <table class="signatures">
+        <table class="content-table" style="text-align: center; position:fixed; top:65%">
             <tr>
                 <td>&nbsp;</td>
                 <td class="fontBold">Ungaran, {{$data['approve_at']}}</td>

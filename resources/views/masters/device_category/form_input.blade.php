@@ -62,7 +62,7 @@
         var device_category  = $('#device_category').val();
         var disturbance_category = $('#disturbance_category').val();
         
-        artLoadingDialogDo("Please wait, we process your request..",function(){
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
             $.ajax({
                 url : '{!! route('masters/device-category/create-new/create') !!}',
                 type: 'POST',

@@ -116,7 +116,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="col-sm-2" style="font-style: italic;">#1 DETIL PELAPORAN</label>
+                                        <label class="col-sm-2" style="font-style: italic;">#1 DETAIL PELAPORAN</label>
                                     </div>
                                 </div>
 
@@ -205,7 +205,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="col-sm-2" style="font-style: italic;">#2 DETIL PENUGASAN</label>
+                                        <label class="col-sm-2" style="font-style: italic;">#2 DETAIL PENUGASAN</label>
                                     </div>
                                 </div>
 
@@ -290,7 +290,7 @@
                                         <label class="col-sm-2">DESKRIPSI PENUGASAN</label>
                                         <div class="col-sm-6">
                                             <!-- <textarea class="form-control" rows="3" name="detail[{{ $index }}][job_description]" id="detail[{{ $index }}][job_description]" value="{{ $detail['job_description'] }}" @if($status !='NOT APPROVE' ) disabled @endif></textarea> -->
-                                            <input name="detail[{{ $index }}][job_description]" id="detail[{{ $index }}][job_description]" type="text" class="form-control" value="{{ $detail['job_description'] }}" @if($status !='NOT APPROVE' ) disabled @endif>
+                                            <input maxlength="255" name="detail[{{ $index }}][job_description]" id="detail[{{ $index }}][job_description]" type="text" class="form-control" value="{{ $detail['job_description'] }}" @if($status !='NOT APPROVE' ) disabled @endif>
                                         </div>
                                     </div>
                                 </div>
@@ -302,7 +302,7 @@
                                 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="col-sm-2" style="font-style: italic;">#3 DETIL PENGERJAAN</label>
+                                        <label class="col-sm-2" style="font-style: italic;">#3 DETAIL PENGERJAAN</label>
                                     </div>
                                 </div>
 

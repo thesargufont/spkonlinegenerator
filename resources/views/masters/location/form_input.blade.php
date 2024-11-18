@@ -104,7 +104,7 @@
         var basecamp      = $('#basecamp').val();
         var addresss      = $('#addresss').val();
         
-        artLoadingDialogDo("Please wait, we process your request..",function(){
+        artLoadingDialogDo("Harap tunggu, sedang dalam proses...",function(){
             $.ajax({
                 url : '{!! route('masters/location/create-new/create') !!}',
                 type: 'POST',

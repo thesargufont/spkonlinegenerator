@@ -54,7 +54,6 @@ class WorkingOrderController extends Controller
 
     public function show($label, $label_type)
     {
-        dd($label, $label_type);
         $user_id = Auth::user()->id;
         $roles = Role::where('user_id', $user_id)->where('active', 1)->distinct()->pluck('role')->toArray();
         $access_right = array('SUPERADMIN', 'USER');
@@ -105,45 +104,45 @@ class WorkingOrderController extends Controller
 
         $user = Auth::user()->id;
         $spongeheader_ongoing = SpongeHeader::where('created_by', $user)->where('status','=','ONGOING')->orderBy('created_at','desc')
-            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-            ->where('department_id', 'LIKE',  "%{$department}%")
-            ->where('status', 'LIKE',  "%{$wo_status}%")
-        ;
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                                ->where('department_id', 'LIKE',  "%{$department}%")
+                                ->where('status', 'LIKE',  "%{$wo_status}%")
+                                ;
         $spongeheader_done = SpongeHeader::where('created_by', $user)->where('status','=','DONE')->orderBy('created_at','desc')
-            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-            ->where('department_id', 'LIKE',  "%{$department}%")
-            ->where('status', 'LIKE',  "%{$wo_status}%")
-        ;
+                            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                            ->where('department_id', 'LIKE',  "%{$department}%")
+                            ->where('status', 'LIKE',  "%{$wo_status}%")
+                            ;
         $spongeheader_closed = SpongeHeader::where('created_by', $user)->where('status','=','CLOSED')->orderBy('created_at','desc')
-            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-            ->where('department_id', 'LIKE',  "%{$department}%")
-            ->where('status', 'LIKE',  "%{$wo_status}%")
-        ;
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                                ->where('department_id', 'LIKE',  "%{$department}%")
+                                ->where('status', 'LIKE',  "%{$wo_status}%")
+                                ;
         $spongeheader_cancel = SpongeHeader::where('created_by', $user)->where('status','=','CANCEL')->orderBy('created_at','desc')
-            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-            ->where('department_id', 'LIKE',  "%{$department}%")
-            ->where('status', 'LIKE',  "%{$wo_status}%")
-        ;
+                                ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                                ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                                ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                                ->where('department_id', 'LIKE',  "%{$department}%")
+                                ->where('status', 'LIKE',  "%{$wo_status}%")
+                                ;
         $spongeheader = SpongeHeader::where('created_by', $user)->where('status','NOT APPROVE')
-            ->where('wo_number', 'LIKE',  "%{$wo_number}%")
-            ->where('spk_number', 'LIKE',  "%{$spk_number}%")
-            ->where('wo_category', 'LIKE',  "%{$wo_category}%")
-            ->where('department_id', 'LIKE',  "%{$department}%")
-            ->where('status', 'LIKE',  "%{$wo_status}%")
-            ->orderBy('created_at','desc')
-            ->union($spongeheader_ongoing)
-            ->union($spongeheader_done)
-            ->union($spongeheader_closed)
-            ->union($spongeheader_cancel)
-        ;
+                        ->where('wo_number', 'LIKE',  "%{$wo_number}%")
+                        ->where('spk_number', 'LIKE',  "%{$spk_number}%")
+                        ->where('wo_category', 'LIKE',  "%{$wo_category}%")
+                        ->where('department_id', 'LIKE',  "%{$department}%")
+                        ->where('status', 'LIKE',  "%{$wo_status}%")
+                        ->orderBy('created_at','desc')
+                        ->union($spongeheader_ongoing)
+                        ->union($spongeheader_done)
+                        ->union($spongeheader_closed)
+                        ->union($spongeheader_cancel)
+                        ;
 
         // if ($wo_number != '') {
         //     $spongeheader = $spongeheader->where('wo_number', 'LIKE',  "%{$wo_number}%");
@@ -503,7 +502,7 @@ class WorkingOrderController extends Controller
                 "message" => '<div class="alert alert-danger">Tanggal efektif belum diisi. Mohon cek kembali.</div>'
             ]);
         }
-
+        
         //HEADER VALIDATION - VERIFY DEPARTMENT ID
         $department_cek = Department::find($request->department);
         if (!$department_cek) {
@@ -673,7 +672,7 @@ class WorkingOrderController extends Controller
                 //     $closeAt = null;
                 // }
                 $closeAt = null;
-
+                
                 $newFilename1 = '';
                 $newFilename2 = '';
                 $newFilename3 = '';
